@@ -5,7 +5,8 @@
 - Keep project-specific rules in project config files, not in global instructions.
 - Prefer robust, explicit systems over convenience shortcuts.
 - Prefer compile-time enforcement when possible.
-- If compile-time enforcement is not possible, fail fast during testing (assertion/precondition), never silently default.
+- If compile-time enforcement is not possible, fail fast during testing (assertion), never silently default.
+- Never crash in production code paths; avoid `preconditionFailure`/`fatalError` for runtime data handling.
 - Avoid hidden fallback behavior and implicit semantics.
 - Avoid optional parameters where `nil` carries implicit semantic meaning.
 - Default arguments are fine when the default is explicit and unambiguous.
