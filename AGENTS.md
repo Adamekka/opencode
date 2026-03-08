@@ -12,6 +12,7 @@
 - Default arguments are fine when the default is explicit and unambiguous.
 - Avoid optional-driven API semantics where explicit alternatives exist.
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
+- Prefer Clang toolchains for C and C++ projects when the project supports them.
 
 ## Swift
 - Prefer clear `MARK` grouping; avoid random extension placement.
