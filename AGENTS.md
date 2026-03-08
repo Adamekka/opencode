@@ -11,6 +11,7 @@
 - Avoid optional parameters where `nil` carries implicit semantic meaning.
 - Default arguments are fine when the default is explicit and unambiguous.
 - Avoid optional-driven API semantics where explicit alternatives exist.
+- For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
 
 ## Swift
 - Prefer clear `MARK` grouping; avoid random extension placement.
