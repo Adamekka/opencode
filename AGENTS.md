@@ -1,5 +1,6 @@
 # Global Preferences
 
+## Shared
 - Treat this file as a living preference profile and keep it updated frequently.
 - When the user states a stable cross-project preference, update global instructions immediately.
 - Keep project-specific rules in project config files, not in global instructions.
@@ -12,7 +13,12 @@
 - Default arguments are fine when the default is explicit and unambiguous.
 - Avoid optional-driven API semantics where explicit alternatives exist.
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
+
+## C and C++
 - Prefer Clang toolchains for C and C++ projects when the project supports them.
+
+## Rust
+- Every Rust type should live in its own file.
 
 ## Swift
 - Prefer clear `MARK` grouping; avoid random extension placement.
