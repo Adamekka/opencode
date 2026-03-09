@@ -4,6 +4,7 @@
 - Treat this file as a living preference profile and keep it updated frequently.
 - When the user states a stable cross-project preference, update global instructions immediately.
 - Keep project-specific rules in project config files, not in global instructions.
+- When adding new preferences, put them in a dedicated section when possible instead of growing `Shared`.
 - Prefer robust, explicit systems over convenience shortcuts.
 - Prefer compile-time enforcement when possible.
 - If compile-time enforcement is not possible, fail fast during testing (assertion), never silently default.
@@ -16,6 +17,9 @@
 
 ## C and C++
 - Prefer Clang toolchains for C and C++ projects when the project supports them.
+
+## JavaScript and TypeScript
+- Always use Bun for package manager and script commands.
 
 ## Rust
 - Every Rust type should live in its own file.
