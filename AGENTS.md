@@ -28,6 +28,7 @@
 ## Swift
 - Prefer clear `MARK` grouping; avoid random extension placement.
 - Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
+- Avoid declaring singletons inside types with patterns like `static let shared`; prefer explicit ownership/injection unless the existing architecture already requires that pattern.
 - Keep localization calls in the existing style (`"literal".localized(...)` on the same line as the literal).
 - After finishing a Swift task, run `swiftformat .` and `swiftlint` from repo root.
 - Do not run formatting/linting early unless requested; run at task completion checkpoints.
