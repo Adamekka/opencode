@@ -6,6 +6,7 @@
 - When the user states a stable cross-project preference, update global instructions immediately.
 - Keep project-specific rules in project config files, not in global instructions.
 - When adding new preferences, put them in a dedicated section when possible instead of growing `Shared`.
+- Prefer inline one-off handlers and simple local logic over extracting small helper functions.
 - Prefer robust, explicit systems over convenience shortcuts.
 - Prefer compile-time enforcement when possible.
 - If compile-time enforcement is not possible, fail fast during testing (assertion), never silently default.
