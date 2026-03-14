@@ -1,6 +1,7 @@
 # Global Preferences
 
 ## Shared
+
 - Treat this file as a living preference profile and keep it updated frequently.
 - When the user states a stable cross-project preference, update global instructions immediately.
 - Keep project-specific rules in project config files, not in global instructions.
@@ -16,16 +17,20 @@
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
 
 ## C and C++
+
 - Prefer Clang toolchains for C and C++ projects when the project supports them.
 
 ## JavaScript and TypeScript
+
 - Always use Bun for package manager and script commands.
 
 ## Rust
+
 - Every Rust type should live in its own file.
 - In binary Rust projects, prefer `pub` over `pub(crate)` when both accomplish the same thing; use `pub(crate)` only when the narrower visibility meaningfully helps.
 
 ## Swift
+
 - Prefer clear `MARK` grouping; avoid random extension placement.
 - Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
 - Avoid hardcoding dependencies inside types (e.g. `private let defaults = UserDefaults.standard`); prefer receiving dependencies via initializers, environment, or explicit injection to keep types testable and behavior explicit.
