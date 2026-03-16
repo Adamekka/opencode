@@ -34,6 +34,8 @@
 ## Swift
 
 - Every Swift type should live in its own file.
+- Prefer `Manager` over `ViewModel` in Swift type naming; this applies to type names, not folder names.
+- When iterating over all cases of an enum, always use `CaseIterable` with `allCases`; never hardcode an array of cases.
 - Prefer clear `MARK` grouping; avoid random extension placement.
 - Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
 - Avoid hardcoding dependencies inside types (e.g. `private let defaults = UserDefaults.standard`); prefer receiving dependencies via initializers, environment, or explicit injection to keep types testable and behavior explicit.
