@@ -3,6 +3,7 @@
 ## Shared
 
 - Treat this file as a living preference profile and keep it updated frequently.
+- Always add a "why" comment when code does something non-obvious, e.g. a constant that always returns a fixed value, a deliberate no-op, or a workaround for an external constraint.
 - When the user states a stable cross-project preference, update global instructions immediately.
 - Keep project-specific rules in project config files, not in global instructions.
 - Do not duplicate global preferences in project AGENTS files unless a project-specific override is intentional.
