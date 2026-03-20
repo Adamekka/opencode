@@ -37,8 +37,6 @@
 - For non-trivial work, write a checkable plan to `tasks/todo.md` before implementation starts.
 - Sanity-check the plan before coding, keep `tasks/todo.md` updated as items progress, and mark items complete as soon as they are done.
 - Record short high-level progress notes and add a review/results section to `tasks/todo.md` before declaring success.
-- At the start of work in a project, review `tasks/lessons.md` for relevant lessons when the file exists.
-- After any user correction, immediately update `tasks/lessons.md` with the pattern and a concrete rule that prevents the same mistake.
 
 ## Solution Quality
 
