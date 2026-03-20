@@ -19,6 +19,10 @@
 - Avoid optional-driven API semantics where explicit alternatives exist.
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
 
+## State Modeling
+
+- When a UI path should be impossible by construction, do not add a user-facing fallback branch just to satisfy control flow; model the presentation state explicitly and use `assertionFailure` at the invalid transition point so impossible states are caught during development.
+
 ## Planning
 
 - For any non-trivial task (roughly 3+ steps or any architectural decision), enter plan mode before implementation.
