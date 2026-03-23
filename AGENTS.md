@@ -45,6 +45,7 @@
 ## Solution Quality
 
 - Keep changes as small and local as possible while still addressing the real root cause.
+- Prefer simplification that deletes indirection over adding new abstraction layers that mostly relocate branching without reducing total complexity.
 - For non-trivial changes, pause and ask whether there is a more elegant solution before settling on the first workable approach.
 - If a fix feels hacky, step back and implement the cleaner solution with the current understanding.
 - Do not over-engineer simple, obvious fixes.
