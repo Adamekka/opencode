@@ -19,6 +19,11 @@
 - Avoid optional-driven API semantics where explicit alternatives exist.
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
 
+## Function Structure
+
+- Prefer inline local logic over introducing new helper functions.
+- When a new function's role could be mistaken for an API entrypoint instead of a private helper, inline it unless reuse clearly justifies extraction.
+
 ## State Modeling
 
 - When a UI path should be impossible by construction, do not add a user-facing fallback branch just to satisfy control flow; model the presentation state explicitly and use `assertionFailure` at the invalid transition point so impossible states are caught during development.
