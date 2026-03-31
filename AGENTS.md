@@ -74,6 +74,7 @@
 - Always use trailing return types: `auto foo() -> int32_t` not `int foo()`.
 - Always use sized integer types (`int32_t`, `uint8_t`, etc.); never use `int`, `long`, `unsigned`, etc.
 - Prefer `std::unique_ptr` over raw `new`; only use raw `new` when ownership is immediately transferred to a framework that manages lifetime itself (e.g. Qt parent-child widget ownership).
+- Add `const` to value parameters in `.cpp` definitions where the parameter is not reassigned inside the function body. Do not put `const` on by-value parameters in header declarations (it has no effect on the function signature).
 
 ## JavaScript and TypeScript
 
