@@ -19,10 +19,15 @@
 - Avoid optional-driven API semantics where explicit alternatives exist.
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
 
+## Shared Instances
+
+- For singleton/shared dependencies (e.g. `UserDefaults.standard`, `Foo.shared`), do not inject, wrap, or alias them; access the canonical shared instance directly at the use site.
+
 ## Function Structure
 
 - Prefer inline local logic over introducing new helper functions.
 - When a new function's role could be mistaken for an API entrypoint instead of a private helper, inline it unless reuse clearly justifies extraction.
+- Do not add pass-through helpers or computed properties that only rename existing data or restate enum state without adding real semantic value; prefer direct use and direct comparisons at the call site, e.g. `foo.status == .pending` instead of a thin `isPending` wrapper.
 
 ## State Modeling
 
@@ -88,11 +93,10 @@
 ## Swift
 
 - Every Swift type should live in its own file.
-- Prefer `Manager` over `ViewModel` in Swift type naming; this applies to type names, not folder names.
+- Organize Swift code by feature; within each feature, group files into `Views`, `ViewModels`, `Managers`, and `Models` folders as needed, and do not create those folders when they would be empty.
 - When iterating over all cases of an enum, always use `CaseIterable` with `allCases`; never hardcode an array of cases.
 - Prefer clear `MARK` grouping; avoid random extension placement.
 - Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
-- Avoid hardcoding dependencies inside types (e.g. `private let defaults = UserDefaults.standard`); prefer receiving dependencies via initializers, environment, or explicit injection to keep types testable and behavior explicit.
 - Keep localization calls in the existing style (`"literal".localized(...)` on the same line as the literal).
 - When fixing intentional empty closure/block lint violations, use a comment placeholder instead of a dummy statement.
 - After finishing a Swift task, run `swiftformat .` and `swiftlint` from repo root.
