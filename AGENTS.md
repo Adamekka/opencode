@@ -82,6 +82,10 @@
 - Prefer `std::unique_ptr` over raw `new`; only use raw `new` when ownership is immediately transferred to a framework that manages lifetime itself (e.g. Qt parent-child widget ownership).
 - Add `const` to value parameters in `.cpp` definitions where the parameter is not reassigned inside the function body. Do not put `const` on by-value parameters in header declarations (it has no effect on the function signature).
 
+## Java
+
+- Use Lombok to remove Java boilerplate when it improves clarity and the project already includes Lombok or adding it is acceptable.
+
 ## JavaScript and TypeScript
 
 - Always use Bun for package manager and script commands.
