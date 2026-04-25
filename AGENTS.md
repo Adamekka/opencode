@@ -18,6 +18,14 @@
 - Default arguments are fine when the default is explicit and unambiguous.
 - Avoid optional-driven API semantics where explicit alternatives exist.
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
+- Bias toward caution over speed for non-trivial work; use judgment for trivial tasks.
+
+## Clarification and Tradeoffs
+
+- State assumptions explicitly before implementation when they affect behavior, architecture, or scope.
+- If multiple plausible interpretations exist, ask or present options instead of silently choosing one.
+- Surface meaningful tradeoffs and push back when a simpler or safer approach exists.
+- If unclear information blocks correct implementation, stop and ask before editing.
 
 ## Shared Instances
 
@@ -33,10 +41,19 @@
 
 - When a UI path should be impossible by construction, do not add a user-facing fallback branch just to satisfy control flow; model the presentation state explicitly and use `assertionFailure` at the invalid transition point so impossible states are caught during development.
 
+## Editing Scope
+
+- Touch only the files and lines needed to satisfy the request; do not refactor, reformat, or clean up adjacent code unless required.
+- Match the existing style, naming, and structure even when a different style would be preferred.
+- Remove imports, variables, functions, and files that your own changes made unused; leave pre-existing dead code alone unless asked.
+- Every changed line should have a clear connection to the user's request.
+
 ## Planning
 
 - For any non-trivial task (roughly 3+ steps or any architectural decision), enter plan mode before implementation.
 - Write detailed specs up front, including implementation and verification approach, to reduce ambiguity.
+- Define success criteria before implementation; turn vague requests into verifiable outcomes.
+- For multi-step plans, include a verification check for each major step.
 - Treat verification as part of the plan, not as a final cleanup step.
 - If something goes sideways or the plan no longer matches the facts, stop immediately and re-plan before continuing.
 
@@ -55,10 +72,12 @@
 ## Solution Quality
 
 - Keep changes as small and local as possible while still addressing the real root cause.
+- Implement only the requested scope; do not add speculative features, configurability, or abstractions for one-off code.
 - Prefer simplification that deletes indirection over adding new abstraction layers that mostly relocate branching without reducing total complexity.
 - For non-trivial changes, pause and ask whether there is a more elegant solution before settling on the first workable approach.
 - If a fix feels hacky, step back and implement the cleaner solution with the current understanding.
 - Do not over-engineer simple, obvious fixes.
+- Do not add defensive handling for states that should be impossible by construction; make the invariant explicit and catch violations in development or tests.
 
 ## Verification
 
