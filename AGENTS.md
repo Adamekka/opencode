@@ -27,6 +27,15 @@
 - Surface meaningful tradeoffs and push back when a simpler or safer approach exists.
 - If unclear information blocks correct implementation, stop and ask before editing.
 
+## User-Facing Copy
+
+- UI/product copy must read like production text for end users, never like a response to a developer, implementation note, roadmap entry, or vibecoding artifact.
+- Before shipping UI strings, reject wording that exposes implementation intent, internal scope management, framework internals, scaffolding, temporary status, or project-management workflow.
+- Do not ship phrases like "This feature intentionally...", "Keep the declared scope aligned...", "declared service types", "curated set", "manager is/manager collects/manager executes", "Network.framework did not...", "URLSession metrics", "App Store-safe public APIs", "Planned Workflow", "future regression", "the app now...", "now have their own...", "HomeKit-ish", "dev endpoints", "bounded pass", or "sample-window evidence".
+- Avoid developer jargon in UI such as "heuristic", "heuristics", "heuristically", "view-scoped", "foundation", "scaffold", "implementation detail", and raw internal capability lists unless the product explicitly needs that technical detail.
+- Prefer user-centered production wording such as "checks are running", "route details are unavailable", "estimated", "approximate", "common services", "repeated samples", and "details".
+- If a UI string sounds like a commit message, technical caveat, future-developer instruction, or internal plan, remove it or rewrite it before considering the task complete.
+
 ## Shared Instances
 
 - For singleton/shared dependencies (e.g. `UserDefaults.standard`, `Foo.shared`), do not inject, wrap, or alias them; access the canonical shared instance directly at the use site.
