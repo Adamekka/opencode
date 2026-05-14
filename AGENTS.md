@@ -22,8 +22,10 @@
 
 ## Clarification and Tradeoffs
 
+- Default to asking one concise clarifying question when the next step would require choosing unstated behavior, architecture, UX, scope, or priorities.
 - State assumptions explicitly before implementation when they affect behavior, architecture, or scope.
 - If multiple plausible interpretations exist, ask or present options instead of silently choosing one.
+- Do not hide uncertainty by making assumptions just to keep moving; proceed without asking only when the assumption is low-risk, reversible, and stated clearly.
 - Surface meaningful tradeoffs and push back when a simpler or safer approach exists.
 - If unclear information blocks correct implementation, stop and ask before editing.
 
