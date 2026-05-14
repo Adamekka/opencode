@@ -6,8 +6,8 @@
       "registryUrl": "https://registry.kdco.dev",
       "registryName": "kdco",
       "name": "kdco-primitives",
-      "revision": "sha256:688d2d5f536e8db0b44fdff5d588000a5a9ed7028ec715828cc458d27f34dd8d",
-      "hash": "688d2d5f536e8db0b44fdff5d588000a5a9ed7028ec715828cc458d27f34dd8d",
+      "revision": "sha256:b108360e94fdc5e70eabd338460361fef61c6bb1f2301461027e395402885ba4",
+      "hash": "b108360e94fdc5e70eabd338460361fef61c6bb1f2301461027e395402885ba4",
       "files": [
         {
           "path": "plugins/kdco-primitives/get-project-id.ts",
@@ -38,22 +38,27 @@
           "hash": "b66983f2a747d87fb84dcdaa3ed88e5da2e8e46c8151e98f74e76755148f7e08"
         },
         {
+          "path": "plugins/kdco-primitives/cmux.ts",
+          "hash": "58d066e118a3ca75b1541d65b586ed3b846b42860ac08cfe302232a6a5ceac7b"
+        },
+        {
           "path": "plugins/kdco-primitives/terminal-detect.ts",
           "hash": "523435085e8fc31883a6a702e70fd9ba82c5d799026d0f04be890c84dbab6b41"
         },
         {
           "path": "plugins/kdco-primitives/index.ts",
-          "hash": "012301f644639e930b30ea09f43b0a3808d8dfed3970c242dd60ab1c530fc5e6"
+          "hash": "2c7a1609f214b7e1bd427ef5d14f615dbfee7b021962b7b28f4cc7c83c701578"
         }
       ],
-      "installedAt": "2026-03-10T13:08:51.167Z"
+      "installedAt": "2026-03-10T13:08:51.167Z",
+      "updatedAt": "2026-05-12T13:58:59.614Z"
     },
     "https://registry.kdco.dev::kdco/notify@sha256:ec7f564f771d8c48292b359d2a0e2f2b4f7b90c48a24c148b61a0ec252c8b797": {
       "registryUrl": "https://registry.kdco.dev",
       "registryName": "kdco",
       "name": "notify",
-      "revision": "sha256:1d8ad230346bb5d1cc830cdb1a6ec7b51f049d95e92469ef3c962bb3e23f0126",
-      "hash": "1d8ad230346bb5d1cc830cdb1a6ec7b51f049d95e92469ef3c962bb3e23f0126",
+      "revision": "sha256:c9911c68296070ee93a832c4978c7a1cb9d9f235b9f586c6a18961742a08aed5",
+      "hash": "c9911c68296070ee93a832c4978c7a1cb9d9f235b9f586c6a18961742a08aed5",
       "files": [
         {
           "path": "plugins/notify.ts",
@@ -65,7 +70,7 @@
         },
         {
           "path": "plugins/notify/cmux.ts",
-          "hash": "0859873b6cf474bb20bb6180920497cf28a9d260c39f4955b9cb7e3f8c601899"
+          "hash": "43f7076901ab3e707b45b5db10694ecac7397df7cc3fc61339788d69c717dfde"
         },
         {
           "path": "plugins/notify/status.ts",
@@ -77,7 +82,7 @@
         }
       ],
       "installedAt": "2026-03-10T13:08:51.167Z",
-      "updatedAt": "2026-05-08T23:16:40.028Z"
+      "updatedAt": "2026-05-12T13:58:59.614Z"
     }
   }
 }
