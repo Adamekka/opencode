@@ -104,38 +104,8 @@
 - Start from concrete evidence such as logs, errors, or failing tests, then trace to root cause.
 - Prefer durable root-cause fixes over temporary patches.
 
-## C and C++
+## Language Preferences
 
-- Prefer Clang toolchains for C and C++ projects when the project supports them.
-- Always use trailing return types: `auto foo() -> int32_t` not `int foo()`.
-- Always use sized integer types (`int32_t`, `uint8_t`, etc.); never use `int`, `long`, `unsigned`, etc.
-- For C++, use `this->` when accessing members where valid.
-- Prefer constructor initializer lists whenever members or base classes can be initialized there.
-- Prefer `std::unique_ptr` over raw `new`; only use raw `new` when ownership is immediately transferred to a framework that manages lifetime itself (e.g. Qt parent-child widget ownership).
-- For C++, prefer `const` wherever possible, including local variables, references, pointers, and non-mutating member functions.
-- Add `const` to value parameters in `.cpp` definitions where the parameter is not reassigned inside the function body. Do not put `const` on by-value parameters in header declarations (it has no effect on the function signature).
-
-## Java
-
-- Use Lombok to remove Java boilerplate when it improves clarity and the project already includes Lombok or adding it is acceptable.
-
-## JavaScript and TypeScript
-
-- Always use Bun for package manager and script commands.
-
-## Rust
-
-- Every Rust type should live in its own file.
-- In binary Rust projects, prefer `pub` over `pub(crate)` when both accomplish the same thing; use `pub(crate)` only when the narrower visibility meaningfully helps.
-
-## Swift
-
-- Every Swift type should live in its own file.
-- Organize Swift code by feature; within each feature, group files into `Views`, `ViewModels`, `Managers`, and `Models` folders as needed, and do not create those folders when they would be empty.
-- When iterating over all cases of an enum, always use `CaseIterable` with `allCases`; never hardcode an array of cases.
-- Prefer clear `MARK` grouping; avoid random extension placement.
-- Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
-- Keep localization calls in the existing style (`"literal".localized(...)` on the same line as the literal).
-- When fixing intentional empty closure/block lint violations, use a comment placeholder instead of a dummy statement.
-- After finishing a Swift task, run `swiftformat .` and `swiftlint` from repo root.
-- Do not run formatting/linting early unless requested; run at task completion checkpoints.
+- Language-specific preferences live in opencode skills under `skills/`.
+- Load the relevant skill before editing, configuring, or discussing language-specific code.
+- Add durable cross-project language rules to those skills instead of expanding this file.
