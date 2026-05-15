@@ -96,6 +96,7 @@
 - Never mark a task complete without proving the result works.
 - Diff behavior against `main` or the prior implementation when that comparison is relevant.
 - Run appropriate tests, inspect logs, and otherwise demonstrate correctness before handing off.
+- When verification for a requested fix or implementation reveals unrelated build, test, or lint failures, do not fix them implicitly; ask the user what additional scope is allowed before editing unrelated code.
 - Before presenting non-trivial work, ask whether the result would pass a staff-engineer review bar.
 
 ## Bug Fixing
