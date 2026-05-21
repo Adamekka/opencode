@@ -20,6 +20,10 @@
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
 - Bias toward caution over speed for non-trivial work; use judgment for trivial tasks.
 
+## Defaults And Fallbacks
+
+- Never use preview, sample, test, mock, fixture, or generated demo data as a default argument or implicit fallback in production APIs; require the caller to pass the real value explicitly and keep fixtures inside preview/test-only code.
+
 ## Clarification and Tradeoffs
 
 - Default to asking one concise clarifying question when the next step would require choosing unstated behavior, architecture, UX, scope, or priorities.
