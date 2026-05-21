@@ -57,12 +57,12 @@
       "registryUrl": "https://registry.kdco.dev",
       "registryName": "kdco",
       "name": "notify",
-      "revision": "sha256:c9911c68296070ee93a832c4978c7a1cb9d9f235b9f586c6a18961742a08aed5",
-      "hash": "c9911c68296070ee93a832c4978c7a1cb9d9f235b9f586c6a18961742a08aed5",
+      "revision": "sha256:b64f3f6f98a6e50d90d3233a577ee4600d750b3325371f3d8c5d00b318070772",
+      "hash": "b64f3f6f98a6e50d90d3233a577ee4600d750b3325371f3d8c5d00b318070772",
       "files": [
         {
           "path": "plugins/notify.ts",
-          "hash": "353c8376c6bc76769c4b64548445f915cb1e3fbebd201c4c9637db1cefd520d1"
+          "hash": "2076b82dd67ecc45c147bc8de8ada60559c8633deccbeb7b063b390cf4780001"
         },
         {
           "path": "plugins/notify/backend.ts",
@@ -70,7 +70,7 @@
         },
         {
           "path": "plugins/notify/cmux.ts",
-          "hash": "43f7076901ab3e707b45b5db10694ecac7397df7cc3fc61339788d69c717dfde"
+          "hash": "be18c871fc705084363a225f1ce133a51c16ea5ca7915154f03d481188c01a71"
         },
         {
           "path": "plugins/notify/status.ts",
@@ -82,7 +82,7 @@
         }
       ],
       "installedAt": "2026-03-10T13:08:51.167Z",
-      "updatedAt": "2026-05-12T13:58:59.614Z"
+      "updatedAt": "2026-05-20T15:17:19.066Z"
     }
   }
 }
