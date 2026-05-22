@@ -112,6 +112,4 @@
 
 ## Language Preferences
 
-- Language-specific preferences live in opencode skills under `skills/`.
-- Load the relevant skill before editing, configuring, or discussing language-specific code.
-- Add durable cross-project language rules to those skills instead of expanding this file.
+- Load the relevant language skill before editing or discussing language-specific code. Keep durable language-specific preferences in `skills/`, not in this file.
