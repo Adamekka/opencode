@@ -13,5 +13,6 @@ description: Use when editing Swift files, configuring Swift projects, or discus
 - Keep localization calls in the existing style (`"literal".localized(...)` on the same line as the literal).
 - When Swift code imports `CoreUtils`, inspect the sibling dependency at `../CoreUtils` for the referenced implementation.
 - When fixing intentional empty closure/block lint violations, use a comment placeholder instead of a dummy statement.
+- Treat SwiftLint rules as strong defaults. When following a rule would make a specific correct implementation less clear or less safe, prefer the clearer code and disable that rule locally at the smallest practical scope; do not add awkward structure just to satisfy lint.
 - After finishing a Swift task, run `swiftformat .` and `swiftlint` from repo root.
 - Do not run formatting/linting early unless requested; run at task completion checkpoints.
