@@ -65,6 +65,13 @@
 - Remove imports, variables, functions, and files that your own changes made unused; leave pre-existing dead code alone unless asked.
 - Every changed line should have a clear connection to the user's request.
 
+## Diagnostic Scope
+
+- When the user provides exactly one compiler, lint, test, CI, or file/line diagnostic, treat that diagnostic as the entire requested scope unless they explicitly ask to continue beyond it.
+- Fix only the provided diagnostic. Do not fix additional unrelated diagnostics discovered during verification, even when the fix appears obvious.
+- If verification reveals unrelated failures, report them as blockers or residual failures and stop without editing those code paths.
+- Do not infer permission to fix follow-up errors from having run a broader build, lint, or test command.
+
 ## Planning
 
 - For any non-trivial task (roughly 3+ steps or any architectural decision), enter plan mode before implementation.
