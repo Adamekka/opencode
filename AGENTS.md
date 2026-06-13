@@ -50,6 +50,7 @@
 ## Function Structure
 
 - Prefer inline local logic over introducing new helper functions.
+- Inline helpers that have only one caller; when structure still helps readability, prefer a local nested function inside the caller, e.g. `func outer() { func inner() { ... }; inner() }`.
 - When a new function's role could be mistaken for an API entrypoint instead of a private helper, inline it unless reuse clearly justifies extraction.
 - Do not add pass-through helpers or computed properties that only rename existing data or restate enum state without adding real semantic value; prefer direct use and direct comparisons at the call site, e.g. `foo.status == .pending` instead of a thin `isPending` wrapper.
 - Do not add count-only helpers such as `fooCount { foos.count }`; use the collection and `.count` directly at the call site.
