@@ -31,6 +31,7 @@
 - Do not invent or initialize application state values to make behavior work; ask when a needed state value is missing unless the requested behavior defines an explicit fallback.
 - If multiple plausible interpretations exist, ask or present options instead of silently choosing one.
 - Do not hide uncertainty by making assumptions just to keep moving; proceed without asking only when the assumption is low-risk, reversible, and stated clearly.
+- Do not guess current or external values such as latest versions, API shapes, or supported options; verify them against an authoritative source before using them.
 - Surface meaningful tradeoffs and push back when a simpler or safer approach exists.
 - If unclear information blocks correct implementation, stop and ask before editing.
 
