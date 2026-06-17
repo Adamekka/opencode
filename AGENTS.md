@@ -12,7 +12,7 @@
 - Prefer robust, explicit systems over convenience shortcuts.
 - Prefer compile-time enforcement when possible.
 - If compile-time enforcement is not possible, fail fast during testing (assertion), never silently default.
-- Never crash in production code paths; avoid `preconditionFailure`/`fatalError` for runtime data handling.
+- Never crash in production code paths for runtime data handling; required startup configuration is separate and should fail fast when missing.
 - Avoid hidden fallback behavior and implicit semantics.
 - Avoid optional parameters where `nil` carries implicit semantic meaning.
 - Default arguments are fine when the default is explicit and unambiguous.
@@ -23,6 +23,7 @@
 ## Defaults And Fallbacks
 
 - Never use preview, sample, test, mock, fixture, or generated demo data as a default argument or implicit fallback in production APIs; require the caller to pass the real value explicitly and keep fixtures inside preview/test-only code.
+- Required environment/configuration values and secrets must stay required. Do not convert them to optionals, hidden fallbacks, or recoverable runtime branches to avoid a crash; if the app cannot work without the value, preserve an explicit fail-fast path so operators see misconfiguration immediately.
 
 ## Clarification and Tradeoffs
 
