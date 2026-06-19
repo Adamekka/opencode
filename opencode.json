@@ -17,5 +17,12 @@
         }
       }
     }
+  },
+  "permission": {
+    "external_directory": {
+      "/tmp": "allow",
+      "/tmp/*": "allow",
+      "/tmp/**": "allow"
+    }
   }
 }
