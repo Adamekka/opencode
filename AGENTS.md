@@ -28,6 +28,8 @@
 ## Clarification and Tradeoffs
 
 - Default to asking one concise clarifying question when the next step would require choosing unstated behavior, architecture, UX, scope, or priorities.
+- For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
+- Push back before making changes that would weaken code quality, lock tests to questionable behavior, or alter product behavior just to make tests pass.
 - State assumptions explicitly before implementation when they affect behavior, architecture, or scope.
 - Do not invent or initialize application state values to make behavior work; ask when a needed state value is missing unless the requested behavior defines an explicit fallback.
 - If multiple plausible interpretations exist, ask or present options instead of silently choosing one.
