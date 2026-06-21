@@ -14,5 +14,6 @@ description: Use when editing Swift files, configuring Swift projects, or discus
 - When Swift code imports `CoreUtils`, inspect the sibling dependency at `../CoreUtils` for the referenced implementation.
 - When fixing intentional empty closure/block lint violations, use a comment placeholder instead of a dummy statement.
 - Treat SwiftLint rules as strong defaults. When following a rule would make a specific correct implementation less clear or less safe, prefer the clearer code and disable that rule locally at the smallest practical scope; do not add awkward structure just to satisfy lint.
+- For protocol witness methods, do not assume the implementation must repeat `async` or `throws` from the requirement. If the body does not `await` or throw, first try a synchronous and/or non-throwing witness instead of adding `async_without_await`, `unused_parameter`, or `unneeded_throws_rethrows` disables.
 - After finishing a Swift task, run `swiftformat .` and `swiftlint` from repo root.
 - Do not run formatting/linting early unless requested; run at task completion checkpoints.
