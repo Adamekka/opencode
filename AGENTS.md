@@ -51,6 +51,12 @@
 
 - For singleton/shared dependencies (e.g. `UserDefaults.standard`, `Foo.shared`), do not inject, wrap, or alias them; access the canonical shared instance directly at the use site.
 
+## Dependency Injection
+
+- Do not introduce dependency-injection patterns for a single dependency; call the concrete or shared dependency directly at the use site.
+- Introduce dependency injection only when multiple dependencies or a concrete architectural need justify the pattern; otherwise choose the smaller, more direct implementation.
+- For tests around a single seam, prefer the smallest explicit test-only seam over production-facing dependency-injection scaffolding.
+
 ## Function Structure
 
 - Prefer inline local logic over introducing new helper functions.
