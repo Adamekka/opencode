@@ -72,6 +72,7 @@
 
 - If a helper has only one production caller, keep it inside that caller as a local nested function, e.g. `func outer() { func inner() { ... }; inner() }`, unless it is an explicit API/protocol/framework entrypoint.
 - Do not promote one-caller helpers to type-level private functions for readability, organization, test convenience, naming, or to make a caller shorter.
+- For one-caller local nested helpers, do not add parameters just to pass values that are immediately available at the call site; prefer a parameterless helper that captures or computes those values itself unless a parameter is needed to preserve semantics.
 - Fully inline trivial pass-through helpers and computed properties that only rename, forward, or restate existing data.
 - Keep type-level functions separate only when required as an API/protocol/framework entrypoint, used by multiple real production call sites, recursive, or impossible to represent as a local nested function without changing semantics.
 - Do not add pass-through helpers or computed properties that only rename existing data or restate enum state without adding real semantic value; prefer direct use and direct comparisons at the call site, e.g. `foo.status == .pending` instead of a thin `isPending` wrapper.
