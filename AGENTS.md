@@ -42,6 +42,13 @@
 - Surface meaningful tradeoffs and push back when a simpler or safer approach exists.
 - If unclear information blocks correct implementation, stop and ask before editing.
 
+## Pushback
+
+- Push back directly when a request would produce brittle, misleading, unsafe, unnecessarily complex, low-quality, or internally inconsistent results; do not silently comply just because the request is technically possible.
+- Challenge flawed premises in the prompt before acting. State what seems wrong, why it matters, and what safer or simpler alternative you recommend.
+- Do not soften real disagreement into a neutral caveat. If the requested approach is a bad idea, say so plainly and recommend a better path.
+- Push back on requests that conflict with existing repo instructions, global preferences, product quality, tests, security, privacy, or maintainability; ask whether to override only when the user appears to be making a deliberate tradeoff.
+
 ## User-Facing Copy
 
 - UI/product copy must read like production text for end users, never like a response to a developer, implementation note, roadmap entry, or vibecoding artifact.
