@@ -2,12 +2,7 @@
 
 ## Shared
 
-- Treat this file as a living preference profile and keep it updated frequently.
 - Always add a "why" comment when code does something non-obvious, e.g. a constant that always returns a fixed value, a deliberate no-op, or a workaround for an external constraint.
-- When the user states a stable cross-project preference, update global instructions immediately.
-- Keep project-specific rules in project config files, not in global instructions.
-- Do not duplicate global preferences in project AGENTS files unless a project-specific override is intentional.
-- When adding new preferences, put them in a dedicated section when possible instead of growing `Shared`.
 - Prefer inline one-off handlers and simple local logic over extracting small helper functions.
 - Prefer robust, explicit systems over convenience shortcuts.
 - Prefer compile-time enforcement when possible.
@@ -19,6 +14,15 @@
 - Avoid optional-driven API semantics where explicit alternatives exist.
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
 - Bias toward caution over speed for non-trivial work; use judgment for trivial tasks.
+
+## Instruction Maintenance
+
+- Treat this file as a living preference profile and keep it updated frequently.
+- When the user states a stable cross-project preference, update global instructions immediately.
+- Keep project-specific rules in project config files, not in global instructions.
+- Do not duplicate global preferences in project AGENTS files unless a project-specific override is intentional.
+- When adding new preferences, put them in a dedicated section when possible instead of growing `Shared`.
+- If an `AGENTS.md` rule is unclear, does not make sense, or conflicts with another rule, tell the user instead of silently accepting or adding it.
 
 ## Defaults And Fallbacks
 
