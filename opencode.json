@@ -22,7 +22,10 @@
     "external_directory": {
       "/tmp": "allow",
       "/tmp/*": "allow",
-      "/tmp/**": "allow"
+      "/tmp/**": "allow",
+      "~/Coding/html-plan": "allow",
+      "~/Coding/html-plan/*": "allow",
+      "~/Coding/html-plan/**": "allow"
     }
   }
 }
