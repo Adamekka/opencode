@@ -24,6 +24,10 @@
 - When adding new preferences, put them in a dedicated section when possible instead of growing `Shared`.
 - If an `AGENTS.md` rule is unclear, does not make sense, or conflicts with another rule, tell the user instead of silently accepting or adding it.
 
+## Success Signals
+
+- These guidelines are working when diffs contain fewer unnecessary changes, fewer rewrites are needed due to overcomplication, and clarifying questions happen before implementation mistakes rather than after them.
+
 ## Defaults And Fallbacks
 
 - Never use preview, sample, test, mock, fixture, or generated demo data as a default argument or implicit fallback in production APIs; require the caller to pass the real value explicitly and keep fixtures inside preview/test-only code.
@@ -34,13 +38,13 @@
 - Default to asking one concise clarifying question when the next step would require choosing unstated behavior, architecture, UX, scope, or priorities.
 - For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
 - Push back before making changes that would weaken code quality, lock tests to questionable behavior, or alter product behavior just to make tests pass.
-- State assumptions explicitly before implementation when they affect behavior, architecture, or scope.
+- Before implementing, state assumptions explicitly when they affect behavior, architecture, UX, scope, or priorities.
 - Do not invent or initialize application state values to make behavior work; ask when a needed state value is missing unless the requested behavior defines an explicit fallback.
-- If multiple plausible interpretations exist, ask or present options instead of silently choosing one.
+- If multiple plausible interpretations exist, present them clearly or ask instead of silently choosing one.
 - Do not hide uncertainty by making assumptions just to keep moving; proceed without asking only when the assumption is low-risk, reversible, and stated clearly.
 - Do not guess current or external values such as latest versions, API shapes, or supported options; verify them against an authoritative source before using them.
-- Surface meaningful tradeoffs and push back when a simpler or safer approach exists.
-- If unclear information blocks correct implementation, stop and ask before editing.
+- Surface meaningful tradeoffs, including simpler approaches, and push back when a safer or simpler path exists.
+- If unclear information blocks correct implementation, name what's confusing and stop to ask before editing.
 
 ## Pushback
 
@@ -85,9 +89,9 @@
 
 ## Editing Scope
 
-- Touch only the files and lines needed to satisfy the request; do not refactor, reformat, or clean up adjacent code unless required.
+- Touch only the files and lines needed to satisfy the request; do not refactor, reformat, improve adjacent code/comments, or clean up nearby code unless required.
 - Match the existing style, naming, and structure even when a different style would be preferred.
-- Remove imports, variables, functions, and files that your own changes made unused; leave pre-existing dead code alone unless asked.
+- Remove imports, variables, functions, and files that your own changes made unused; leave pre-existing dead code and cleanup opportunities alone unless asked, and mention unrelated issues instead of changing them.
 - Every changed line should have a clear connection to the user's request.
 
 ## Diagnostic Scope
@@ -100,9 +104,8 @@
 ## Planning
 
 - For any non-trivial task (roughly 3+ steps or any architectural decision), enter plan mode before implementation.
-- Write detailed specs up front, including implementation and verification approach, to reduce ambiguity.
-- Define success criteria before implementation; turn vague requests into verifiable outcomes.
-- For multi-step plans, include a verification check for each major step.
+- State a brief plan before multi-step work, including assumptions and verification for each major step; use detailed specs when ambiguity or architecture warrants it.
+- Define concrete success criteria before implementation; turn vague requests into verifiable outcomes before coding.
 - Treat verification as part of the plan, not as a final cleanup step.
 - If something goes sideways or the plan no longer matches the facts, stop immediately and re-plan before continuing.
 
@@ -121,19 +124,19 @@
 
 ## Solution Quality
 
-- Keep changes as small and local as possible while still addressing the real root cause.
+- Write the minimum code that solves the requested problem while still addressing the real root cause.
 - Implement only the requested scope; do not add speculative features, configurability, or abstractions for one-off code.
 - Prefer simplification that deletes indirection over adding new abstraction layers that mostly relocate branching without reducing total complexity.
-- For non-trivial changes, pause and ask whether there is a more elegant solution before settling on the first workable approach.
+- For non-trivial changes, ask whether a senior engineer would consider the solution overcomplicated; simplify before continuing if yes.
 - If a fix feels hacky, step back and implement the cleaner solution with the current understanding.
 - Do not over-engineer simple, obvious fixes.
 - Do not add defensive handling for states that should be impossible by construction; make the invariant explicit and catch violations in development or tests.
 
 ## Verification
 
-- Never mark a task complete without proving the result works.
+- Never mark a task complete or hand it off without proving the result works against the defined success criteria.
 - Diff behavior against `main` or the prior implementation when that comparison is relevant.
-- Run appropriate tests, inspect logs, and otherwise demonstrate correctness before handing off.
+- Run appropriate tests, inspect logs, and otherwise demonstrate correctness before handing off; loop on requested-scope failures until verified.
 - When verification for a requested fix or implementation reveals unrelated build, test, or lint failures, do not fix them implicitly; ask the user what additional scope is allowed before editing unrelated code.
 - Before presenting non-trivial work, ask whether the result would pass a staff-engineer review bar.
 
