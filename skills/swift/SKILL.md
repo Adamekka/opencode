@@ -6,6 +6,7 @@ description: Use when editing Swift files, configuring Swift projects, or discus
 # Swift Preferences
 
 - Every Swift type should live in its own file.
+- Prefer `struct` for Swift utility and value types unless identity, inheritance, or reference semantics are required.
 - Organize Swift code by feature; within each feature, group files into `Views`, `ViewModels`, `Managers`, and `Models` folders as needed, and do not create those folders when they would be empty.
 - When iterating over all cases of an enum, always use `CaseIterable` with `allCases`; never hardcode an array of cases.
 - Prefer clear `MARK` grouping; avoid random extension placement.
