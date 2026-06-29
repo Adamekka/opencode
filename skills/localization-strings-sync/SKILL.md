@@ -1,6 +1,6 @@
 ---
 name: localization-strings-sync
-description: Mirror uncommitted changes from a source Localizable.strings file into sibling locale files and verify key parity.
+description: Use genstrings and syncstrings to regenerate an English Localizable.strings baseline, mirror keys into sibling locale files, and verify key parity.
 compatibility: opencode
 metadata:
   audience: maintainers
@@ -9,34 +9,39 @@ metadata:
 
 ## What I do
 
-- Review the uncommitted diff for a source `Localizable.strings` file, usually the base or English locale.
-- Apply added and removed keys to sibling `*.lproj/Localizable.strings` files.
-- Keep entries aligned with the surrounding sort order and existing formatting.
+- Run `genstrings` to regenerate the English `Localizable.strings` baseline from Swift sources.
+- Run `syncstrings` after `genstrings` so sibling `*.lproj/*.strings` files get the same key set.
+- Preserve existing translated target values, translate `TODO` placeholders left by `syncstrings`, and remove whole entries only when their keys no longer exist in English.
 - Verify every target locale matches the expected key set before handing off.
 
 ## When to use me
 
-Use this when one locale's `Localizable.strings` file changed and the same key set needs to be propagated to the other locales.
+Use this when Swift localized strings changed, an English `Localizable.strings` baseline needs regenerating, or one locale's `.strings` key set needs to be propagated to sibling locale files.
+
+## Tools
+
+- Use `genstrings` from PATH.
+- Use `syncstrings` from PATH.
+- If either command is missing, stop and report that the localization tools are not installed correctly.
 
 ## Workflow
 
-1. Inspect the diff for the source localization file only.
-2. List the added, removed, and renamed keys before editing any target files.
-3. Read the neighboring lines in each target file so inserted keys land in the right position.
-4. Add translated values for new keys, matching the locale's existing terminology and tone.
-5. Remove keys that were deleted from the source locale.
-6. Preserve unrelated edits and translations already present in the target files.
-7. Verify each added key exists exactly once in every target locale and each removed key is gone.
-8. Review the diff and report any translations that may need native-speaker follow-up.
+1. Identify the Swift source root to scan and the localization root that contains `en.lproj` plus sibling locale folders.
+2. Regenerate the English baseline with `genstrings <source-root> > <localization-root>/en.lproj/Localizable.strings`.
+3. Inspect the English baseline diff so unexpected key churn is caught before syncing target locales.
+4. Run `syncstrings <localization-root> en` to update sibling locale files.
+5. Translate `TODO` placeholders left by `syncstrings`, matching each locale's existing terminology and tone.
+6. Run `syncstrings <localization-root> en` a second time; it should report zero updated files.
 
 ## Guardrails
 
-- Do not rewrite whole localization files when small targeted edits are enough.
-- Do not change the source locale unless the user asked for it.
-- Do not silently fall back to placeholder behavior for uncertain translations; call it out if confidence is low.
+- Do not manually add `TODO` placeholders or remove stale keys in target locales when `syncstrings` can do it.
+- Do not change existing non-`TODO` target translations that still correspond to English keys; `syncstrings` preserves those raw values.
+- Do not leave `TODO` placeholders as the final state when translation is in scope; translate them and call out any translations that need native-speaker review.
 - Prefer scripted verification over manual eyeballing.
 
 ## Verification
 
-- Search all locale files for the added and removed keys.
-- Read the resulting diff to confirm only the intended entries changed.
+- Re-run `syncstrings <localization-root> en` and require an idempotent result with zero updated files.
+- Search all locale files for added and removed keys when reviewing a specific change.
+- Read the resulting diff to confirm English was regenerated first and target locales only received key-set synchronization.
