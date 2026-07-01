@@ -12,6 +12,7 @@ description: Use when editing Swift files, configuring Swift projects, or discus
 - Prefer clear `MARK` grouping; avoid random extension placement.
 - Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
 - Keep localization calls in the existing style (`"literal".localized(...)` on the same line as the literal). When a localized string needs runtime values, use a full localized format string with `String(format: "literal %@".localized(...), value)` rather than string interpolation or concatenating localized fragments.
+- In `@Observable` classes, when a property needs `UserDefaults`-backed storage, use `@ObservableUserDefault` instead of direct `UserDefaults` access.
 - When Swift code imports `CoreUtils`, inspect the sibling dependency at `../CoreUtils` for the referenced implementation.
 - When fixing intentional empty closure/block lint violations, use a comment placeholder instead of a dummy statement.
 - Treat SwiftLint rules as strong defaults. When following a rule would make a specific correct implementation less clear or less safe, prefer the clearer code and disable that rule locally at the smallest practical scope; do not add awkward structure just to satisfy lint.
