@@ -114,7 +114,6 @@
 - Use subagents liberally for exploration, research, focused analysis, and parallel investigation to keep the main context clean.
 - Give each subagent one tack or question so its scope stays narrow and results stay easy to apply.
 - For complex problems, prefer spending extra parallel analysis up front over muddling through in the main context.
-- After an agent makes non-trivial changes, have the dedicated review subagent review the resulting diff before final handoff.
 
 ## Task Management
 
