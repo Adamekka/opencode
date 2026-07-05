@@ -103,6 +103,7 @@
 
 ## Planning
 
+- Before each implementation step, run a planning phase: identify multiple viable approaches, list each approach's advantages and disadvantages, recommend one when appropriate, and ask the user which approach to implement before editing.
 - For any non-trivial task (roughly 3+ steps or any architectural decision), enter plan mode before implementation.
 - State a brief plan before multi-step work, including assumptions and verification for each major step; use detailed specs when ambiguity or architecture warrants it.
 - Define concrete success criteria before implementation; turn vague requests into verifiable outcomes before coding.
