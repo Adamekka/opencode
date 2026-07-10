@@ -1,6 +1,6 @@
 ---
 name: c-cpp
-description: Use when editing C or C++ files, configuring C/C++ tooling, or discussing C/C++ implementation style.
+description: When C/C++.
 ---
 
 # Shared Preferences
