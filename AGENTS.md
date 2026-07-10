@@ -21,7 +21,7 @@
 - When the user states a stable cross-project preference, update global instructions immediately.
 - Keep project-specific rules in project config files, not in global instructions.
 - Do not duplicate global preferences in project AGENTS files unless a project-specific override is intentional.
-- When adding new preferences, put them in a dedicated section when possible instead of growing `Shared`.
+- When adding new preferences, put them in a dedicated section or a skill when possible instead of growing `Shared`.
 - If an `AGENTS.md` rule is unclear, does not make sense, or conflicts with another rule, tell the user instead of silently accepting or adding it.
 
 ## Success Signals
