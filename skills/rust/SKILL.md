@@ -1,6 +1,6 @@
 ---
 name: rust
-description: Use when editing Rust files, configuring Rust projects, or discussing Rust implementation style.
+description: When Rust.
 ---
 
 # Rust Preferences

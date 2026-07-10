@@ -1,6 +1,6 @@
 ---
 name: review
-description: Use when the user asks for a review, code review, audit, or feedback on current changes or the whole program.
+description: When user asks for review.
 ---
 
 # Review Skill
