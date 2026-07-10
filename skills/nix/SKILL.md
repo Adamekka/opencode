@@ -1,6 +1,6 @@
 ---
 name: nix
-description: Use when editing or discussing Nix, NixOS, Home Manager, flakes, Nix modules, overlays, package lists, or Nix formatting style.
+description: When editing Nix files.
 ---
 
 # Nix
