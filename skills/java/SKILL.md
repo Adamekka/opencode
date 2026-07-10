@@ -1,6 +1,6 @@
 ---
 name: java
-description: Use when editing Java files, configuring Java projects, or discussing Java implementation style.
+description: When Java.
 ---
 
 # Java Preferences
