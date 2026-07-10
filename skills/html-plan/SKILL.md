@@ -1,6 +1,6 @@
 ---
 name: html-plan
-description: Use when the user asks for an html plan, HTML plan, shareable plan page, or a published static HTML plan; create a new file in ~/Coding/html-plan and publish it with Postplan.
+description: When user asks for HTML plan.
 ---
 
 # HTML Plan
