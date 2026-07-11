@@ -20,6 +20,7 @@
 - Treat this file as a living preference profile and keep it updated frequently.
 - When the user states a stable cross-project preference, update global instructions immediately.
 - Keep project-specific rules in project config files, not in global instructions.
+- When the user provides durable, important project-specific information, record it in the project's local `AGENTS.md` so future agents can use it without asking the user again.
 - Do not duplicate global preferences in project AGENTS files unless a project-specific override is intentional.
 - When adding new preferences, put them in a dedicated section or a skill when possible instead of growing `Shared`.
 - If an `AGENTS.md` rule is unclear, does not make sense, or conflicts with another rule, tell the user instead of silently accepting or adding it.
