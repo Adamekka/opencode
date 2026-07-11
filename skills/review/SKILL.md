@@ -30,6 +30,7 @@ description: When user asks for review.
 ## Output
 
 - Put findings first, ordered by severity. Include file and line references when available.
+- Assign every finding a unique sequential number, starting at 1, and include that number in its heading or label.
 - For each finding, state the issue, why it matters, and the smallest practical fix.
 - Include open questions or assumptions after findings.
 - Keep summaries brief and secondary to findings.
