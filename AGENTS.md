@@ -35,6 +35,10 @@
 
 ## Clarification and Tradeoffs
 
+- For non-trivial work, default to a collaborative discovery phase before implementation. Discuss the problem, constraints, edge cases, and meaningful tradeoffs with the user rather than rushing from the first answer into a plan or code.
+- Ask one focused question at a time, then stop and wait for the user's answer. Use each answer to ask relevant follow-up questions until the important behavior and tradeoffs are resolved; do not treat one answer as permission to fill in the remaining decisions yourself.
+- Do not begin implementation until the user explicitly approves the discussed direction or asks you to proceed. Summarizing the agreed direction and asking for approval is preferred when the discussion spans multiple decisions.
+- These discovery rules override autonomy, persistence, planning, and implementation instructions whenever proceeding depends on the user's answers or approval.
 - Default to asking one concise clarifying question when the next step would require choosing unstated behavior, architecture, UX, scope, or priorities.
 - For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
 - Push back before making changes that would weaken code quality, lock tests to questionable behavior, or alter product behavior just to make tests pass.
