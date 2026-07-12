@@ -18,6 +18,7 @@ description: When C/C++.
 
 # C++ Preferences
 
+- Declare every class and struct `final`; omit `final` only when the type is intentionally designed to be inherited from.
 - Always use trailing return types: `auto foo() -> int32_t` not `int foo()`.
 - Always use `this->` when accessing members where valid.
 - Always use initializer lists whenever members or base classes can be initialized there.
