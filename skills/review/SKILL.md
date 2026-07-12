@@ -10,6 +10,7 @@ description: When user asks for review.
 - Start by inspecting the working tree: status, staged diff, unstaged diff, and diff size.
 - If there is a lot of uncommitted code, assume the user is working on a feature and review the feature represented by those changes. Read surrounding code as needed to understand behavior and project conventions, but keep findings tied to the feature scope unless the user asks for a broader review.
 - If there are only a few changed lines or no uncommitted changes, treat the scope as the whole program. Review architecture, project structure, and representative critical paths instead of only the tiny diff.
+- When implementing fixes from a whole-program review, put each independent fix or tightly related group of fixes on a separate branch based on the original review base so the fixes can be reviewed independently.
 - Respect any explicit scope from the user over the default scope rules above.
 
 ## Review Focus
