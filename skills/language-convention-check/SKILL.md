@@ -48,6 +48,7 @@ This is not a general code review. Do not report bugs, security issues, architec
 
 ## Output
 
+- Present the complete report as a numbered list, with each finding, convention-definition problem, and coverage summary as its own numbered item.
 - Put confirmed convention violations first, grouped by language and convention.
 - For each violation, include the file and line, identify the violated convention, and briefly explain the mismatch.
 - Then list contradictions in the applicable convention sources.
