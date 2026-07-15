@@ -11,6 +11,7 @@ description: When C/C++.
 - For raw C-style pointers, use the strongest valid const qualification for both the pointee and pointer, such as `const Type* const var`, whenever neither is modified.
 - Always use `auto` wherever the type can be inferred.
 - Declare and initialize variables using direct-list initialization in the form `auto var{Type{}}`.
+- Always include a trailing comma in multiline array initializers.
 
 # C Preferences
 
@@ -25,7 +26,7 @@ description: When C/C++.
 - Always name function parameters, including parameters in declarations and callbacks, except copy/move constructor and copy/move assignment parameters. Mark intentionally unused named parameters `[[maybe_unused]]` when needed.
 - Make single-argument constructors `explicit`, except enum-wrapper constructors intended to provide an implicit conversion from their wrapped enum.
 - Always use `this->` when accessing members where valid.
-- Always use initializer lists whenever members or base classes can be initialized there.
+- Prefer in-class member initializers. When that is not possible, use the constructor initializer list; assign members in the constructor body only when neither initializer form can express the required initialization.
 - Order class members as follows, omitting sections that do not apply:
 
   ```cpp
