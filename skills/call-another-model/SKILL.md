@@ -12,14 +12,14 @@ Use lower-capability external models to broaden a code review after forming an i
 ## Method
 
 1. Inspect the review scope and form a preliminary assessment before calling another model so its conclusions do not anchor the primary analysis.
-2. Build one self-contained review prompt containing the intended behavior, applicable constraints, and the relevant diff or code excerpts. Ask for concrete correctness, security, regression, and missing-test findings with file and line references. Do not include the primary assessment or suspected findings.
+2. Build one self-contained review prompt containing the intended behavior, applicable constraints, and the relevant diff or code excerpts. Ask for concrete correctness, security, regression, and missing-test findings with file and line references. Explicitly instruct the external reviewer to review the supplied context directly without spawning subagents, delegating, or launching additional research tasks. Do not include the primary assessment or suspected findings.
 3. Redact credentials, tokens, personal data, and unrelated sensitive content before sending the prompt externally.
-4. Run all three commands with the same prompt, using separate parallel shell calls when possible. Replace `<prompt>` with the shell-quoted prompt; do not execute the angle-bracket placeholder literally.
+4. Run all three commands with the same prompt sequentially, waiting for each command to finish before starting the next. Never dispatch `agy` review calls in parallel because concurrent calls prevent all but one model from completing reliably. Give each model at most five minutes with `--print-timeout 5m`, and set the shell timeout only slightly longer. Do not automatically retry a timed-out model unless the user asks. Replace `<prompt>` with the shell-quoted prompt; do not execute the angle-bracket placeholder literally.
 
 ```sh
-agy --model "Claude Opus 4.6 (Thinking)" --prompt <prompt>
-agy --model "Gemini 3.1 Pro (High)" --prompt <prompt>
-agy --model "Gemini 3.5 Flash (High)" --prompt <prompt>
+agy --model "Claude Opus 4.6 (Thinking)" --print-timeout 5m --prompt <prompt>
+agy --model "Gemini 3.1 Pro (High)" --print-timeout 5m --prompt <prompt>
+agy --model "Gemini 3.5 Flash (High)" --print-timeout 5m --prompt <prompt>
 ```
 
 5. Treat each command's stdout as that model's response. Keep the responses attributed to their models during analysis.
