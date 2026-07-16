@@ -122,6 +122,10 @@
 - Give each subagent one tack or question so its scope stays narrow and results stay easy to apply.
 - For complex problems, prefer spending extra parallel analysis up front over muddling through in the main context.
 
+## Reviews
+
+- For every code review and final review of non-trivial implementation work, use the `call-another-model` skill to obtain independent perspectives from all configured external review models; verify every candidate finding directly before reporting or editing.
+
 ## Task Management
 
 - For non-trivial work, write a checkable plan to `/tmp/tasks/<project-name>/todo.md` before implementation starts.
