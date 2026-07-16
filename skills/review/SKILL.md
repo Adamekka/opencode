@@ -33,6 +33,7 @@ description: When user asks for review.
 - Put findings first, ordered by severity. Include file and line references when available.
 - Assign every finding a unique sequential number, starting at 1, and include that number in its heading or label.
 - For each finding, state the issue, why it matters, and the smallest practical fix.
+- For each finding, show implementation difficulty as `Low`, `Medium`, or `High`, considering the change's scope, risk, dependencies, and verification effort.
 - Include open questions or assumptions after findings.
 - Keep summaries brief and secondary to findings.
 - If no findings are discovered, say so directly and mention residual risks or areas not verified.
