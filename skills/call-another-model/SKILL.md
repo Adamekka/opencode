@@ -12,14 +12,14 @@ Use lower-capability external models to broaden a code review after forming an i
 ## Method
 
 1. Inspect the review scope and form a preliminary assessment before calling another model so its conclusions do not anchor the primary analysis.
-2. Build one self-contained review prompt containing the intended behavior, applicable constraints, and the relevant diff or code excerpts. Ask for concrete correctness, security, regression, and missing-test findings with file and line references. Explicitly instruct the external reviewer to review the supplied context directly without spawning subagents, delegating, or launching additional research tasks. Do not include the primary assessment or suspected findings.
+2. Build one self-contained review prompt containing the intended behavior, applicable constraints, and all relevant diffs or code excerpts. Pass repository context into the prompt through zsh command substitutions over explicit, zsh-expanded paths; never give the external model paths and expect it to read or explore them. Include untracked files explicitly because ordinary `git diff` omits them. Ask for concrete correctness, security, regression, and missing-test findings with file and line references. End the prompt with an explicit instruction such as: `Do not use tools, read files, spawn subagents, delegate, edit, or research. Review only the supplied context.` Do not include the primary assessment or suspected findings.
 3. Redact credentials, tokens, personal data, and unrelated sensitive content before sending the prompt externally.
-4. Run all three commands with the same prompt sequentially, waiting for each command to finish before starting the next. Never dispatch `agy` review calls in parallel because concurrent calls prevent all but one model from completing reliably. Give each model at most five minutes with `--print-timeout 5m`, and set the shell timeout only slightly longer. Do not automatically retry a timed-out model unless the user asks. Replace `<prompt>` with the shell-quoted prompt; do not execute the angle-bracket placeholder literally.
+4. Run all three commands with the same self-contained prompt sequentially, waiting for each command to finish before starting the next. Never dispatch `agy` review calls in parallel because concurrent calls prevent all but one model from completing reliably. Give each model at most five minutes with `--print-timeout 5m`, and set the shell timeout only slightly longer. Do not automatically retry a timed-out model unless the user asks. Construct the prompt in the zsh command itself so command substitutions inject the requested repository context before `agy` starts. Use explicit paths rather than asking the model to discover files. For example:
 
 ```sh
-agy --model "Claude Opus 4.6 (Thinking)" --print-timeout 5m --prompt <prompt>
-agy --model "Gemini 3.1 Pro (High)" --print-timeout 5m --prompt <prompt>
-agy --model "Gemini 3.5 Flash (High)" --print-timeout 5m --prompt <prompt>
+agy --model "Claude Opus 4.6 (Thinking)" --print-timeout 5m --prompt "Review the supplied uncommitted production changes. Feature: <feature>. Constraints: <constraints>. Find concrete correctness, security, regression, and missing-test issues with file/line references. Do not use tools, read files, spawn subagents, delegate, edit, or research. Review only the supplied context. DIFF: $(git diff -- path/to/tracked/scope) $(git diff --no-index -- /dev/null path/to/untracked-file)"
+agy --model "Gemini 3.1 Pro (High)" --print-timeout 5m --prompt "<the same complete prompt and zsh command substitutions>"
+agy --model "Gemini 3.5 Flash (High)" --print-timeout 5m --prompt "<the same complete prompt and zsh command substitutions>"
 ```
 
 5. Treat each command's stdout as that model's response. Keep the responses attributed to their models during analysis.
