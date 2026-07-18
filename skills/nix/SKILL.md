@@ -9,9 +9,6 @@ description: When editing Nix files.
 
 - Format files in place with `nixpkgs-fmt FILE...`.
 - Check formatting without modifying files with `nixpkgs-fmt --check FILE...`; use `--explain` to show violated formatting rules.
-- In a local NUR repository, lint an affected package from the repository root with `nixpkgs-lint --file . --package PACKAGE_ATTRIBUTE`.
-- `--file .` evaluates the repository's root `default.nix`; `--package` selects an exported package attribute, not a source file.
-- Lint all exported packages with `nixpkgs-lint --file .`; its package filter defaults to `*`.
 
 ## Sorting
 
