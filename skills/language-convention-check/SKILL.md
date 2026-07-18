@@ -1,6 +1,6 @@
 ---
 name: language-convention-check
-description: Use ONLY when asks for language convention check.
+description: Use ONLY when the user asks for a language convention check.
 ---
 
 # Language Convention Check
@@ -18,15 +18,6 @@ This is not a general code review. Do not report bugs, security issues, architec
 - Do not run commands that can rewrite source files or generated artifacts.
 - Report findings and convention-definition problems to the user; do not fix them.
 
-## Scope
-
-- Respect an explicit user-provided scope over these defaults.
-- Start by inspecting the working tree, including status, staged changes, unstaged changes, and diff size.
-- If there is a lot of uncommitted code, focus the check on all uncommitted code files. Read unchanged surrounding code only when needed to determine whether an in-scope line follows a written convention.
-- If there are no uncommitted changes, or only a few changed lines, check the whole repository rather than limiting the check to the small diff.
-- Exclude vendored dependencies, generated code, build output, caches, and other non-authored code unless the user explicitly includes them.
-- Inspect every line of authored code in the selected scope. Do not sample representative files or stop after finding initial violations.
-
 ## Convention Sources
 
 - Identify every programming language present in the selected scope.
@@ -39,8 +30,8 @@ This is not a general code review. Do not report bugs, security issues, architec
 
 ## Method
 
-1. Determine the exact scope using the rules above.
-2. Inventory all authored code files and languages in scope.
+1. Use the exact scope provided by the user.
+2. Inventory all authored code files and languages in scope, excluding vendored dependencies, generated code, build output, caches, and other non-authored code unless the user explicitly includes them.
 3. Load every applicable language skill and extract its explicit, checkable conventions.
 4. Check every in-scope code line against every applicable convention, reading structural context where a convention concerns files, types, modules, or project organization.
 5. Track coverage so no in-scope authored code file is skipped.
