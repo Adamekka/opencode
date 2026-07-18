@@ -90,6 +90,10 @@
 - Remove imports, variables, functions, and files that your own changes made unused; leave pre-existing dead code and cleanup opportunities alone unless asked, and mention unrelated issues instead of changing them.
 - Every changed line should have a clear connection to the user's request.
 
+## Git Workflow
+
+- Always use rebase rather than merge when integrating or updating branches; do not create merge commits.
+
 ## Diagnostic Scope
 
 - When the user provides exactly one compiler, lint, test, CI, or file/line diagnostic, treat that diagnostic as the entire requested scope unless they explicitly ask to continue beyond it.
