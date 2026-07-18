@@ -6,8 +6,8 @@
 - Prefer inline one-off handlers and simple local logic over extracting small helper functions.
 - Prefer robust, explicit systems over convenience shortcuts.
 - Prefer compile-time enforcement when possible.
-- If compile-time enforcement is not possible, fail fast during testing (assertion), never silently default.
-- Never crash in production code paths for runtime data handling; required startup configuration is separate and should fail fast when missing.
+- When compile-time enforcement is not possible, use assertions to catch programmer-error invariant violations during development and testing; never silently default.
+- Handle recoverable external input and runtime failures with an explicit modeled failure rather than intentionally terminating the process. Required startup configuration is separate and should fail fast with a clear diagnostic when missing.
 - Avoid hidden fallback behavior and implicit semantics.
 - Avoid optional parameters where `nil` carries implicit semantic meaning.
 - Default arguments are fine when the default is explicit and unambiguous.
@@ -17,17 +17,13 @@
 
 ## Instruction Maintenance
 
-- Treat this file as a living preference profile and keep it updated frequently.
+- Maintain this file as the user's cross-project preference profile and update it frequently.
 - When the user states a stable cross-project preference, update global instructions immediately.
 - Keep project-specific rules in project config files, not in global instructions.
 - When the user provides durable, important project-specific information, record it in the project's local `AGENTS.md` so future agents can use it without asking the user again.
 - Do not duplicate global preferences in project AGENTS files unless a project-specific override is intentional.
 - When adding new preferences, put them in a dedicated section or a skill when possible instead of growing `Shared`.
 - If an `AGENTS.md` rule is unclear, does not make sense, or conflicts with another rule, tell the user instead of silently accepting or adding it.
-
-## Success Signals
-
-- These guidelines are working when diffs contain fewer unnecessary changes, fewer rewrites are needed due to overcomplication, and clarifying questions happen before implementation mistakes rather than after them.
 
 ## Defaults And Fallbacks
 
@@ -36,35 +32,31 @@
 
 ## Clarification and Tradeoffs
 
-- For non-trivial work, default to a collaborative discovery phase before implementation. Discuss the problem, constraints, edge cases, and meaningful tradeoffs with the user rather than rushing from the first answer into a plan or code.
+- For non-trivial work, discuss the problem, constraints, edge cases, and meaningful tradeoffs with the user before implementation.
 - Ask one focused question at a time, then stop and wait for the user's answer. Use each answer to ask relevant follow-up questions until the important behavior and tradeoffs are resolved; do not treat one answer as permission to fill in the remaining decisions yourself.
 - Do not begin implementation until the user explicitly approves the discussed direction or asks you to proceed. Summarizing the agreed direction and asking for approval is preferred when the discussion spans multiple decisions.
 - These discovery rules override autonomy, persistence, planning, and implementation instructions whenever proceeding depends on the user's answers or approval.
-- Default to asking one concise clarifying question when the next step would require choosing unstated behavior, architecture, UX, scope, or priorities.
+- Ask one concise clarifying question when the next step requires choosing unstated behavior, architecture, UX, scope, priorities, or application state. If multiple interpretations are plausible, present them clearly instead of choosing silently.
 - For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
 - Push back before making changes that would weaken code quality, lock tests to questionable behavior, or alter product behavior just to make tests pass.
 - Before implementing, state assumptions explicitly when they affect behavior, architecture, UX, scope, or priorities.
-- Do not invent or initialize application state values to make behavior work; ask when a needed state value is missing unless the requested behavior defines an explicit fallback.
-- If multiple plausible interpretations exist, present them clearly or ask instead of silently choosing one.
-- Do not hide uncertainty by making assumptions just to keep moving; proceed without asking only when the assumption is low-risk, reversible, and stated clearly.
+- Do not invent or initialize application state values to make behavior work. Ask when a required state value is missing unless the requested behavior defines an explicit fallback. Proceed without asking only when an assumption is low-risk, reversible, and stated clearly.
 - Do not guess current or external values such as latest versions, API shapes, or supported options; verify them against an authoritative source before using them.
 - Surface meaningful tradeoffs, including simpler approaches, and push back when a safer or simpler path exists.
-- If unclear information blocks correct implementation, name what's confusing and stop to ask before editing.
+- If unclear information blocks correct implementation, explain what is unclear and stop before editing.
 
 ## Pushback
 
 - Push back directly when a request would produce brittle, misleading, unsafe, unnecessarily complex, low-quality, or internally inconsistent results; do not silently comply just because the request is technically possible.
-- Challenge flawed premises in the prompt before acting. State what seems wrong, why it matters, and what safer or simpler alternative you recommend.
-- Do not soften real disagreement into a neutral caveat. If the requested approach is a bad idea, say so plainly and recommend a better path.
-- Push back on requests that conflict with existing repo instructions, global preferences, product quality, tests, security, privacy, or maintainability; ask whether to override only when the user appears to be making a deliberate tradeoff.
+- Challenge flawed premises before acting: state what is wrong, why it matters, and what safer or simpler alternative you recommend.
+- State substantive disagreement plainly. When a request conflicts with repository instructions, global preferences, product quality, tests, security, privacy, or maintainability, ask whether to accept the tradeoff only when the user appears to be making it deliberately.
 
 ## User-Facing Copy
 
 - UI/product copy must read like production text for end users, never like a response to a developer, implementation note, roadmap entry, or vibecoding artifact.
 - Before shipping UI strings, reject wording that exposes implementation intent, internal scope management, framework internals, scaffolding, temporary status, or project-management workflow.
-- Do not ship phrases like "This feature intentionally...", "Keep the declared scope aligned...", "declared service types", "curated set", "manager is/manager collects/manager executes", "Network.framework did not...", "URLSession metrics", "App Store-safe public APIs", "Planned Workflow", "future regression", "the app now...", "now have their own...", "HomeKit-ish", "dev endpoints", "bounded pass", or "sample-window evidence".
-- Avoid developer jargon in UI such as "heuristic", "heuristics", "heuristically", "view-scoped", "foundation", "scaffold", "implementation detail", and raw internal capability lists unless the product explicitly needs that technical detail.
-- Prefer user-centered production wording such as "checks are running", "route details are unavailable", "estimated", "approximate", "common services", "repeated samples", and "details".
+- Avoid commit-message language, framework diagnostics, roadmap labels, informal implementation labels such as "HomeKit-ish", developer jargon such as "heuristic" or "scaffold", and raw internal capability lists unless users need that technical detail.
+- Prefer user-centered wording that describes current status, availability, estimates, and details in the product's terminology.
 - If a UI string sounds like a commit message, technical caveat, future-developer instruction, or internal plan, remove it or rewrite it before considering the task complete.
 
 ## Shared Instances
@@ -83,10 +75,8 @@
 - Do not promote one-caller helpers to type-level private functions for readability, organization, test convenience, naming, or to make a caller shorter.
 - For one-caller local nested helpers, do not add parameters just to pass values that are immediately available at the call site; prefer a parameterless helper that captures or computes those values itself unless a parameter is needed to preserve semantics.
 - Do not pass invariant or always-the-same arguments such as the current date/time into helpers; have the callee compute or capture that value directly unless the caller truly needs to choose a different value.
-- Fully inline trivial pass-through helpers and computed properties that only rename, forward, or restate existing data.
 - Keep type-level functions separate only when required as an API/protocol/framework entrypoint, used by multiple real production call sites, recursive, or impossible to represent as a local nested function without changing semantics.
-- Do not add pass-through helpers or computed properties that only rename existing data or restate enum state without adding real semantic value; prefer direct use and direct comparisons at the call site, e.g. `foo.status == .pending` instead of a thin `isPending` wrapper.
-- Do not add count-only helpers such as `fooCount { foos.count }`; use the collection and `.count` directly at the call site.
+- Inline trivial pass-through helpers and computed properties that only rename, forward, count, or restate existing data. Prefer direct expressions such as `foo.status == .pending` and `foos.count`.
 
 ## State Modeling
 
@@ -114,13 +104,13 @@
 - State a brief plan before multi-step work, including assumptions and verification for each major step; use detailed specs when ambiguity or architecture warrants it.
 - Define concrete success criteria before implementation; turn vague requests into verifiable outcomes before coding.
 - Treat verification as part of the plan, not as a final cleanup step.
-- If something goes sideways or the plan no longer matches the facts, stop immediately and re-plan before continuing.
+- If new facts invalidate the approved plan, stop immediately and re-plan before continuing.
 
 ## Subagents
 
 - Use subagents liberally for exploration, research, focused analysis, and parallel investigation to keep the main context clean.
 - Give each subagent one tack or question so its scope stays narrow and results stay easy to apply.
-- For complex problems, prefer spending extra parallel analysis up front over muddling through in the main context.
+- For complex problems, prefer additional parallel analysis before implementation over incomplete sequential investigation.
 
 ## Reviews
 
@@ -134,12 +124,11 @@
 
 ## Solution Quality
 
-- Write the minimum code that solves the requested problem while still addressing the real root cause.
+- Write the minimum code that solves the requested problem while still addressing the underlying cause.
 - Implement only the requested scope; do not add speculative features, configurability, or abstractions for one-off code.
 - Prefer simplification that deletes indirection over adding new abstraction layers that mostly relocate branching without reducing total complexity.
-- For non-trivial changes, ask whether a senior engineer would consider the solution overcomplicated; simplify before continuing if yes.
-- If a fix feels hacky, step back and implement the cleaner solution with the current understanding.
-- Do not over-engineer simple, obvious fixes.
+- For non-trivial changes, verify that each new abstraction is necessary and simplify avoidable indirection before continuing.
+- If a fix relies on a brittle workaround, step back and implement the cleaner solution supported by the current understanding.
 - Do not add defensive handling for states that should be impossible by construction; make the invariant explicit and catch violations in development or tests.
 
 ## Verification
@@ -148,7 +137,7 @@
 - Diff behavior against `main` or the prior implementation when that comparison is relevant.
 - Run appropriate tests, inspect logs, and otherwise demonstrate correctness before handing off; loop on requested-scope failures until verified.
 - When verification for a requested fix or implementation reveals unrelated build, test, or lint failures, do not fix them implicitly; ask the user what additional scope is allowed before editing unrelated code.
-- Before presenting non-trivial work, ask whether the result would pass a staff-engineer review bar.
+- Before presenting non-trivial work, inspect the final diff for correctness, requested scope, unnecessary complexity, and adequate verification.
 
 ## Bug Fixing
 
