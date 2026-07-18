@@ -5,14 +5,6 @@ description: When user asks for review.
 
 # Review Skill
 
-## Scope
-
-- Start by inspecting the working tree: status, staged diff, unstaged diff, and diff size.
-- If there is a lot of uncommitted code, assume the user is working on a feature and review the feature represented by those changes. Read surrounding code as needed to understand behavior and project conventions, but keep findings tied to the feature scope unless the user asks for a broader review.
-- If there are only a few changed lines or no uncommitted changes, treat the scope as the whole program. Review architecture, project structure, and representative critical paths instead of only the tiny diff.
-- When implementing fixes from a whole-program review, put each independent fix or tightly related group of fixes on a separate branch based on the original review base so the fixes can be reviewed independently.
-- Respect any explicit scope from the user over the default scope rules above.
-
 ## Review Focus
 
 - Security: authentication, authorization, secrets, injection, XSS, CSRF, SSRF, path traversal, unsafe deserialization, insecure crypto, permission boundaries, dependency and supply-chain risk, and sensitive data exposure.
@@ -22,11 +14,12 @@ description: When user asks for review.
 
 ## Method
 
-- Build enough context before judging: read project instructions, load relevant language skills, inspect changed files, and sample nearby established patterns.
+- Build enough context within the user-provided scope before judging: read project instructions, load relevant language skills, inspect the scoped files or changes, and sample nearby established patterns.
 - For feature reviews, infer intended behavior from changed tests, docs, call sites, and surrounding code. If the intent is still ambiguous, list the ambiguity as an open question instead of guessing.
 - Prefer concrete, actionable findings over broad advice. Tie each finding to a real consequence and a practical fix.
 - Treat technical debt and convention drift as first-class review findings. Do not omit them just because there are also security or correctness concerns.
 - Do not invent issues to fill categories. If no meaningful technical-debt findings exist, say that explicitly.
+- When implementing fixes from a whole-program review, put each independent fix or tightly related group of fixes on a separate branch based on the original review base so the fixes can be reviewed independently.
 
 ## Output
 
