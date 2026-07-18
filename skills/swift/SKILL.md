@@ -5,7 +5,7 @@ description: When Swift.
 
 # Swift Preferences
 
-- Every Swift type should live in its own file.
+- Every top-level Swift type should live in its own file. If a type is used only by one parent type, nest it inside that parent type instead of giving it a separate file.
 - Prefer `struct` for Swift utility and value types unless identity, inheritance, or reference semantics are required.
 - Organize Swift code by feature; within each feature, group files into `Views`, `ViewModels`, `Managers`, and `Models` folders as needed, and do not create those folders when they would be empty.
 - When iterating over all cases of an enum, always use `CaseIterable` with `allCases`; never hardcode an array of cases.
