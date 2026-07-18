@@ -5,4 +5,4 @@ description: When JavaScript/TypeScript.
 
 # JavaScript and TypeScript Preferences
 
-- Always use Bun for package manager and script commands.
+- Prefer Bun for package manager and script commands when the repository does not select another tool.
