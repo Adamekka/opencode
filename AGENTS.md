@@ -96,6 +96,10 @@
 - During multi-fix implementation work, create small commits for completed independent fixes as work progresses so each change remains easy to review; never include unrelated worktree changes.
 - For independent fixes in a multi-task request, prefer assigning subagents separate Git worktrees so they can implement and commit in parallel; integrate completed work with rebase or cherry-pick rather than merge commits.
 
+## CI Supply Chain
+
+- Pin GitHub Actions to immutable full commit SHAs rather than mutable version tags, and include the corresponding release version in a trailing comment so updates remain secure and readable.
+
 ## Diagnostic Scope
 
 - When the user provides exactly one compiler, lint, test, CI, or file/line diagnostic, treat that diagnostic as the entire requested scope unless they explicitly ask to continue beyond it.
