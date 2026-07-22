@@ -93,7 +93,7 @@
 ## Git Workflow
 
 - Always use rebase rather than merge when integrating or updating branches; do not create merge commits.
-- During multi-fix implementation work, create small commits for completed independent fixes as work progresses so each change remains easy to review; never include unrelated worktree changes.
+- When a request includes multiple independent pieces of work, split each completed piece into a separate commit as work progresses so each change remains easy to review; never include unrelated worktree changes.
 - For independent fixes in a multi-task request, prefer assigning subagents separate Git worktrees so they can implement and commit in parallel; integrate completed work with rebase or cherry-pick rather than merge commits.
 
 ## CI Supply Chain
