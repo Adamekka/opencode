@@ -19,7 +19,7 @@ Use lower-capability external models to broaden a code review after forming an i
 ```sh
 agy --model "Claude Opus 4.6 (Thinking)" --print-timeout 5m --prompt "Review the supplied uncommitted production changes. Feature: <feature>. Constraints: <constraints>. Find concrete correctness, security, regression, and missing-test issues with file/line references. Do not use tools, read files, spawn subagents, delegate, edit, or research. Review only the supplied context. DIFF: $(git diff -- path/to/tracked/scope) $(git diff --no-index -- /dev/null path/to/untracked-file)"
 agy --model "Gemini 3.1 Pro (High)" --print-timeout 5m --prompt "<the same complete prompt and zsh command substitutions>"
-agy --model "Gemini 3.5 Flash (High)" --print-timeout 5m --prompt "<the same complete prompt and zsh command substitutions>"
+agy --model "Gemini 3.6 Flash (High)" --print-timeout 5m --prompt "<the same complete prompt and zsh command substitutions>"
 ```
 
 5. Treat each command's stdout as that model's response. Keep the responses attributed to their models during analysis.
