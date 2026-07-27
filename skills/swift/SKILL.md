@@ -12,9 +12,11 @@ description: When Swift.
 - Prefer clear `MARK` grouping; avoid random extension placement unless it's used for visibility.
 - Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
 - Keep localization calls in the existing style (`"literal".localized(...)` on the same line as the literal). When a localized string needs runtime values, use a full localized format string with `String(format: "literal %@".localized(...), value)` rather than string interpolation or concatenating localized fragments.
+- When a localized literal would exceed SwiftFormat's configured width, put `// swiftformat:options:next --maxwidth 1000` immediately before the statement so `.localized()` remains on the same line for static localization analyzers.
 - In `@Observable` classes, when a property needs `UserDefaults`-backed storage, use `@ObservableUserDefault` instead of direct `UserDefaults` access.
 - When Swift code imports `CoreUtils`, inspect the sibling dependency at `../CoreUtils` for the referenced implementation.
 - When fixing intentional empty closure/block lint violations, use a comment placeholder instead of a dummy statement.
+- In SwiftUI impossible-state branches, always use CoreUtils' `CrashView` instead of an `EmptyView` with an assertion.
 - Treat SwiftLint rules as strong defaults. When following a rule would make a specific correct implementation less clear or less safe, prefer the clearer code and disable that rule locally at the smallest practical scope; do not add awkward structure just to satisfy lint.
 - For protocol witness methods, do not assume the implementation must repeat `async` or `throws` from the requirement. If the body does not `await` or throw, first try a synchronous and/or non-throwing witness instead of adding `async_without_await`, `unused_parameter`, or `unneeded_throws_rethrows` disables.
 - After finishing a Swift edit task, run `swiftformat .` and `swiftlint` from repo root.
