@@ -12,6 +12,7 @@ description: When Swift.
 - Prefer clear `MARK` grouping; avoid random extension placement unless it's used for visibility.
 - Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
 - Keep localization calls in the existing style (`"literal".localized(...)` on the same line as the literal). When a localized string needs runtime values, use a full localized format string with `String(format: "literal %@".localized(...), value)` rather than string interpolation or concatenating localized fragments.
+- Never manually edit `Localizable.strings` files when editing Swift; leave localized keys in the Swift source for the localization workflow to collect and synchronize.
 - When a localized literal would exceed SwiftFormat's configured width, put `// swiftformat:options:next --maxwidth 1000` immediately before the statement so `.localized()` remains on the same line for static localization analyzers.
 - In `@Observable` classes, when a property needs `UserDefaults`-backed storage, use `@ObservableUserDefault` instead of direct `UserDefaults` access.
 - When Swift code imports `CoreUtils`, inspect the sibling dependency at `../CoreUtils` for the referenced implementation.
