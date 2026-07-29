@@ -17,7 +17,10 @@
 
 ## Instruction Maintenance
 
-- Maintain this file as the user's cross-project preference profile and update it frequently.
+- Treat every `AGENTS.md`, including this global file and project-local files, as a durable instruction profile.
+- Update the appropriate `AGENTS.md` when durable product goals, architectural principles, quality requirements, development responsibilities, or user preferences become clear.
+- Keep instructions implementation-independent. Record enduring direction rather than transient status, completed feature lists, file locations, symbol names, or other details that will become stale as the implementation evolves.
+- Do not use any `AGENTS.md` as a roadmap, changelog, architecture inventory, or substitute for code and user documentation.
 - When the user states a stable cross-project preference, update global instructions immediately.
 - Keep project-specific rules in project config files, not in global instructions.
 - When the user provides durable, important project-specific information, record it in the project's local `AGENTS.md` so future agents can use it without asking the user again.
