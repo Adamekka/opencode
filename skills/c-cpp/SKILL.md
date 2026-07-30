@@ -10,7 +10,7 @@ description: When C/C++.
 - Prefer `const` wherever possible, including local variables, references, pointers, and non-mutating member functions.
 - For raw C-style pointers, use the strongest valid const qualification for both the pointee and pointer, such as `const Type* const var`, whenever neither is modified.
 - Always use `auto` wherever the type can be inferred.
-- Declare and initialize variables using direct-list initialization in the form `auto var{Type{}}`.
+- Declare and initialize variables using direct-list initialization in the form `auto var{Type{}}`. Use parenthesized construction inside the outer list when braces would select an `initializer_list` constructor and change the intended semantics, such as `auto values{std::vector<char>(count)}` for a count-sized vector.
 - Always include a trailing comma in multiline array initializers.
 
 # C Preferences
@@ -26,6 +26,7 @@ description: When C/C++.
 - Include project-local headers with quotes, not angle brackets.
 - Always name function parameters, including parameters in declarations and callbacks, except copy/move constructor and copy/move assignment parameters. Mark intentionally unused named parameters `[[maybe_unused]]` when needed.
 - Make single-argument constructors `explicit`, except enum-wrapper constructors intended to provide an implicit conversion from their wrapped enum.
+- When a declaration is both `constexpr` and `explicit`, order the specifiers as `constexpr explicit`.
 - Always use `this->` when accessing members where valid.
 - Prefer in-class member initializers. When that is not possible, use the constructor initializer list; assign members in the constructor body only when neither initializer form can express the required initialization.
 - Order class members as follows, omitting sections that do not apply:
