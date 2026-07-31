@@ -165,4 +165,4 @@
 
 ## Language Preferences
 
-- Load the relevant language skill before editing or discussing language-specific code. Keep durable language-specific preferences in `skills/`, not in this file.
+- Keep durable language-specific preferences in `skills/`, not in this file.
