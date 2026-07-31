@@ -22,7 +22,7 @@ description: When C/C++.
 - Always declare `main` as `auto main() -> int`.
 - Declare every class and struct `final`; omit `final` only when the type is intentionally designed to be inherited from.
 - Always use trailing return types: `auto foo() -> int32_t` not `int foo()`.
-- Use `[[nodiscard]]` broadly on functions and constructors whose ignored result is likely a mistake, including error/status results, ownership-bearing values, computed values, and factory functions. Never apply `[[nodiscard]]` to a type declaration. Omit it when discarding the result is an intentional and common use case.
+- Use `[[nodiscard]]` broadly on non-constructor functions, including member methods, whose ignored result is likely a mistake, such as error/status results, ownership-bearing values, computed values, and factory functions. Never apply `[[nodiscard]]` to constructors or type declarations. Omit it when discarding the result is an intentional and common use case.
 - Include project-local headers with quotes, not angle brackets.
 - Always name function parameters, including parameters in declarations and callbacks, except copy/move constructor and copy/move assignment parameters. Mark intentionally unused named parameters `[[maybe_unused]]` when needed.
 - Make single-argument constructors `explicit`, except enum-wrapper constructors intended to provide an implicit conversion from their wrapped enum.
