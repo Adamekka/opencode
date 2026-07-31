@@ -14,7 +14,8 @@ description: When git commit.
 | `ci`       | Continuous integration and delivery configuration            | `ci: pin checkout action to an immutable commit`      |
 | `deps`     | Dependency additions, removals, and version updates          | `deps: update swift-syntax to 600.0.1`                |
 | `dev`      | Local development tooling and developer workflows            | `dev: add a command to reset the local database`      |
-| `docs`     | Documentation-only changes                                   | `docs(api): explain pagination cursor behavior`       |
+| `docs`     | Prose and reference documentation changes                    | `docs(api): explain pagination cursor behavior`       |
+| `example`  | Code examples and sample project changes                     | `example(api): add a paginated request sample`        |
 | `feat`     | New user-facing or externally observable behavior            | `feat(auth): add passkey sign-in`                     |
 | `fix`      | Corrections to unintended behavior                           | `fix(sync): retry uploads after token refresh`        |
 | `perf`     | Measurable performance improvements without behavior changes | `perf(search): skip decoding unchanged index entries` |
