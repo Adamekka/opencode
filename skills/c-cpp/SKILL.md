@@ -11,7 +11,7 @@ description: When C/C++.
 - For raw C-style pointers, use the strongest valid const qualification for both the pointee and pointer, such as `const Type* const var`, whenever neither is modified.
 - Always use `auto` wherever the type can be inferred.
 - Declare and initialize variables using direct-list initialization in the form `auto var{Type{}}`. Use parenthesized construction inside the outer list when braces would select an `initializer_list` constructor and change the intended semantics, such as `auto values{std::vector<char>(count)}` for a count-sized vector.
-- Always include a trailing comma in multiline array initializers.
+- Do not include trailing commas in array or similar aggregate initializers.
 
 # C Preferences
 
