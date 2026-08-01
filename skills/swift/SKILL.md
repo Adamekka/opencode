@@ -15,6 +15,7 @@ description: When Swift.
 - Never manually edit `Localizable.strings` files when editing Swift; leave localized keys in the Swift source for the localization workflow to collect and synchronize.
 - When a localized literal would exceed SwiftFormat's configured width, put `// swiftformat:options:next --maxwidth 1000` immediately before the statement so `.localized()` remains on the same line for static localization analyzers.
 - In `@Observable` classes, when a property needs `UserDefaults`-backed storage, use `@ObservableUserDefault` instead of direct `UserDefaults` access.
+- When tests need access to a private method, keep the production method private and expose a clearly named internal test wrapper inside `#if DEBUG` so the testing-only seam is explicit and absent from release builds.
 - When Swift code imports `CoreUtils`, inspect the sibling dependency at `../CoreUtils` for the referenced implementation.
 - When fixing intentional empty closure/block lint violations, use a comment placeholder instead of a dummy statement.
 - In SwiftUI impossible-state branches, always use CoreUtils' `CrashView` instead of an `EmptyView` with an assertion.
