@@ -26,7 +26,11 @@ description: When C/C++.
 - Include project-local headers with quotes, not angle brackets.
 - Always name function parameters, including parameters in declarations and callbacks, except copy/move constructor and copy/move assignment parameters. Mark intentionally unused named parameters `[[maybe_unused]]` when needed.
 - Make single-argument constructors `explicit`, except enum-wrapper constructors intended to provide an implicit conversion from their wrapped enum.
-- When a declaration is both `constexpr` and `explicit`, order the specifiers as `constexpr explicit`.
+- Order C++ function declaration elements as shown below, omitting inapplicable elements and combinations forbidden by C++. Slash-separated elements are mutually exclusive alternatives. Constructors, destructors, and conversion functions omit the return type as required.
+
+  ```cpp
+  [[attributes]] friend extern/static inline constexpr/consteval explicit(...) virtual auto function(parameters) const volatile &/&& noexcept(...) -> Return requires Constraint override final = 0/default/delete;
+  ```
 - Always use `this->` when accessing members where valid.
 - Prefer in-class member initializers for fixed default values. Do not add redundant `{}` initializers to members that their normal construction, aggregate initialization, or constructor initializer list already initializes in place. Assign members in the constructor body only when neither initializer form can express the required initialization.
 - Order class members as follows, omitting sections that do not apply:
@@ -54,7 +58,6 @@ description: When C/C++.
   ```
 
   Keep `public` before `private`, variables before methods within each visibility section, and preserve the blank-line grouping shown above between function categories.
-- Prefer `std::unique_ptr` over raw `new`; only use raw `new` when ownership is immediately transferred to a framework that manages lifetime itself (e.g. Qt parent-child widget ownership).
 - Pass non-resource-owning, trivially copyable value types no larger than two pointers (`sizeof(T) <= 2 * sizeof(void*)`) by value. Apply this only when the parameter's declared type guarantees the size bound; generic or extensible APIs that can accept larger types may borrow by `const` reference. Keep resource-owning wrappers noncopyable, borrow them by `const` reference, and add move operations only when ownership transfer is required.
 - Prefer `emplace`/`emplace_back` over `insert`/`push_back` when constructing elements in-place.
 - Use `constexpr` for values and functions that can be evaluated at compile time but may also be used at runtime. Use `consteval` only when every call must be evaluated at compile time and runtime calls should be rejected. Do not apply either specifier to runtime-only operations. Keep definitions of public `constexpr` functions reachable from their call sites, normally by defining them in the header.
