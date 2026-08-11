@@ -25,4 +25,5 @@ description: When git commit.
 - Write the summary in lowercase imperative form, without a trailing period.
 - Describe the concrete change, not the activity performed. Prefer `fix(sync): retain queued uploads after relaunch` over `fix: update sync code`.
 - Include a scope only when it adds useful domain or component context.
+- Use the `ui` scope for user interface layout, styling, and presentation changes.
 - Omit generic or redundant scopes such as `project`, `app`, or `code`.
