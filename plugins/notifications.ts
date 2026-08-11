@@ -11,6 +11,15 @@ export const Notifications: Plugin = async ({ $, client }) => {
       if (!message) return
 
       try {
+        if (event.type === "session.idle") {
+          const { data: session, error } = await client.session.get({
+            path: { id: event.properties.sessionID },
+          })
+          if (error) throw error
+          if (!session) throw new Error("Session metadata was missing")
+          if (session.parentID) return
+        }
+
         const script = `display notification ${JSON.stringify(message)} with title "opencode" sound name "Glass"`
         await $`osascript -e ${script}`
       } catch (error) {
