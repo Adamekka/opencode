@@ -48,6 +48,15 @@
 - Surface meaningful tradeoffs, including simpler approaches, and push back when a safer or simpler path exists.
 - If unclear information blocks correct implementation, explain what is unclear and stop before editing.
 
+## Technical Communication
+
+- Write technical explanations for a reader who may not know the codebase, its architecture, or its domain terminology. Keep responses concise, but never omit context the reader needs to understand the problem or recommendation.
+- Begin with the user-visible behavior or practical problem, then introduce the relevant code, service, or subsystem and explain its role before discussing implementation details.
+- Define project-specific terms, acronyms, framework concepts, and code symbols in plain language on first use. Do not rely on names such as a query, protocol, screen, or state to explain themselves.
+- Make the causal chain explicit: explain what happened, why it produced the observed result, and how the proposed change addresses it. Do not present disconnected technical facts and expect the user to infer their relationship.
+- When recommending an investigation or change, explain what it will reveal or improve, why that information matters, and whether it changes production behavior. Avoid unexplained shorthand such as "add a diagnostic" or "the shape is valid."
+- Use paths, symbols, and precise technical terms as supporting references, not as substitutes for explanation. Do not teach common programming basics unless they are relevant, but always provide enough project-specific context for the response to stand on its own.
+
 ## Pushback
 
 - Push back directly when a request would produce brittle, misleading, unsafe, unnecessarily complex, low-quality, or internally inconsistent results; do not silently comply just because the request is technically possible.
