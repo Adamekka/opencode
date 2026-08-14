@@ -124,6 +124,12 @@
 - If verification reveals unrelated failures, report them as blockers or residual failures and stop without editing those code paths.
 - Do not infer permission to fix follow-up errors from having run a broader build, lint, or test command.
 
+## Error Presentation
+
+- Present recoverable failures with concise, actionable, user-friendly messages in release builds.
+- In debug builds, preserve the user-facing message and add the concrete underlying error details needed for development and physical-device diagnosis.
+- Keep developer diagnostics out of release UI, and do not replace recoverable runtime failure handling with assertions.
+
 ## Planning
 
 - Before each implementation step, run a planning phase: identify multiple viable approaches, list each approach's advantages and disadvantages, recommend one when appropriate, and ask the user which approach to implement before editing.
