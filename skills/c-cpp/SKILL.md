@@ -28,6 +28,7 @@ description: When C/C++.
 - Include project-local headers with quotes, not angle brackets.
 - Always name function parameters, including parameters in declarations and callbacks, except copy/move constructor and copy/move assignment parameters. Mark intentionally unused named parameters `[[maybe_unused]]` when needed.
 - Make single-argument constructors `explicit`, except enum-wrapper constructors intended to provide an implicit conversion from their wrapped enum.
+- When one-off initialization requires a temporary result plus validation or error handling, use an immediately invoked lambda that returns the final value so the temporary does not leak into the enclosing scope.
 - Order C++ function declaration elements as shown below, omitting inapplicable elements and combinations forbidden by C++. Slash-separated elements are mutually exclusive alternatives. Constructors, destructors, and conversion functions omit the return type as required.
 
   ```cpp
