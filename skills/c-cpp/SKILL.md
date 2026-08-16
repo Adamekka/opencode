@@ -6,6 +6,7 @@ description: When C/C++.
 # Shared Preferences
 
 - Prefer Clang toolchains when the project supports them.
+- When editing a file, only add an include directive when compilation fails and the diagnostic shows that the include is required; do not add includes proactively.
 - Use sized integer types (`int32_t`, `uint8_t`, etc.) for explicit integer type declarations instead of `int`, `long`, `unsigned`, etc. `size_t` is also acceptable for sizes, counts, indices, and related non-type template parameters. The standard `main` return type is an exception. When a local integer exists only to supply an argument whose API declaration already fixes the required integer type, allow `auto` to infer it instead of adding a sized conversion solely to control deduction.
 - Never qualify standard integer type aliases with `std::`; use bare names such as `size_t`, `int32_t`, and `uint8_t` instead of `std::size_t`, `std::int32_t`, and `std::uint8_t`.
 - Prefer `const` wherever possible, including local variables, references, pointers, and non-mutating member functions.
