@@ -18,6 +18,7 @@ description: When git commit.
 | `example`  | Code examples and sample project changes                     | `example(api): add a paginated request sample`        |
 | `feat`     | New user-facing or externally observable behavior            | `feat(auth): add passkey sign-in`                     |
 | `fix`      | Corrections to unintended behavior                           | `fix(sync): retry uploads after token refresh`        |
+| `locale`   | Localized strings and translation resource changes           | `locale: add Polish translations`                     |
 | `perf`     | Measurable performance improvements without behavior changes | `perf(search): skip decoding unchanged index entries` |
 | `refactor` | Internal restructuring without behavior changes              | `refactor(cache): consolidate eviction decisions`     |
 | `test`     | Test-only additions or corrections                           | `test(parser): cover escaped delimiters`              |
