@@ -5,6 +5,7 @@ description: When Swift.
 
 # Swift Preferences
 
+- Always use Swift 6 or newer language mode for every target and Swift tool.
 - Every top-level Swift type should live in its own file. If a type is used only by one parent type, nest it inside that parent type instead of giving it a separate file.
 - Prefer `struct` for Swift utility and value types unless identity, inheritance, or reference semantics are required.
 - Organize Swift code by feature; within each feature, group files into `Views`, `ViewModels`, `Managers`, and `Models` folders as needed, and do not create those folders when they would be empty.
