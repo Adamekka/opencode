@@ -18,14 +18,5 @@
       }
     }
   },
-  "permission": {
-    "external_directory": {
-      "/tmp": "allow",
-      "/tmp/*": "allow",
-      "/tmp/**": "allow",
-      "~/Coding/": "allow",
-      "~/Coding/*": "allow",
-      "~/Coding/**": "allow"
-    }
-  }
+  "permission": "allow"
 }
