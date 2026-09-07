@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+destinations=(
+    ~/.codex/AGENTS.md
+    ~/.codex/skills
+    ~/.gemini/GEMINI.md
+    ~/.gemini/antigravity/skills
+)
+
+if [[ ! -f "$source_dir/AGENTS.md" || ! -d "$source_dir/skills" ]]; then
+    printf 'Expected AGENTS.md and skills beside this script.\n' >&2
+    exit 1
+fi
+
+for destination in "${destinations[@]}"; do
+    source_path="$source_dir/${destination##*/}"
+    if [[ "$destination" == ~/.gemini/GEMINI.md ]]; then
+        source_path="$source_dir/AGENTS.md"
+    fi
+    mkdir -p -- "$(dirname -- "$destination")"
+
+    if [[ -L "$destination" && "$(readlink -- "$destination")" == "$source_path" ]]; then
+        printf 'Already linked: %s\n' "$destination"
+        continue
+    fi
+
+    if [[ -e "$destination" || -L "$destination" ]]; then
+        rm -rf -- "$destination"
+    fi
+
+    ln -s -- "$source_path" "$destination"
+    printf 'Linked: %s -> %s\n' "$destination" "$source_path"
+done
