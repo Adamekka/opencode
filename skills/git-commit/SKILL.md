@@ -5,6 +5,8 @@ description: When git commit.
 
 # Git Commit
 
+- Before committing, run the project's configured formatter and linter on the code being committed. Fix formatting and lint issues within the requested scope, then verify both checks pass on the final changes before committing.
+- If either check fails or cannot run, report the blocker and do not commit. If the project has no formatter or linter configured, state which check is unavailable rather than silently skipping it.
 - Use concise Conventional Commit messages: `type(scope): summary` or `type: summary`.
 - Choose exactly one type from this alphabetized list:
 
