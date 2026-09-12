@@ -6,7 +6,7 @@ destinations=(
     ~/.codex/AGENTS.md
     ~/.codex/skills
     ~/.gemini/GEMINI.md
-    ~/.gemini/antigravity/skills
+    ~/.gemini/config/skills
 )
 
 if [[ ! -f "$source_dir/AGENTS.md" || ! -d "$source_dir/skills" ]]; then
