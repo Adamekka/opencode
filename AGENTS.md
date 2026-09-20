@@ -175,7 +175,6 @@
 
 ## Bug Fixing
 
-- When given a bug report, failing CI signal, or broken test, investigate and fix it autonomously without routine hand-holding.
 - Start from concrete evidence such as logs, errors, or failing tests, then trace to root cause.
 - Prefer durable root-cause fixes over temporary patches.
 
