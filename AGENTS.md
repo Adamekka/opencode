@@ -66,6 +66,7 @@
 
 ## User-Facing Copy
 
+- Keep screens focused on content and actions. Avoid motivational taglines, redundant introductory headings, and filler empty-state titles; adjust layout and spacing when removing them.
 - UI/product copy must read like production text for end users, never like a response to a developer, implementation note, roadmap entry, or vibecoding artifact.
 - Before shipping UI strings, reject wording that exposes implementation intent, internal scope management, framework internals, scaffolding, temporary status, or project-management workflow.
 - Avoid commit-message language, framework diagnostics, roadmap labels, informal implementation labels such as "HomeKit-ish", developer jargon such as "heuristic" or "scaffold", and raw internal capability lists unless users need that technical detail.
