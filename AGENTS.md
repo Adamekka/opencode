@@ -74,21 +74,21 @@
 
 ## Shared Instances
 
-- For singleton/shared dependencies (e.g. `UserDefaults.standard`, `Foo.shared`), do not inject, wrap, or alias them; access the canonical shared instance directly at the use site.
+- For singleton/shared dependencies (e.g. `UserDefaults.standard`, `Foo.shared`), prefer accessing the canonical shared instance directly at the use site. Inject, wrap, or alias them only when a concrete testing, ownership, lifecycle, or behavioral requirement justifies it.
 
 ## Dependency Injection
 
-- Do not introduce dependency-injection patterns for a single dependency; call the concrete or shared dependency directly at the use site.
-- Introduce dependency injection only when multiple dependencies or a concrete architectural need justify the pattern; otherwise choose the smaller, more direct implementation.
+- Prefer calling concrete or shared dependencies directly when substitution is unnecessary.
+- Introduce dependency injection when a concrete testing, ownership, lifecycle, or behavioral requirement justifies it, even for a single dependency. Dependency count alone does not justify the pattern; choose the smallest implementation that meets the requirement.
 - For tests around a single seam, prefer the smallest explicit test-only seam over production-facing dependency-injection scaffolding.
 
 ## Function Structure
 
-- If a helper has only one production caller, keep it inside that caller as a local nested function, e.g. `func outer() { func inner() { ... }; inner() }`, unless it is an explicit API/protocol/framework entrypoint.
-- Do not promote one-caller helpers to type-level private functions for readability, organization, test convenience, naming, or to make a caller shorter.
+- Prefer keeping a helper with one production caller inside that caller as a local nested function when the language supports it and local placement keeps the behavior clear.
+- Extract a one-caller helper when a concrete testing, ownership, lifecycle, or behavioral requirement, or a meaningful separation of responsibilities, justifies it. Do not extract helpers merely to shorten a caller or rename a trivial expression.
 - For one-caller local nested helpers, do not add parameters just to pass values that are immediately available at the call site; prefer a parameterless helper that captures or computes those values itself unless a parameter is needed to preserve semantics.
-- Do not pass invariant or always-the-same arguments such as the current date/time into helpers; have the callee compute or capture that value directly unless the caller truly needs to choose a different value.
-- Keep type-level functions separate only when required as an API/protocol/framework entrypoint, used by multiple real production call sites, recursive, or impossible to represent as a local nested function without changing semantics.
+- Prefer capturing invariant values over passing redundant arguments. Pass a value explicitly when the caller must control it for behavior or testing, including a timestamp captured once to keep an operation consistent.
+- Keep API/protocol/framework entrypoints and helpers used by multiple production callers separate; choose local or separate placement for other helpers based on the requirements above and the language's capabilities.
 - Inline trivial pass-through helpers and computed properties that only rename, forward, count, or restate existing data. Prefer direct expressions such as `foo.status == .pending` and `foos.count`.
 
 ## State Modeling
