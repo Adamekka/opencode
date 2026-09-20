@@ -6,13 +6,11 @@ description: When C/C++.
 # Shared Preferences
 
 - Prefer Clang toolchains when the project supports them.
-- When editing a file, only add an include directive when compilation fails and the diagnostic shows that the include is required; do not add includes proactively.
 - Use sized integer types (`int32_t`, `uint8_t`, etc.) for explicit integer type declarations instead of `int`, `long`, `unsigned`, etc. `size_t` is also acceptable for sizes, counts, indices, and related non-type template parameters. The standard `main` return type is an exception. When a local integer exists only to supply an argument whose API declaration already fixes the required integer type, allow `auto` to infer it instead of adding a sized conversion solely to control deduction.
 - Never qualify standard integer type aliases with `std::`; use bare names such as `size_t`, `int32_t`, and `uint8_t` instead of `std::size_t`, `std::int32_t`, and `std::uint8_t`.
 - Prefer `const` wherever possible, including local variables, references, pointers, and non-mutating member functions.
 - For raw C-style pointers, use the strongest valid const qualification for both the pointee and pointer, such as `const Type* const var`, whenever neither is modified.
 - Always use `auto` wherever the type can be inferred.
-- Declare and initialize variables using direct-list initialization in the form `auto var{Type{}}`. Use parenthesized construction inside the outer list when braces would select an `initializer_list` constructor and change the intended semantics, such as `auto values{std::vector<char>(count)}` for a count-sized vector.
 - Do not include trailing commas in array or similar aggregate initializers.
 
 # C Preferences
@@ -21,6 +19,7 @@ description: When C/C++.
 
 # C++ Preferences
 
+- Declare and initialize variables using direct-list initialization in the form `auto var{Type{}}`. Use parenthesized construction inside the outer list when braces would select an `initializer_list` constructor and change the intended semantics, such as `auto values{std::vector<char>(count)}` for a count-sized vector.
 - Always declare `main` as `auto main() -> int`.
 - Declare every class and struct `final`; omit `final` only when the type is intentionally designed to be inherited from.
 - Always use trailing return types: `auto foo() -> int32_t` not `int foo()`.
