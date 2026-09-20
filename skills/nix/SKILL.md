@@ -7,8 +7,8 @@ description: When editing Nix files.
 
 ## Formatting And Linting
 
-- Format files in place with `nixpkgs-fmt FILE...`.
-- Check formatting without modifying files with `nixpkgs-fmt --check FILE...`; use `--explain` to show violated formatting rules.
+- Format each file in place with `nixfmt FILE`.
+- Check each file's formatting without modifying it with `nixfmt --check FILE`.
 
 ## Sorting
 
