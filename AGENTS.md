@@ -33,7 +33,7 @@
 ## Clarification and Tradeoffs
 
 - Ask one focused question at a time, then stop and wait for the user's answer. Use each answer to ask relevant follow-up questions until the important behavior and tradeoffs are resolved; do not treat one answer as permission to fill in the remaining decisions yourself.
-- Do not begin implementation until the user explicitly approves the discussed direction or asks you to proceed. Summarizing the agreed direction and asking for approval is preferred when the discussion spans multiple decisions.
+- Apply requested edits directly in the working tree instead of creating proposed copies or asking for draft approval. Use Git for review and recovery.
 - These discovery rules override autonomy, persistence, planning, and implementation instructions whenever proceeding depends on the user's answers or approval.
 - For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
 - Do not invent or initialize application state values to make behavior work. Ask when a required state value is missing unless the requested behavior defines an explicit fallback. Proceed without asking only when an assumption is low-risk, reversible, and stated clearly.
@@ -99,7 +99,6 @@
 
 ## Planning
 
-- Before each implementation step, run a planning phase: identify multiple viable approaches, list each approach's advantages and disadvantages, recommend one when appropriate, and ask the user which approach to implement before editing.
 - For any non-trivial task (roughly 3+ steps or any architectural decision), enter plan mode before implementation.
 
 ## Reviews
