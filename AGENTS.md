@@ -71,8 +71,13 @@
 - Touch only the files and lines needed to satisfy the request; do not refactor, reformat, improve adjacent code/comments, or clean up nearby code unless required.
 - Remove imports, variables, functions, and files that your own changes made unused; leave pre-existing dead code and cleanup opportunities alone unless asked, and mention unrelated issues instead of changing them.
 
+## Code quality
+
+- Call out AI slop in a codebase plainly, pointing to concrete defects or needless complexity. If a feature should be removed or rewritten, recommend that explicitly and explain why.
+
 ## Git Workflow
 
+- Amending unpushed commits is fine and does not require additional approval.
 - Always use rebase rather than merge when integrating or updating branches; do not create merge commits.
 - For automated dependency and version updates, use bot-created pull requests that rebase into the target branch only after required CI succeeds; never integrate untested updates automatically.
 - When a request includes multiple independent pieces of work, split each completed piece into a separate commit as work progresses so each change remains easy to review; never include unrelated worktree changes.

@@ -13,19 +13,14 @@ This is not a general code review. Do not report bugs, security issues, architec
 
 ## Read-Only Boundary
 
-- Use only read-only inspection tools and non-mutating version-control commands.
-- Never edit, format, generate, delete, rename, stage, commit, or otherwise modify repository files.
-- Do not run commands that can rewrite source files or generated artifacts.
+- Use only read-only inspection tools and non-mutating version-control commands. Never modify repository files or generated artifacts, including through formatting or generation commands.
 - Report findings and convention-definition problems to the user; do not fix them.
 
 ## Convention Sources
 
-- Identify every programming language present in the selected scope.
-- Load the corresponding language skill for each identified language before evaluating its code.
-- Treat explicit conventions in those language skills as the only basis for confirmed violations. Still identify inconsistent patterns in the code when no applicable convention defines which pattern is preferred; report those as undefined preferences rather than choosing a pattern or calling either one a violation.
+- Treat explicit conventions in those language skills as the only basis for confirmed violations. When no applicable convention resolves inconsistent code patterns, show those patterns and report the undefined preference instead of choosing one or calling either a violation.
 - Repository instructions may determine scope and process, but they are not language conventions for this check unless the applicable language skill explicitly incorporates them.
 - If no language skill exists for an in-scope language, tell the user that the language has no defined convention source and do not invent one.
-- If an applicable language skill lacks a preference needed to resolve an observed inconsistency, show the conflicting patterns, report that the preference is not defined, and do not choose a preferred pattern.
 - If conventions within one applicable language skill contradict each other, or applicable language skills contradict each other for the same code, report the contradiction and do not choose a side.
 
 ## Method
@@ -34,8 +29,7 @@ This is not a general code review. Do not report bugs, security issues, architec
 2. Inventory all authored code files and languages in scope, excluding vendored dependencies, generated code, build output, caches, and other non-authored code unless the user explicitly includes them.
 3. Load every applicable language skill and extract its explicit, checkable conventions.
 4. Check every in-scope code line against every applicable convention, reading structural context where a convention concerns files, types, modules, or project organization.
-5. Track coverage so no in-scope authored code file is skipped.
-6. Report only violations supported by a quoted or precisely identified convention, plus missing or contradictory convention definitions.
+5. Report only violations supported by a quoted or precisely identified convention, plus missing or contradictory convention definitions.
 
 ## Output
 
@@ -45,5 +39,3 @@ This is not a general code review. Do not report bugs, security issues, architec
 - Then list contradictions in the applicable convention sources.
 - Then list missing language skills or undefined preferences encountered during the check.
 - State the selected scope and summarize coverage with the number of authored code files checked and any exclusions.
-- If there are no confirmed violations, say so directly.
-- Do not suggest unrelated improvements or silently expand the convention set.

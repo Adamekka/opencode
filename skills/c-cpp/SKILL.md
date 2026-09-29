@@ -13,10 +13,6 @@ description: When C/C++.
 - Always use `auto` wherever the type can be inferred.
 - Do not include trailing commas in array or similar aggregate initializers.
 
-# C Preferences
-
-- Always use safe alternatives to C functions
-
 # C++ Preferences
 
 - Declare and initialize variables using direct-list initialization in the form `auto var{Type{}}`. Use parenthesized construction inside the outer list when braces would select an `initializer_list` constructor and change the intended semantics, such as `auto values{std::vector<char>(count)}` for a count-sized vector.
