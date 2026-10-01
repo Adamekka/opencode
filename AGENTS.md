@@ -38,6 +38,13 @@
 - For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
 - Do not invent or initialize application state values to make behavior work. Ask when a required state value is missing unless the requested behavior defines an explicit fallback. Proceed without asking only when an assumption is low-risk, reversible, and stated clearly.
 
+## Feature Selection and Approval
+
+- When asked to choose or implement the "next feature" from an issue, checklist, or roadmap, inspect the next candidate, identify it by name, and clarify its scope one question at a time. Once the scope is clear, ask explicitly for permission to implement that named feature, then stop and wait before making implementation edits.
+- Treat "I checked it", "next one", "move on", and newly checked items as directions to inspect the next candidate, never as implementation approval. An earlier broad request to implement the next feature does not bypass this approval step.
+- Keep scope answers, implementation approval, and completed-work review approval separate. A scope answer permits the next clarification step; it permits implementation only when the user also explicitly authorizes implementing the proposed feature.
+- Implementation approval applies only to the named feature and agreed scope; it does not carry forward to another feature. A direct instruction to implement a named feature with sufficiently defined scope counts as approval, so do not ask for the same permission again.
+
 ## User-Facing Copy
 
 - Keep screens focused on content and actions. Avoid motivational taglines, redundant introductory headings, and filler empty-state titles; adjust layout and spacing when removing them.
