@@ -15,6 +15,7 @@ description: When C/C++.
 
 # C++ Preferences
 
+- Prefer inlining values used only once when their lifetimes and evaluation order remain safe.
 - Declare and initialize variables using direct-list initialization in the form `auto var{Type{}}`. Use parenthesized construction inside the outer list when braces would select an `initializer_list` constructor and change the intended semantics, such as `auto values{std::vector<char>(count)}` for a count-sized vector.
 - Always declare `main` as `auto main() -> int`.
 - Declare every class and struct `final`; omit `final` only when the type is intentionally designed to be inherited from.
