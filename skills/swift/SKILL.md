@@ -12,6 +12,7 @@ description: When Swift.
 - When iterating over all cases of an enum, always use `CaseIterable` with `allCases`; never hardcode an array of cases.
 - Prefer clear `MARK` grouping; avoid random extension placement unless it's used for visibility.
 - Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
+- When extending app features, localize new user-facing strings if the codebase already uses localization, and use its existing logging for relevant events and failures if it already uses logging. Follow the established conventions for each.
 - Keep localization calls in the existing style (`"literal".localized(...)` on the same line as the literal). When a localized string needs runtime values, use a full localized format string with `String(format: "literal %@".localized(...), value)` rather than string interpolation or concatenating localized fragments.
 - Never manually edit `Localizable.strings` files when editing Swift; leave localized keys in the Swift source for the localization workflow to collect and synchronize.
 - When a long localized literal is passed inside a function call such as `Text(...)`, put `// swiftformat:options:next --maxwidth 1000` inside the call immediately before the localized string expression, between `Text(` and the string. Never put the directive before the outer call. This keeps `.localized()` on the same line as the literal for static localization analyzers.
