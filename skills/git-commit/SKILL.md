@@ -8,6 +8,7 @@ description: When git commit.
 - Before committing, run the project's configured formatter and linter on the code being committed. Fix formatting and lint issues within the requested scope, then verify both checks pass on the final changes before committing.
 - If either check fails or cannot run, report the blocker and do not commit. If the project has no formatter or linter configured, state which check is unavailable rather than silently skipping it.
 - Use concise Conventional Commit messages: `type(scope): summary` or `type: summary`.
+- For commits made by AI, add a separate `Author: <model-name>` line to the commit message body, replacing `<model-name>` with the actual model name.
 - Choose exactly one type from this alphabetized list:
 
 | Type | Use for |
