@@ -84,6 +84,10 @@
 - Touch only the files and lines needed to satisfy the request; do not refactor, reformat, improve adjacent code/comments, or clean up nearby code unless required.
 - Remove imports, variables, functions, and files that your own changes made unused; leave pre-existing dead code and cleanup opportunities alone unless asked, and mention unrelated issues instead of changing them.
 
+## Reuse
+
+- Every formula and shared feature behavior used in multiple places must have one shared implementation. Reuse existing code or extract shared logic before adding another use; do not reimplement it separately for each feature or screen.
+
 ## Code quality
 
 - Call out AI slop in a codebase plainly, pointing to concrete defects or needless complexity. If a feature should be removed or rewritten, recommend that explicitly and explain why.
