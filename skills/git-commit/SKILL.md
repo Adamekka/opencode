@@ -8,7 +8,10 @@ description: When git commit.
 - Before committing, run the project's configured formatter and linter on the code being committed. Fix formatting and lint issues within the requested scope, then verify both checks pass on the final changes before committing.
 - If either check fails or cannot run, report the blocker and do not commit. If the project has no formatter or linter configured, state which check is unavailable rather than silently skipping it.
 - Use concise Conventional Commit messages: `type(scope): summary` or `type: summary`.
-- For commits made by AI, add a separate `Author: <model-name>` line to the commit message body, replacing `<model-name>` with the actual model name.
+- For commits made by AI, add a separate `Author: <exact-model-id>` line to the commit message body. Use the verified full model ID, preserving its version and variant, for example `Author: gpt-6.1-sol`. Family names such as `GPT-6` and product names such as `Codex` are insufficient.
+- Determine the model from authoritative metadata for the executing session and turn. In local Codex, use `CODEX_THREAD_ID` to locate the matching rollout JSONL under `${CODEX_HOME:-$HOME/.codex}/sessions/`, confirm `session_meta.payload.id` matches that thread ID, and read `payload.model` from the latest `turn_context` record. Read only the needed metadata, without printing conversation contents or credentials. In other agents, use their equivalent current-session model metadata.
+- Do not infer the model from a generic self-description, the available-model catalog, a review model, or a global configuration default; per-session and per-turn overrides can differ.
+- If the exact executing model cannot be verified, ask the user for it before committing rather than guessing or using a broad family name.
 - Choose exactly one type from this alphabetized list:
 
 | Type | Use for |
