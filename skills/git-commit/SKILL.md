@@ -5,8 +5,8 @@ description: When git commit.
 
 # Git Commit
 
-- Before committing, run the project's configured formatter and linter on the code being committed, and run the project's configured tests relevant to the changes. Fix formatting, lint, and test failures within the requested scope, then verify all checks pass on the final changes before committing.
-- If any configured check fails or cannot run, report the blocker and do not commit. If the project has no formatter, linter, or tests configured, state which checks are unavailable rather than silently skipping them.
+- Before committing, run the project's configured formatter and linter on the code being committed, and run the project's configured tests relevant to the changes. Fix formatting, lint, and test failures within the requested scope, then verify all checks that ran pass on the final changes before committing.
+- Silently skip checks when their configuration, tools, or tests are missing. If a check runs and fails, report the blocker and do not commit.
 - Use concise Conventional Commit messages: `type(scope): summary` or `type: summary`.
 - Put commit metadata in a final Git trailer block, separated from the subject or body by a blank line, with no prose after it. Order `Author` before `Linear-Issue` when both apply.
 - For commits made by AI, add an `Author: <exact-model-id>` trailer. Use the verified full model ID, preserving its version and variant, for example `Author: gpt-6.1-sol`. Family names such as `GPT-6` and product names such as `Codex` are insufficient.
