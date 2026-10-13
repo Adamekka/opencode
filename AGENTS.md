@@ -43,6 +43,10 @@
 - For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
 - Do not invent or initialize application state values to make behavior work. Ask when a required state value is missing unless the requested behavior defines an explicit fallback. Proceed without asking only when an assumption is low-risk, reversible, and stated clearly.
 
+## Incremental implementation
+
+- Write AI-assisted code in small, reviewable increments so the user can understand the changes and retain control over the code.
+
 ## Feature Selection and Approval
 
 - When asked to choose or implement the "next feature" from an issue, checklist, or roadmap, inspect the next candidate, identify it by name, and clarify its scope one question at a time. Once the scope is clear, ask explicitly for permission to implement that named feature, then stop and wait before making implementation edits.
