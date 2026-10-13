@@ -20,6 +20,7 @@ description: When Swift.
 - In `@Observable` classes, when a property needs `UserDefaults`-backed storage, use `@ObservableUserDefault` instead of direct `UserDefaults` access.
 - When tests need access to a private method, keep the production method private and expose a clearly named internal test wrapper inside `#if DEBUG` so the testing-only seam is explicit and absent from release builds.
 - When Swift code imports `CoreUtils`, inspect the sibling dependency at `../CoreUtils` for the referenced implementation.
+- When a `CoreUtils` API needs improvement or forces awkward plumbing in an app, propose an improvement to `CoreUtils` instead of adding an app-specific workaround, so all apps can benefit.
 - When fixing intentional empty closure/block lint violations, use a comment placeholder instead of a dummy statement.
 - In SwiftUI impossible-state branches, always use CoreUtils' `CrashView` instead of an `EmptyView` with an assertion.
 - Treat SwiftLint rules as strong defaults. When following a rule would make a specific correct implementation less clear or less safe, prefer the clearer code and disable that rule locally at the smallest practical scope; do not add awkward structure just to satisfy lint.
