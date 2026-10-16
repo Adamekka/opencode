@@ -1,6 +1,6 @@
 ---
 name: docs
-description: When reading/writing docs.
+description: When reading or writing project documentation, editing AGENTS.md, or recording durable project requirements and decisions.
 ---
 
 # Docs
