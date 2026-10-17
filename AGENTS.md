@@ -17,9 +17,10 @@
 
 - Keep instructions focused on concrete preferences that change default model behavior. Omit generic reminders such as being thorough.
 - Update the appropriate `AGENTS.md` when durable product goals, architectural principles, quality requirements, development responsibilities, or user preferences become clear.
+- Before editing global `AGENTS.md` or any skill, explain the proposed change, ask for explicit permission, and wait for the user's approval.
 - Keep instructions implementation-independent. Record enduring direction rather than transient status, completed feature lists, file locations, symbol names, or other details that will become stale as the implementation evolves.
 - Do not use any `AGENTS.md` as a roadmap, changelog, architecture inventory, or substitute for code and user documentation.
-- When the user states a stable cross-project preference, update global instructions immediately.
+- When the user states a stable cross-project preference, propose updating global instructions immediately and obtain permission before editing.
 - Keep project-specific rules in project config files, not in global instructions.
 - When the user provides durable, important project-specific information, record it in the project's local `AGENTS.md` so future agents can use it without asking the user again.
 - Do not duplicate global preferences in project AGENTS files unless a project-specific override is intentional.
