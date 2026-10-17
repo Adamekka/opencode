@@ -16,13 +16,13 @@
 ## Instruction Maintenance
 
 - Keep instructions focused on concrete preferences that change default model behavior. Omit generic reminders such as being thorough.
-- Update the appropriate `AGENTS.md` when durable product goals, architectural principles, quality requirements, development responsibilities, or user preferences become clear.
+- Use the `docs` skill before editing `AGENTS.md` or recording durable project requirements and decisions; follow its placement rules. Update `AGENTS.md` for agent workflow instructions and user preferences.
 - Before editing global `AGENTS.md` or any skill, explain the proposed change, ask for explicit permission, and wait for the user's approval.
 - Keep instructions implementation-independent. Record enduring direction rather than transient status, completed feature lists, file locations, symbol names, or other details that will become stale as the implementation evolves.
 - Do not use any `AGENTS.md` as a roadmap, changelog, architecture inventory, or substitute for code and user documentation.
 - When the user states a stable cross-project preference, propose updating global instructions immediately and obtain permission before editing.
 - Keep project-specific rules in project config files, not in global instructions.
-- When the user provides durable, important project-specific information, record it in the project's local `AGENTS.md` so future agents can use it without asking the user again.
+- When the user provides durable, important project-specific information, record it in the relevant project documentation through the `docs` skill so future agents can find it without asking the user again.
 - Do not duplicate global preferences in project AGENTS files unless a project-specific override is intentional.
 - When adding new preferences, put them in a dedicated section or a skill when possible instead of growing `Shared`.
 
