@@ -96,6 +96,7 @@
 ## Code quality
 
 - Call out AI slop in a codebase plainly, pointing to concrete defects or needless complexity. If a feature should be removed or rewritten, recommend that explicitly and explain why.
+- Tell the user plainly when the code architecture is poor or could be materially improved. Explain the concrete problems and recommend a better design with its tradeoffs.
 
 ## Git Workflow
 
