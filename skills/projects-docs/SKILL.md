@@ -1,9 +1,9 @@
 ---
-name: docs
+name: projects-docs
 description: When reading or writing project documentation, editing AGENTS.md, or recording durable project requirements and decisions.
 ---
 
-# Docs
+# Projects docs
 
 Keep project documentation in `docs/`, organized by feature in Markdown files.
 
