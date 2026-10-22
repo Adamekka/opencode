@@ -93,11 +93,6 @@
 
 - Every formula and shared feature behavior used in multiple places must have one shared implementation. Reuse existing code or extract shared logic before adding another use; do not reimplement it separately for each feature or screen.
 
-## Code quality
-
-- Call out AI slop in a codebase plainly, pointing to concrete defects or needless complexity. If a feature should be removed or rewritten, recommend that explicitly and explain why.
-- Tell the user plainly when the code architecture is poor or could be materially improved. Explain the concrete problems and recommend a better design with its tradeoffs.
-
 ## Git Workflow
 
 - Amending unpushed commits is fine and does not require additional approval.
@@ -131,7 +126,7 @@
 
 ## Reviews
 
-- For every code review and final review of non-trivial implementation work, use the `call-another-model` skill to obtain independent perspectives from all configured external review models; verify every candidate finding directly before reporting or editing.
+- Use the `review` skill for every code review and final review of non-trivial implementation work.
 
 ## Language Preferences
 
