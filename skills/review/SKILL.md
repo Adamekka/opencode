@@ -8,6 +8,7 @@ description: Review changes, features, or full projects and fix verified finding
 ## Review scope
 
 - Honor the requested scope. For a diff review, trace affected callers and shared implementations as needed without turning it into a whole-project audit. Respect requests limited to a particular concern.
+- Treat behavior-preserving refactoring opportunities as valid findings even when current behavior is correct. Suggest them within the requested review scope and implement them only within the user's authorized implementation scope.
 - In either mode, actively examine every applicable dimension below within the requested scope.
 
 ## Review modes
@@ -43,6 +44,7 @@ description: Review changes, features, or full projects and fix verified finding
 ## Evidence and judgment
 
 - Support each finding with a specific location, concrete impact, and an actionable recommendation. A reproducible bug is not required; maintenance cost, convention drift, user friction, and accessibility barriers are valid impacts.
+- For refactoring suggestions, explain the concrete cost of the current design, the expected benefit of the proposed change, and its tradeoffs and regression risk. Avoid refactorings justified only by personal taste or speculative future needs.
 - Call out AI slop plainly when it causes concrete defects or needless complexity. Name the defect and why it matters; do not infer AI authorship from style alone.
 - Verify assumptions against the implementation and applicable requirements. Do not invent findings to fill categories. State material limits on what was inspected or could be verified, especially for UI, UX, and AX.
 - For every code review and final review of non-trivial implementation work, use [call-another-model](../call-another-model/SKILL.md) to obtain independent perspectives from all configured external review models. Include the applicable review dimensions in their prompt and verify every candidate finding directly before reporting or editing.
@@ -50,6 +52,7 @@ description: Review changes, features, or full projects and fix verified finding
 ## Output
 
 - Assign every finding a unique sequential number, starting at 1, and include that number in its heading or label.
+- Explicitly label refactoring suggestions and distinguish them from defect fixes.
 - For each finding, state its category, priority based on impact, specific file/line references or UI location, concrete impact, and implemented fix or remaining recommended improvement. Group repeated instances of the same underlying issue.
 - For each finding, show implementation difficulty as `Low`, `Medium`, or `High`, considering the change's scope, risk, dependencies, and verification effort.
 - Report verification results and any remaining blockers. For a full project review, also include deferred findings, the fix commits, and whether a complete pass found no remaining findings worth fixing.
