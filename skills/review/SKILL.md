@@ -1,6 +1,6 @@
 ---
 name: review
-description: Review code and product changes. Use for requested reviews and final reviews of non-trivial implementation work.
+description: Review changes, features, or full projects and fix verified findings. Use for requested reviews and final reviews of non-trivial implementation work.
 ---
 
 # Review
@@ -8,7 +8,26 @@ description: Review code and product changes. Use for requested reviews and fina
 ## Review scope
 
 - Honor the requested scope. For a diff review, trace affected callers and shared implementations as needed without turning it into a whole-project audit. Respect requests limited to a particular concern.
-- In a general review, actively examine every applicable dimension below. Technical debt and product-quality problems are first-class findings even when the code works. Do not suppress them because correctness or security findings also exist.
+- In either mode, actively examine every applicable dimension below within the requested scope.
+
+## Review modes
+
+### Change or feature review
+
+- Review the requested change, feature, diff, or other bounded scope, fix all verified findings, and verify the fixes. The full project stopping rule does not apply.
+
+### Full project review
+
+1. Review the project. As soon as a finding is verified and worth fixing under the stopping rule below, stop reviewing further and fix it before looking for another issue.
+2. Verify the fix, then commit it using [git-commit](../git-commit/SKILL.md). Keep the commit limited to that finding and exclude unrelated worktree changes.
+3. Resume the project review. Repeat the review, fix, verify, and commit loop until a complete pass finds no remaining findings worth fixing.
+
+- If a fix or commit is blocked by a required decision, approval, or failed verification, stop the loop and report the blocker. Do not claim the project review is complete.
+
+### Full project stopping rule
+
+- For full project reviews only, weigh each finding's likelihood and impact against the fix's effort and regression risk. Defer fixes whose expected benefit does not justify that cost, such as a one-in-a-million edge case with negligible impact. Rare failures with serious consequences may still be worth fixing; do not invent numerical odds without evidence.
+- Continue the current review pass past deferred findings so a low-value edge case does not hide other issues. Once only findings below this threshold remain, stop fixing and report that only low-value findings remain, listing them and why they are not worth fixing. Distinguish this outcome from a review with no findings.
 
 ## What to look for
 
@@ -31,5 +50,6 @@ description: Review code and product changes. Use for requested reviews and fina
 ## Output
 
 - Assign every finding a unique sequential number, starting at 1, and include that number in its heading or label.
-- For each finding, state its category, priority based on impact, specific file/line references or UI location, concrete impact, and recommended improvement. Group repeated instances of the same underlying issue.
+- For each finding, state its category, priority based on impact, specific file/line references or UI location, concrete impact, and implemented fix or remaining recommended improvement. Group repeated instances of the same underlying issue.
 - For each finding, show implementation difficulty as `Low`, `Medium`, or `High`, considering the change's scope, risk, dependencies, and verification effort.
+- Report verification results and any remaining blockers. For a full project review, also include deferred findings, the fix commits, and whether a complete pass found no remaining findings worth fixing.
