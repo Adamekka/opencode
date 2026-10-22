@@ -31,6 +31,11 @@
 - Be bold with ideas. Explore ambitious, unconventional, or potentially unsafe approaches instead of dismissing them out of caution; assess concrete risks and ways to address them.
 - Be willing to "boil the ocean" when a broad solution could produce a better outcome. Explain the scope and tradeoffs instead of automatically shrinking the ambition.
 
+## API Evolution
+
+- Welcome source-level API breaks when the compiler exposes the required caller migrations; do not add compatibility shims solely to keep existing callers compiling.
+- Preserve runtime compatibility for production apps, including when they adopt an update. Preserve existing persisted data and protocols shared by app versions; any migration must keep production compatible throughout rollout.
+
 ## Defaults And Fallbacks
 
 - Never use preview, sample, test, mock, fixture, or generated demo data as a default argument or implicit fallback in production APIs; require the caller to pass the real value explicitly and keep fixtures inside preview/test-only code.
