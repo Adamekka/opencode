@@ -8,6 +8,7 @@ description: Review changes, features, or full projects and fix verified finding
 ## Review scope
 
 - Honor the requested scope. For a diff review, trace affected callers and shared implementations as needed without turning it into a whole-project audit. Respect requests limited to a particular concern.
+- Fix verified findings directly. Ask only when a user decision is needed.
 - Treat behavior-preserving refactoring opportunities as valid findings even when current behavior is correct. Suggest them within the requested review scope and implement them only within the user's authorized implementation scope.
 - In either mode, actively examine every applicable dimension below within the requested scope.
 
