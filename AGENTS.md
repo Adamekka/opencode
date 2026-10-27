@@ -53,6 +53,10 @@
 
 - Write AI-assisted code in small, reviewable increments so the user can understand the changes and retain control over the code.
 
+## Subagents
+
+- Use subagents freely and proactively to parallelize exploration, investigation, review, and independent implementation work without waiting for a separate user request.
+
 ## Feature Selection and Approval
 
 - When asked to choose or implement the "next feature" from an issue, checklist, or roadmap, inspect the next candidate, identify it by name, and clarify its scope one question at a time. Once the scope is clear, ask explicitly for permission to implement that named feature, then stop and wait before making implementation edits.
