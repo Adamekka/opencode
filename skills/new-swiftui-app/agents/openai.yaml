@@ -1,0 +1,7 @@
+interface:
+  display_name: "New SwiftUI app"
+  short_description: "Configure a new iOS SwiftUI app with CoreUtils"
+  default_prompt: "Use $new-swiftui-app to configure this new Xcode SwiftUI project."
+
+policy:
+  allow_implicit_invocation: false
