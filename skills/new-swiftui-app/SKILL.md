@@ -16,8 +16,9 @@ Before editing the app, compare this skill's instructions and bundled examples w
 - Identify the app root, Xcode project, app target, configurations, and SwiftUI entry point. If the project does not exist or the target is ambiguous, ask before proceeding.
 - Resolve `../config-files` relative to the app root. Inspect the actual files rather than assuming their contents. If it is missing, ask for its location instead of substituting bundled configs.
 - Fetch CoreUtils from its Git repository as described in the integration reference. Inspect the fetched revision rather than requiring a sibling checkout. If fetching fails, stop and report the failure instead of substituting a local package.
-- Ask for the bundle identifier unless the user has already supplied it for this app. Do not derive it from the project name or copy it from another app. Ask for the display name when it has not been provided.
-- Read [CoreUtils integration](references/coreutils.md) and resolve its required app-specific configuration before wiring startup. Ask one focused question at a time and wait for each answer. Never fill missing values with another app's URLs, product IDs, account choices, assets, or copy.
+- Ask for the bundle identifier unless the user has already supplied it for this app. Do not derive it from the project name or copy it from another app. Then use [App Store Connect discovery](references/app-store-connect.md) through `asc` to retrieve the app ID, available URLs, localized metadata, and configured products before requesting remaining inputs.
+- Use the supplied home-screen display name. The App Store marketing name can differ; ask for the display name when it has not been provided rather than treating the store title as that choice.
+- Read [CoreUtils integration](references/coreutils.md) and resolve its required app-specific configuration before wiring startup. Ask only for unresolved inputs, one focused question at a time, and wait for each answer. Never fill missing values with another app's URLs, product IDs, account choices, assets, or copy.
 
 ## Copy shared configs
 

@@ -12,7 +12,7 @@ Use [localization and logging](localization-and-logging.md) for app resources, t
 
 ## Required app choices
 
-Use values already supplied for this app. Ask for missing choices one at a time before generating configuration:
+Use values already supplied for this app and perform [App Store Connect discovery](app-store-connect.md) with `asc` before asking for values available there. Ask only for unresolved choices, one at a time, before generating configuration:
 
 - App Store, privacy policy, and terms URLs for `SettingsConfig`.
 - Whether in-app feedback is enabled. This controls notification integration and signing configuration.
