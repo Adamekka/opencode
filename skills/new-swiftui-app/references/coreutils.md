@@ -14,7 +14,7 @@ Use [localization and logging](localization-and-logging.md) for app resources, t
 
 Use values already supplied for this app and perform [App Store Connect discovery](app-store-connect.md) with `asc` before asking for values available there. Ask only for unresolved choices, one at a time, before generating configuration:
 
-- App Store, privacy policy, and terms URLs for `SettingsConfig`.
+- The real App Store URL for `SettingsConfig`. Use available app-specific privacy policy and terms URLs. For either missing URL, use `https://riviacorp.com` with a `// TODO` comment beside its Swift argument; do not ask the user for that missing URL.
 - Whether in-app feedback is enabled. This controls notification integration and signing configuration.
 - Purchase identity and monetization choices. Obtain real offer IDs, renewal periods, and the intended default offer. Token products also require their actual grant amounts and names.
 - App-specific onboarding content and assets, paywall content, and any splash styling needed by the selected startup flow.

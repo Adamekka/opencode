@@ -35,7 +35,7 @@ final class Account: Accountable {
 
 ## Settings configuration
 
-`Config/SettingsConfig.swift` contains the real app URLs and the explicit feedback choice. This configuration is passed to AppWrapper, which supplies it to Settings through the environment.
+`Config/SettingsConfig.swift` contains the app URLs and the explicit feedback choice. This example shows the authorized privacy policy and terms placeholders for an app where those URLs are missing. Use real URLs whenever available. This configuration is passed to AppWrapper, which supplies it to Settings through the environment.
 
 ```swift
 import CoreUtils
@@ -43,8 +43,10 @@ import Foundation
 
 @MainActor let settingsConfig: SettingsConfig = .init(
     appStoreURL: .init(string: <#APP_STORE_URL_STRING_LITERAL#>)!,
-    privacyURL: .init(string: <#PRIVACY_URL_STRING_LITERAL#>)!,
-    termsURL: .init(string: <#TERMS_URL_STRING_LITERAL#>)!,
+    // TODO: Replace with this app's privacy policy URL.
+    privacyURL: .init(string: "https://riviacorp.com")!,
+    // TODO: Replace with this app's terms of service URL.
+    termsURL: .init(string: "https://riviacorp.com")!,
     feedbackEnabled: false,
 )
 ```
