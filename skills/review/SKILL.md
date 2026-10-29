@@ -31,6 +31,12 @@ description: Review changes, features, or full projects and fix verified finding
 - For full project reviews only, weigh each finding's likelihood and impact against the fix's effort and regression risk. Defer fixes whose expected benefit does not justify that cost, such as a one-in-a-million edge case with negligible impact. Rare failures with serious consequences may still be worth fixing; do not invent numerical odds without evidence.
 - Continue the current review pass past deferred findings so a low-value edge case does not hide other issues. Once only findings below this threshold remain, stop fixing and report that only low-value findings remain, listing them and why they are not worth fixing. Distinguish this outcome from a review with no findings.
 
+## Feature completeness
+
+- Review feature completeness within the requested scope. Identify actions users need from the feature's purpose, requirements, and established product behavior, including actions absent from both code and tests.
+- Trace those actions through the UI or public API to persisted results where applicable. For CRUD features, explicitly check create, read, update, and delete. Check relevant cancellation and reversal paths for other workflows.
+- Report missing actions with concrete user impact. Respect intentional restrictions and clarify uncertain requirements instead of assuming every feature needs every operation.
+
 ## What to look for
 
 - Correctness, security, performance, and tests that leave a concrete risk uncovered.
