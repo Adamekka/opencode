@@ -5,6 +5,7 @@ description: When git commit.
 
 # Git Commit
 
+- When committing user-requested fixes or refinements to a feature recently completed in the same thread, amend the original feature commit instead of creating a separate fix commit. Use an interactive rebase when needed to amend an earlier commit while preserving later work. Existing approval requirements for rewriting published history still apply.
 - Before committing, run the project's configured formatter and linter on the code being committed, and run the project's configured tests relevant to the changes. Fix formatting, lint, and test failures within the requested scope, then verify all checks that ran pass on the final changes before committing.
 - Silently skip checks when their configuration, tools, or tests are missing. If a check runs and fails, report the blocker and do not commit.
 - Use concise Conventional Commit messages: `type(scope): summary` or `type: summary`.
