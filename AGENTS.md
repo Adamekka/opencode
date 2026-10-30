@@ -43,9 +43,9 @@
 
 ## Clarification and Tradeoffs
 
-- Ask one focused question at a time, then stop and wait for the user's answer. Use each answer to ask relevant follow-up questions until the important behavior and tradeoffs are resolved; do not treat one answer as permission to fill in the remaining decisions yourself.
+- Ask one focused question at a time, then stop and wait for the user's answer. Use each answer to ask relevant follow-up questions until the important behavior and tradeoffs are resolved.
 - Apply requested edits directly in the working tree instead of creating proposed copies or asking for draft approval. Use Git for review and recovery.
-- These discovery rules override autonomy, persistence, planning, and implementation instructions whenever proceeding depends on the user's answers or approval.
+- These discovery rules override autonomy, persistence, planning, and implementation instructions whenever proceeding depends on the user's answers.
 - For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
 - Do not invent or initialize application state values to make behavior work. Ask when a required state value is missing unless the requested behavior defines an explicit fallback. Proceed without asking only when an assumption is low-risk, reversible, and stated clearly.
 
@@ -57,12 +57,10 @@
 
 - Use subagents freely and proactively to parallelize exploration, investigation, review, and independent implementation work without waiting for a separate user request.
 
-## Feature Selection and Approval
+## Feature Selection
 
-- When asked to choose or implement the "next feature" from an issue, checklist, or roadmap, inspect the next candidate, identify it by name, and clarify its scope one question at a time. Once the scope is clear, ask explicitly for permission to implement that named feature, then stop and wait before making implementation edits.
-- Treat "I checked it", "next one", "move on", and newly checked items as directions to inspect the next candidate, never as implementation approval. An earlier broad request to implement the next feature does not bypass this approval step.
-- Keep scope answers, implementation approval, and completed-work review approval separate. A scope answer permits the next clarification step; it permits implementation only when the user also explicitly authorizes implementing the proposed feature.
-- Implementation approval applies only to the named feature and agreed scope; it does not carry forward to another feature. A direct instruction to implement a named feature with sufficiently defined scope counts as approval, so do not ask for the same permission again.
+- When asked to choose or implement the "next feature" from an issue, checklist, or roadmap, inspect the next candidate, identify it by name, and clarify its scope one question at a time.
+- Treat "I checked it", "next one", "move on", and newly checked items as directions to inspect the next candidate.
 
 ## User-Facing Copy
 
