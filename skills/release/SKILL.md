@@ -98,6 +98,14 @@ To Test:
 
 Summarize user-visible improvements and material fixes rather than reproducing the commit log. List each affected feature once as an unchecked Markdown task under `To Test:`. Preserve a checked state only while its test result still applies to the target release. Compare code and dependency changes since the feature's last verified tested build or commit; uncheck it when changed behavior or affected shared logic requires retesting, unless verified testing already covers those changes. Keep unaffected features checked and existing unchecked items unchecked. Name individual games or challenges when they need separate testing. Keep the list at feature level instead of enumerating every behavior, edge case, or implementation detail. Include features affected by dependency or internal changes when the history establishes that impact. Do not turn formatting, documentation, or test-only commits into product features or claim unperformed tests passed.
 
+## Update the app's website legal pages
+
+Every prepared release must include a review of the app's terms of use and privacy policy in `/Users/adamekka/Coding/riviacorp.com`. Use the exact target build's source, resolved dependencies, and backend behavior, including builds not yet in production. On a resumed release, use its recorded snapshot rather than later worktree changes.
+
+Read the website's repository instructions and `docs/README.md` using the `projects-docs` skill. Update the affected legal pages when the build changes their accuracy, including permissions, data collection, external services, storage/deletion, subscriptions, user content, and feature limitations. Preserve existing public policy URLs. Resolve material unknowns with the user rather than inventing practices or legal commitments. Update document dates only when their text changes, and maintain any existing build-verification record even when no legal wording changes.
+
+Run the website's relevant build and link checks, review the final text, and commit its changes separately from the app release marker. Do not include unrelated website changes. Report the website commit and the build it covers, or explicitly report that the existing pages remain accurate. Website deployment follows the website's own instructions and the release request's publishing authorization; a local update is not evidence that the public pages have changed. Report any remaining publication blocker.
+
 ## Commit and maintain the release issue
 
 1. Update the app's version/build in its canonical configuration and all applicable app configurations. Preserve unrelated target settings and production data.
