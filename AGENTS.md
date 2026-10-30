@@ -34,6 +34,7 @@
 ## API Evolution
 
 - Welcome source-level API breaks when the compiler exposes the required caller migrations; do not add compatibility shims solely to keep existing callers compiling.
+- New shared Settings features must require explicit per-app initializer arguments, without defaults, so updating CoreUtils exposes each app's opt-in or opt-out choice as a compile-time migration.
 - Preserve runtime compatibility for production apps, including when they adopt an update. Preserve existing persisted data and protocols shared by app versions; any migration must keep production compatible throughout rollout.
 
 ## Defaults And Fallbacks
