@@ -21,6 +21,10 @@ Before editing the app, compare this skill's instructions and bundled examples w
 - Read [CoreUtils integration](references/coreutils.md) and resolve its required app-specific configuration before wiring startup. Ask only for unresolved inputs, one focused question at a time, and wait for each answer. Never fill missing values with another app's URLs, product IDs, account choices, assets, or copy.
 - If this app has no privacy policy or terms URL, use `https://riviacorp.com` for that missing URL and add a `// TODO` comment beside the Swift argument explaining which app-specific URL must replace it. This is the explicit placeholder policy for these two URLs; use real URLs when available.
 
+## Name the SwiftUI entry point
+
+Name the `@main` app struct `<AppName>App` and its file `<AppName>App.swift`, using the app's Swift identifier, for example `PlantCareApp` in `PlantCareApp.swift`. Rename the template's `MyApp` in both places, update the filename header, and update any explicit Xcode file references.
+
 ## Copy shared configs
 
 Copy these files into the app repository root, retaining their names and contents:
