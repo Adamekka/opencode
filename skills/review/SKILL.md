@@ -43,6 +43,7 @@ description: Review changes, features, or full projects and fix verified finding
 - Technical debt and architecture that create unnecessary coupling, indirection, complexity, or maintenance work. Explain the concrete problem and recommend a better design with its tradeoffs. Recommend removing or rewriting a feature when that is the better remedy.
 - Convention drift from applicable instructions or established project patterns. Cite the convention and the conflicting implementation rather than presenting personal taste as a requirement.
 - UI problems in visual hierarchy, layout, readability, consistency, and controls. Inspect the rendered interface when available; distinguish observed problems from concerns inferred from source.
+- For UI reviews, inspect rendered screens on supported iPhone and iPad sizes. Check visual polish, spacing, typography, touch targets, safe areas, and clipping. Verify supported orientations, Dynamic Type, and iPad multitasking layouts. Ensure iPad layouts use the available space effectively, and report any device coverage that could not be verified.
 - UX problems in task flows, discoverability, interaction feedback, loading and empty states, error recovery, and avoidable friction.
 - Developer experience (DX) problems in APIs, diagnostics, configuration, builds, and tests that make ordinary development confusing or fragile.
 - Accessibility (AX) barriers involving keyboard access, focus, accessible names and semantics, assistive technology, contrast, or text scaling. Explain the affected interaction and who it excludes.
