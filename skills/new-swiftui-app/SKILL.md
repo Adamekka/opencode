@@ -115,11 +115,12 @@ Run `git init` in the app repository root. Preserve any existing repository hist
 
 ## Verify
 
+- Before simulator builds or device verification, load and follow [simlock](../simlock/SKILL.md).
 - Validate changed project and plist syntax, then use `xcodebuild -list` to confirm the project and scheme load.
 - Inspect effective build settings for Debug and Release, plus any other configurations. Verify deployment, language, concurrency, platform support, identity, version, and sandboxing values.
 - Resolve the Git-backed package and build the app for a generic iOS Simulator destination. Use a toolchain compatible with the fetched CoreUtils revision's `Package.swift` and the copied formatter config. Report toolchain or dependency-resolution failures without changing the requested setup to hide them.
 - Verify that the built app's Info.plist contains the requested display name, bundle ID, versions, and Boolean encryption flag.
 - When Swift files changed, run `swiftformat .` and `swiftlint` from the app root, then rebuild if formatting changed compiled source.
-- Verify startup and access to Settings in a simulator using the environment's device workflow. Check that both use the same account and settings configuration.
+- Verify startup and access to Settings in a simulator. Check that both use the same account and settings configuration.
 - Verify that localized resources are bundled, their key sets match, and changing language updates content and Settings while preserving the account. Verify that opening Settings records the app's typed event and screen through the same account logger.
 - Check the diff for duplicate package references or Lint phases and accidental edits to sibling repositories. Report what was configured and any verification blocker.
