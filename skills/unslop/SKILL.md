@@ -1,6 +1,6 @@
 ---
 name: unslop
-description: ALWAYS LOAD.
+description: ALWAYS LOAD, remove AI slop text.
 ---
 
 # Unslop
