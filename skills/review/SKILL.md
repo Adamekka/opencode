@@ -36,6 +36,7 @@ description: Review changes, features, or full projects and fix verified finding
 - Review feature completeness within the requested scope. Identify actions users need from the feature's purpose, requirements, and established product behavior, including actions absent from both code and tests.
 - Trace those actions through the UI or public API to persisted results where applicable. For CRUD features, explicitly check create, read, update, and delete. Check relevant cancellation and reversal paths for other workflows.
 - Report missing actions with concrete user impact. Respect intentional restrictions and clarify uncertain requirements instead of assuming every feature needs every operation.
+- Propose new features when their absence clearly leaves an important user need unmet for the product's purpose. Explain the user benefit and label them as feature proposals.
 
 ## What to look for
 
