@@ -2,7 +2,7 @@
 
 These examples are bundled with the skill. Check them against the CoreUtils declarations at the fetched Git revision before applying them. If any information is outdated, stop and report it.
 
-The examples illustrate an explicitly chosen configuration with anonymous purchase identity, yearly and weekly subscriptions, the yearly offer selected initially, ads and feedback disabled, no onboarding callbacks or icon shadow, and Settings presented as a sheet. These are example choices, not defaults for a new app. Confirm the app's choices and adapt its content and offer structure accordingly. A change in app requirements is separate from an outdated API; the latter requires stopping and reporting.
+The examples illustrate an explicitly chosen configuration with anonymous purchase identity, yearly and weekly subscriptions, the yearly offer selected initially, ads and feedback disabled, blue as the default color, optional App Color and App Lock disabled, all backup types disabled, no onboarding callbacks or icon shadow, and Settings presented as a sheet. These are example choices, not defaults for a new app. Confirm the app's choices and adapt its content and offer structure accordingly. A change in app requirements is separate from an outdated API; the latter requires stopping and reporting.
 
 Replace every `<#...#>` editor placeholder with the app's real values before building. String-literal placeholders require quoted Swift strings. These placeholders prevent missing required information from becoming runnable production configuration. Keep the app's existing root content and use its actual App type name.
 
@@ -35,7 +35,7 @@ final class Account: Accountable {
 
 ## Settings configuration
 
-`Config/SettingsConfig.swift` contains the app URLs and the explicit feedback choice. This example shows the authorized privacy policy and terms placeholders for an app where those URLs are missing. Use real URLs whenever available. This configuration is passed to AppWrapper, which supplies it to Settings through the environment.
+`Config/SettingsConfig.swift` contains the app URLs and explicit feedback, default-color, App Color and App Lock choices. This example shows the authorized privacy policy and terms placeholders for an app where those URLs are missing. Use real URLs whenever available. This configuration is passed to AppWrapper, which supplies it to Settings through the environment.
 
 ```swift
 import CoreUtils
@@ -48,12 +48,15 @@ import Foundation
     // TODO: Replace with this app's terms of service URL.
     termsURL: .init(string: "https://riviacorp.com")!,
     feedbackEnabled: false,
+    defaultAppColor: .blue,
+    appColor: .disabled,
+    appLock: .disabled,
 )
 ```
 
 ## Paywall configuration
 
-`Config/TrialPageConfig.swift` computes localized content when accessed. Use the app's actual subscription IDs and renewal rates. The selected index must refer to an offer in this same array. This example compares the yearly subscription with the weekly subscription and does not assert any introductory trial eligibility.
+`Config/TrialPageConfig.swift` computes localized content when accessed. Use the app's actual subscription IDs. StoreKit supplies renewal periods, prices and introductory-offer eligibility. The default product ID must belong to this offer list. The shared subscription layout requires an annual plan first and a weekly plan second; their StoreKit prices must make the annual plan the best value.
 
 ```swift
 import CoreUtils
@@ -65,24 +68,18 @@ import Localize_Swift
         iconShadowConfig: nil,
         title: <#PAYWALL_TITLE_STRING_LITERAL#>.localized(),
         features: [
-            .init(icon: "checkmark", text: <#PREMIUM_FEATURE_STRING_LITERAL#>.localized()),
+            .init(icon: "checkmark", text: <#PREMIUM_FEATURE_STRING_LITERAL#>.localized(), color: .accentColor),
         ],
         userCount: nil,
         offers: [
             .subscription(.init(
                 id: <#YEARLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
-                renewalRate: .yearly,
-                bestOffer: .init(baseline: .weekly),
-                recommended: false,
             )),
             .subscription(.init(
                 id: <#WEEKLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
-                renewalRate: .weekly,
-                bestOffer: nil,
-                recommended: false,
             )),
         ],
-        defaultOffer: 0,
+        defaultProductID: <#YEARLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
         tokenNameSingular: nil,
         tokenNamePlural: nil,
     )
@@ -104,7 +101,7 @@ import Localize_Swift
             desc: <#ONBOARDING_DESCRIPTION_STRING_LITERAL#>.localized(),
             image: <#ONBOARDING_ASSET_NAME_STRING_LITERAL#>,
         )),
-        .toggle,
+        .toggle(subtitle: <#TRIAL_TOGGLE_SUBTITLE_STRING_LITERAL#>.localized()),
         .trialPage(trialPageConfig),
     ]
 }
@@ -128,6 +125,9 @@ struct <#APP_TYPE_NAME#>: App {
                 account: self.account,
                 settingsConfig: settingsConfig,
                 notifications: .disabled,
+                kvsBackup: .disabled,
+                archiveBackup: .disabled,
+                cloudKitBackup: .disabled,
                 showATT: false,
                 advertisingConsentProvider: .disabled,
                 splashScreenConfig: .init(iconShadowConfig: nil),
@@ -135,10 +135,13 @@ struct <#APP_TYPE_NAME#>: App {
                 trialPageConfig: { trialPageConfig },
                 onboardingStart: nil,
                 onboardingEnd: nil,
-            ) { _ in
-                // Ads are explicitly disabled, so this content does not consume the consent result.
-                ContentView()
-            }
+                // Keep app content distinct from the localized startup configuration closures.
+                // swiftlint:disable:next trailing_closure
+                content: { _ in
+                    // Ads are explicitly disabled, so this content does not consume the consent result.
+                    ContentView()
+                },
+            )
         }
     }
 }

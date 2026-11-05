@@ -16,12 +16,14 @@ Use values already supplied for this app and perform [App Store Connect discover
 
 - The real App Store URL for `SettingsConfig`. Use available app-specific privacy policy and terms URLs. For either missing URL, use `https://riviacorp.com` with a `// TODO` comment beside its Swift argument; do not ask the user for that missing URL.
 - Whether in-app feedback is enabled. This controls notification integration and signing configuration.
-- Purchase identity and monetization choices. Obtain real offer IDs, renewal periods, and the intended default offer. Token products also require their actual grant amounts and names.
-- App-specific onboarding content and assets, paywall content, and any splash styling needed by the selected startup flow.
+- The default app color and explicit App Color and App Lock choices. Enabled features require distinct stable storage keys and a Free or Premium access policy. App Lock also requires the app's Face ID usage description.
+- Explicit KVS, archive and CloudKit backup choices. Pass an enabled app-lifetime manager for each adopted backup type, or `.disabled`. AppWrapper owns registration and lifecycle; Settings derives availability from the registered managers.
+- Purchase identity and monetization choices. Obtain real offer IDs and the intended default product ID. StoreKit supplies renewal periods, prices and trial eligibility. Token products also require their actual grant amounts and names.
+- App-specific onboarding content and assets, the trial-toggle subtitle when used, paywall content and feature colors, and any splash styling needed by the selected startup flow. Shared splash and app-icon paywall views require an `Icon` image asset containing this app's approved icon.
 - Whether ATT and advertising are used. Use `.disabled` for the advertising consent provider only when ads are explicitly disabled.
 - Settings presentation if the app has no chosen route for it yet.
 
-Do not use empty offers with a made-up default index. CoreUtils requires a nonempty offer list with a valid selected index. If the user needs a flow the live API cannot represent, explain the mismatch and ask how to proceed rather than inventing products or modifying CoreUtils as part of app setup.
+Do not use empty offers or invent a default product. CoreUtils requires a nonempty offer list with unique product IDs and a default product ID from that list. If the user needs a flow the live API cannot represent, explain the mismatch and ask how to proceed rather than inventing products or modifying CoreUtils as part of app setup.
 
 ## Add the Git package
 
