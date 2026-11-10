@@ -22,15 +22,15 @@ Follow the issue from inspection through implementation and user review. Keep Li
 1. Follow the user's global feature-selection approval rules before editing implementation files. For a "next feature" request, identify the next unchecked feature, clarify its scope, and obtain explicit approval to implement it. If the user checks that item and says "next one", reload the issue and inspect the next candidate; do not begin implementation.
 2. Keep approval to implement the selected feature separate from approval of completed work and permission to update its checkboxes. Approval for one feature does not authorize implementing the next checklist item.
 
+## Commit for review
+
+After implementation and verification, use [git-commit](../git-commit/SKILL.md) to commit the completed changes before presenting them for user review. Do not wait for review approval or a separate commit request. Include only the requested work and keep independent features in separate commits. If the user requests revisions, verify and commit or amend them using the same skill before presenting the revised result for review.
+
 ## Ask the user to review
 
-1. Tell the user to review the result and say whether it is OK. Explain that their approval will authorize committing the approved work and checking only the completed items. If important problems or findings should be documented in Linear, explain them to the user and ask the user to report them there.
-2. Stop and wait for explicit approval of the completed work. Approval to start implementation, a successful test run, silence, or an issue comment does not count as this review approval. A reply such as "it's OK" or "looks good" counts when it clearly refers to the presented result.
-3. If the user requests changes, make them, verify them, and present the revised result for review before updating Linear. Preserve the issue identifier and pending review state across follow-up turns.
-
-## Commit approved work
-
-After explicit approval of the completed work, use [git-commit](../git-commit/SKILL.md) to commit the approved changes before updating Linear. Review approval authorizes this commit; do not wait for a separate commit request. Include only the approved work and keep independent features in separate commits.
+1. Tell the user to review the committed result and say whether it is OK. Explain that their approval will authorize checking only the completed items in Linear. If important problems or findings should be documented in Linear, explain them to the user and ask the user to report them there.
+2. Stop and wait for explicit approval of the completed work before updating Linear. Approval to start implementation, a successful test run, a commit, silence, or an issue comment does not count as this review approval. A reply such as "it's OK" or "looks good" counts when it clearly refers to the presented result.
+3. If the user requests changes, follow Commit for review and present the revised result before updating Linear. Preserve the issue identifier and pending review state across follow-up turns.
 
 ## Update Linear after approval
 
