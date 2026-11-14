@@ -1,0 +1,6 @@
+interface:
+  display_name: "Anime clip"
+  short_description: "AV1 clips with Japanese audio and burned English subs"
+  default_prompt: "Use $anime-clip with this video link and time range to create a clip under 50 MB."
+policy:
+  allow_implicit_invocation: false
