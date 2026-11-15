@@ -2,23 +2,31 @@
 set -euo pipefail
 
 source_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-destinations=(
-    ~/.codex/AGENTS.md
-    ~/.codex/skills
-    ~/.gemini/GEMINI.md
-    ~/.gemini/config/skills
-)
 
 if [[ ! -f "$source_dir/AGENTS.md" || ! -d "$source_dir/skills" ]]; then
     printf 'Expected AGENTS.md and skills beside this script.\n' >&2
     exit 1
 fi
 
-for destination in "${destinations[@]}"; do
-    source_path="$source_dir/${destination##*/}"
-    if [[ "$destination" == ~/.gemini/GEMINI.md ]]; then
-        source_path="$source_dir/AGENTS.md"
-    fi
+# Each entry is a destination followed by the source it links to.
+links=(
+    ~/.codex/AGENTS.md "$source_dir/AGENTS.md"
+    ~/.codex/skills "$source_dir/skills"
+    ~/.gemini/GEMINI.md "$source_dir/AGENTS.md"
+    ~/.gemini/config/skills "$source_dir/skills"
+    ~/.claude/CLAUDE.md "$source_dir/AGENTS.md"
+)
+
+# Claude Code keeps its own synced skills in ~/.claude/skills, so link each
+# skill individually instead of replacing the directory and syncing into this repo.
+for skill_dir in "$source_dir"/skills/*/; do
+    skill_dir="${skill_dir%/}"
+    links+=(~/.claude/skills/"${skill_dir##*/}" "$skill_dir")
+done
+
+for ((i = 0; i < ${#links[@]}; i += 2)); do
+    destination="${links[i]}"
+    source_path="${links[i + 1]}"
     mkdir -p -- "$(dirname -- "$destination")"
 
     if [[ -L "$destination" && "$(readlink -- "$destination")" == "$source_path" ]]; then
