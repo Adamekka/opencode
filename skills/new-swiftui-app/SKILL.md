@@ -15,8 +15,8 @@ Before editing the app, compare this skill's instructions and bundled examples w
 ## Resolve app inputs
 
 - Identify the app root, Xcode project, app target, configurations, and SwiftUI entry point. If the project does not exist or the target is ambiguous, ask before proceeding.
-- Resolve `../config-files` relative to the app root. Inspect the actual files rather than assuming their contents. If it is missing, ask for its location instead of substituting bundled configs.
-- Fetch CoreUtils from its Git repository as described in the integration reference. Inspect the fetched revision rather than requiring a sibling checkout. If fetching fails, stop and report the failure instead of substituting a local package.
+- Resolve `../config-files` relative to the app root. If it is missing, clone `https://github.com/adamekka/config-files` into a temporary directory and use that clone as `../config-files` in the steps below. If the clone fails, stop and report the failure. Inspect the actual files rather than assuming their contents, and never substitute bundled configs.
+- Before editing the app, confirm that `https://github.com/RiviaCorp/CoreUtils` is reachable with the current Git credentials, for example with `git ls-remote`. The repository is private. If it is unreachable, stop and report that CoreUtils access is missing. Then fetch CoreUtils as described in the integration reference and inspect the fetched revision rather than requiring a sibling checkout. If fetching fails, stop and report the failure instead of substituting a local package.
 - Ask for the bundle identifier unless the user has already supplied it for this app. Do not derive it from the project name or copy it from another app. Then use [App Store Connect discovery](references/app-store-connect.md) through `asc` to retrieve the app ID, available URLs, localized metadata, and configured products before requesting remaining inputs.
 - Use the supplied home-screen display name. The App Store marketing name can differ; ask for the display name when it has not been provided rather than treating the store title as that choice.
 - Read [CoreUtils integration](references/coreutils.md) and resolve its required app-specific configuration before wiring startup. Ask only for unresolved inputs, one focused question at a time, and wait for each answer. Never fill missing values with another app's URLs, product IDs, account choices, assets, or copy.
@@ -116,7 +116,7 @@ Run `git init` in the app repository root. Preserve any existing repository hist
 
 ## Verify
 
-- Before simulator builds or device verification, load and follow [simlock](../simlock/SKILL.md).
+- Before simulator builds or device verification, load and follow [simlock](../simlock/SKILL.md) if it is installed. Skip this step when the skill is missing.
 - Validate changed project and plist syntax, then use `xcodebuild -list` to confirm the project and scheme load.
 - Inspect effective build settings for Debug and Release, plus any other configurations. Verify deployment, language, concurrency, platform support, identity, version, and sandboxing values.
 - Resolve the Git-backed package and build the app for a generic iOS Simulator destination. Use a toolchain compatible with the fetched CoreUtils revision's `Package.swift` and the copied formatter config. Report toolchain or dependency-resolution failures without changing the requested setup to hide them.
