@@ -19,7 +19,8 @@ links=(
 
 # Claude Code keeps its own synced skills in ~/.claude/skills, so link each
 # skill individually instead of replacing the directory and syncing into this repo.
-for skill_dir in "$source_dir"/skills/*/; do
+# claude-skills holds skills that depend on Claude-only tooling, so only Claude gets them.
+for skill_dir in "$source_dir"/skills/*/ "$source_dir"/claude-skills/*/; do
     skill_dir="${skill_dir%/}"
     links+=(~/.claude/skills/"${skill_dir##*/}" "$skill_dir")
 done
@@ -50,7 +51,8 @@ done
 
 # Remove Claude skill links left behind by renamed or deleted skills.
 for link in ~/.claude/skills/*; do
-    if [[ -L "$link" && ! -e "$link" && "$(readlink -- "$link")" == "$source_dir"/skills/* ]]; then
+    if [[ -L "$link" && ! -e "$link" ]] \
+        && [[ "$(readlink -- "$link")" == "$source_dir"/skills/* || "$(readlink -- "$link")" == "$source_dir"/claude-skills/* ]]; then
         rm -- "$link"
         printf 'Removed stale link: %s\n' "$link"
     fi
