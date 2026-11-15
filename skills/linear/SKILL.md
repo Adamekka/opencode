@@ -17,10 +17,10 @@ Follow the issue from inspection through implementation and user review. Keep Li
 1. Before clarifying scope or making an implementation plan, investigate whether the selected feature is already implemented. Inspect the relevant code and tests, and verify existing behavior against the issue's requirements. An unchecked item does not prove that its implementation is missing.
 2. Report what is complete, what remains missing, and what could not be verified. If the feature is already complete, present the evidence for user review. If it is partially implemented, clarify scope and plan only the remaining work.
 
-## Obtain implementation approval
+## Clarify scope
 
-1. Follow the user's global feature-selection approval rules before editing implementation files. For a "next feature" request, identify the next unchecked feature, clarify its scope, and obtain explicit approval to implement it. If the user checks that item and says "next one", reload the issue and inspect the next candidate; do not begin implementation.
-2. Keep approval to implement the selected feature separate from approval of completed work and permission to update its checkboxes. Approval for one feature does not authorize implementing the next checklist item.
+1. Follow the user's global feature-selection rules before editing implementation files. For a "next feature" request, identify the next unchecked feature by name and clarify its scope one question at a time. If the user checks that item and says "next one", reload the issue and inspect the next candidate.
+2. Clarifying or implementing one feature does not approve the completed work, permit updating its checkboxes, or extend to the next checklist item.
 
 ## Commit for review
 
@@ -29,7 +29,7 @@ After implementation and verification, use [git-commit](../git-commit/SKILL.md) 
 ## Ask the user to review
 
 1. Tell the user to review the committed result and say whether it is OK. Explain that their approval will authorize checking only the completed items in Linear. If important problems or findings should be documented in Linear, explain them to the user and ask the user to report them there.
-2. Stop and wait for explicit approval of the completed work before updating Linear. Approval to start implementation, a successful test run, a commit, silence, or an issue comment does not count as this review approval. A reply such as "it's OK" or "looks good" counts when it clearly refers to the presented result.
+2. Stop and wait for explicit approval of the completed work before updating Linear. A scope answer, a successful test run, a commit, silence, or an issue comment does not count as this review approval. A reply such as "it's OK" or "looks good" counts when it clearly refers to the presented result.
 3. If the user requests changes, follow Commit for review and present the revised result before updating Linear. Preserve the issue identifier and pending review state across follow-up turns.
 
 ## Update Linear after approval
