@@ -4,7 +4,9 @@ description: When user asks to sync localization strings.
 disable-model-invocation: true
 ---
 
-Use `genstrings` and `syncstrings` from PATH.
+# Localization strings sync
+
+Use `genstrings` and `syncstrings` from PATH. `genstrings` is the custom Swift extractor, not Apple's `xcrun genstrings`.
 
 ## Workflow
 
@@ -13,7 +15,7 @@ Use `genstrings` and `syncstrings` from PATH.
 3. Run `syncstrings <localization-root> en` to give sibling locale files the English key set, removing whole entries only when their keys no longer exist in English.
 4. Translate `TODO` placeholders left by `syncstrings`, matching each locale's existing terminology and tone.
 5. Verify every target locale matches the English key set. Run `syncstrings <localization-root> en` a second time; it should report zero updated files.
-6. Commit the localization changes in the Git repository containing the localized strings, using the exact commit message `locale`. Include only localization changes from this sync.
+6. Commit the localization changes in the Git repository containing the localized strings using [git-commit](../git-commit/SKILL.md). Use the exact subject `locale`, which overrides that skill's Conventional Commit subject format, and keep its `Author` model trailer. Include only localization changes from this sync.
 
 ## Guardrails
 
