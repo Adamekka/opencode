@@ -21,8 +21,6 @@ Use [review](../../review/SKILL.md) for the final change or feature review. Fix 
 
 Use [review](../../review/SKILL.md) in full-project mode. Follow its review, fix, verify, commit, and resume loop until its stopping rule applies, a real blocker occurs, or the supplied limit is reached. Review findings must have concrete evidence and impact. AppWrapper, AITranscribeBackend, and CoreUtils authorize bug fixes and worthwhile review improvements, including refactoring, without new feature development.
 
-Use that skill's independent review procedure and required review models. Give snapshot-only reviewers the relevant text and prohibit repository access and edits so they do not become competing repository agents. Report unavailable review perspectives as verification limits.
-
 ## Finish
 
 - Recheck ownership before changes, verification, and commits. Stop if competing activity appears. Do not touch a busy dependency or consuming app to finish a cross-repository change; report the dependency or choose a different self-contained task.

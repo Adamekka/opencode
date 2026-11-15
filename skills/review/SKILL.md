@@ -56,7 +56,6 @@ description: Review changes, features, or full projects and fix verified finding
 - For refactoring suggestions, explain the concrete cost of the current design, the expected benefit of the proposed change, and its tradeoffs and regression risk. Avoid refactorings justified only by personal taste or speculative future needs.
 - Call out AI slop plainly when it causes concrete defects or needless complexity. Name the defect and why it matters; do not infer AI authorship from style alone.
 - Verify assumptions against the implementation and applicable requirements. Do not invent findings to fill categories. State material limits on what was inspected or could be verified, especially for UI, UX, and AX.
-- For every code review and final review of non-trivial implementation work, use [call-another-model](../call-another-model/SKILL.md) to obtain independent perspectives from all configured external review models. Include the applicable review dimensions in their prompt and verify every candidate finding directly before reporting or editing.
 
 ## Output
 
