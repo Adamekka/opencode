@@ -11,8 +11,7 @@ description: When Swift.
 - Organize Swift code by feature; within each feature, group files into `Views`, `ViewModels`, `Managers`, and `Models` folders as needed, and do not create those folders when they would be empty.
 - When iterating over all cases of an enum, always use `CaseIterable` with `allCases`; never hardcode an array of cases.
 - When selecting behavior or values for every case of an enum, use an exhaustive `switch` without `default`; do not use ternaries that silently assign future cases to an existing branch.
-- Prefer clear `MARK` grouping; avoid random extension placement unless it's used for visibility.
-- Prefer `MARK` sections in the main type file over splitting behavior into `Type+Feature.swift` extension files, unless there is a strong reason to split.
+- Group a type's code with `MARK` sections in its main file. Avoid scattered extensions and `Type+Feature.swift` extension files unless an extension controls visibility or there is a strong reason to split.
 - When extending app features, localize new user-facing strings if the codebase already uses localization, and use its existing logging for relevant events and failures if it already uses logging. Follow the established conventions for each.
 - Developer-facing text does not need to be localized.
 - Call `.localized(...)` only on quoted string literals, on the same line as the literal; never on variables or computed strings, because static localization extraction cannot collect dynamic keys. When a localized string needs runtime values, use a full localized format string with `String(format: "literal %@".localized(...), value)` rather than string interpolation or concatenating localized fragments.
