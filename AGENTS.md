@@ -3,44 +3,34 @@
 ## Shared
 
 - Always add a "why" comment when code does something non-obvious, e.g. a constant that always returns a fixed value, a deliberate no-op, or a workaround for an external constraint.
-- Prefer inline one-off handlers and simple local logic over extracting small helper functions.
-- Prefer compile-time enforcement when possible.
-- When compile-time enforcement is not possible, use assertions to catch programmer-error invariant violations during development and testing; never silently default.
-- Handle recoverable external input and runtime failures with an explicit modeled failure rather than intentionally terminating the process. Required startup configuration is separate and should fail fast with a clear diagnostic when missing.
-- Avoid hidden fallback behavior and implicit semantics.
-- Avoid optional parameters where `nil` carries implicit semantic meaning.
-- Default arguments are fine when the default is explicit and unambiguous.
-- Avoid optional-driven API semantics where explicit alternatives exist.
+- Prefer compile-time enforcement when possible. When it is not possible, use assertions to catch programmer-error invariant violations during development and testing; never silently default.
+- Handle recoverable external input and runtime failures with an explicit modeled failure rather than intentionally terminating the process.
+- Avoid hidden fallback behavior and implicit semantics, including optional parameters or optional-driven APIs where `nil` carries implicit meaning and an explicit alternative exists. Default arguments are fine when the default is explicit and unambiguous.
 - For compiler/tooling diagnostics during prototyping, prefer strict warnings without `-Werror`; only escalate warnings to errors when explicitly requested.
 
 ## Instruction Maintenance
 
 - Keep instructions focused on concrete preferences that change default model behavior. Omit generic reminders such as being thorough.
-- Use the `projects-docs` skill before editing `AGENTS.md` or recording durable project requirements and decisions; follow its placement rules. Update `AGENTS.md` for agent workflow instructions and user preferences.
-- Before editing global `AGENTS.md` or any skill, explain the proposed change, ask for explicit permission, and wait for the user's approval.
-- Keep instructions implementation-independent. Record enduring direction rather than transient status, completed feature lists, file locations, symbol names, or other details that will become stale as the implementation evolves.
-- Do not use any `AGENTS.md` as a roadmap, changelog, architecture inventory, or substitute for code and user documentation.
-- When the user states a stable cross-project preference, propose updating global instructions immediately and obtain permission before editing.
-- Keep project-specific rules in project config files, not in global instructions.
-- When the user provides durable, important project-specific information, record it in the relevant project documentation through the `projects-docs` skill so future agents can find it without asking the user again.
-- Do not duplicate global preferences in project AGENTS files unless a project-specific override is intentional.
-- When adding new preferences, put them in a dedicated section or a skill when possible instead of growing `Shared`.
+- Keep instructions implementation-independent. Record enduring direction rather than transient status, completed feature lists, file locations, symbol names, or other details that will become stale as the implementation evolves. Do not use any `AGENTS.md` as a roadmap, changelog, architecture inventory, or substitute for code and user documentation.
+- Use the `projects-docs` skill before editing `AGENTS.md` or recording durable project requirements and decisions; follow its placement rules. `AGENTS.md` holds agent workflow instructions and user preferences. When the user provides durable, important project-specific information, record it through that skill so future agents can find it without asking the user again.
+- When the user states a stable cross-project preference, propose a global instruction update immediately. Before editing global `AGENTS.md` or any skill, explain the proposed change, ask for explicit permission, and wait for the user's approval.
+- Put each rule in its narrowest home: project-specific rules in project config files, durable language-specific preferences in a language skill, and new global preferences in a dedicated section or skill instead of `Shared`. Do not duplicate global preferences in project `AGENTS.md` files unless a project-specific override is intentional.
 
 ## Ambition and ideas
 
 - Be bold with ideas. Explore ambitious, unconventional, or potentially unsafe approaches instead of dismissing them out of caution; assess concrete risks and ways to address them.
 - Be willing to "boil the ocean" when a broad solution could produce a better outcome. Explain the scope and tradeoffs instead of automatically shrinking the ambition.
+- Apply this ambition to ideas and proposals. Edits still follow Editing Scope until the user approves the broader scope.
 
 ## API Evolution
 
 - Welcome source-level API breaks when the compiler exposes the required caller migrations; do not add compatibility shims solely to keep existing callers compiling.
-- New shared Settings features must require explicit per-app initializer arguments, without defaults, so updating CoreUtils exposes each app's opt-in or opt-out choice as a compile-time migration.
 - Preserve runtime compatibility for production apps, including when they adopt an update. Preserve existing persisted data and protocols shared by app versions; any migration must keep production compatible throughout rollout.
 
 ## Defaults And Fallbacks
 
 - Never use preview, sample, test, mock, fixture, or generated demo data as a default argument or implicit fallback in production APIs; require the caller to pass the real value explicitly and keep fixtures inside preview/test-only code.
-- Required environment/configuration values and secrets must stay required. Do not convert them to optionals, hidden fallbacks, or recoverable runtime branches to avoid a crash; if the app cannot work without the value, preserve an explicit fail-fast path so operators see misconfiguration immediately.
+- Required environment/configuration values and secrets must stay required. Do not convert them to optionals, hidden fallbacks, or recoverable runtime branches to avoid a crash; if the app cannot work without the value, fail fast at startup with a clear diagnostic so operators see misconfiguration immediately.
 
 ## Clarification and Tradeoffs
 
@@ -50,9 +40,11 @@
 - For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
 - Do not invent or initialize application state values to make behavior work. Ask when a required state value is missing unless the requested behavior defines an explicit fallback. Proceed without asking only when an assumption is low-risk, reversible, and stated clearly.
 
-## Incremental implementation
+## Implementation Workflow
 
+- For any non-trivial task (roughly 3+ steps or any architectural decision), present a plan before implementation. Use the tool's plan mode when it has one.
 - Write AI-assisted code in small, reviewable increments so the user can understand the changes and retain control over the code.
+- Use the `review` skill for every code review and final review of non-trivial implementation work.
 
 ## Subagents
 
@@ -70,17 +62,15 @@
 - UI/product copy must read like production text for end users, never like a response to a developer, implementation note, roadmap entry, or vibecoding artifact.
 - Avoid commit-message language, framework diagnostics, roadmap labels, informal implementation labels such as "HomeKit-ish", developer jargon such as "heuristic" or "scaffold", and raw internal capability lists unless users need that technical detail.
 
-## Shared Instances
-
-- For singleton/shared dependencies (e.g. `UserDefaults.standard`, `Foo.shared`), prefer accessing the canonical shared instance directly at the use site. Inject, wrap, or alias them only when a concrete testing, ownership, lifecycle, or behavioral requirement justifies it.
-
 ## Dependency Injection
 
-- Introduce dependency injection when a concrete testing, ownership, lifecycle, or behavioral requirement justifies it, even for a single dependency. Dependency count alone does not justify the pattern; choose the smallest implementation that meets the requirement.
+- For singleton/shared dependencies (e.g. `UserDefaults.standard`, `Foo.shared`), prefer accessing the canonical shared instance directly at the use site.
+- Inject, wrap, or alias a dependency only when a concrete testing, ownership, lifecycle, or behavioral requirement justifies it, even for a single dependency. Dependency count alone does not justify the pattern; choose the smallest implementation that meets the requirement.
 - For tests around a single seam, prefer the smallest explicit test-only seam over production-facing dependency-injection scaffolding.
 
 ## Function Structure
 
+- Prefer inline one-off handlers and simple local logic over extracting small helper functions.
 - Prefer keeping a helper with one production caller inside that caller as a local nested function when the language supports it and local placement keeps the behavior clear.
 - Extract a one-caller helper when a concrete testing, ownership, lifecycle, or behavioral requirement, or a meaningful separation of responsibilities, justifies it. Do not extract helpers merely to shorten a caller or rename a trivial expression.
 - For one-caller local nested helpers, do not add parameters just to pass values that are immediately available at the call site; prefer a parameterless helper that captures or computes those values itself unless a parameter is needed to preserve semantics.
@@ -89,7 +79,7 @@
 
 ## State Modeling
 
-- When a UI path should be impossible by construction, do not add a user-facing fallback branch just to satisfy control flow; model the presentation state explicitly and use `assertionFailure` at the invalid transition point so impossible states are caught during development.
+- When a UI path should be impossible by construction, do not add a user-facing fallback branch just to satisfy control flow; model the presentation state explicitly and use a debug assertion, such as Swift's `assertionFailure`, at the invalid transition point so impossible states are caught during development.
 - Enforce invariants on the mandatory path data must pass through, preferably during construction or mutation; do not expose optional validation helpers that callers can forget to invoke.
 
 ## Editing Scope
@@ -105,13 +95,13 @@
 
 - Amending unpushed commits is fine and does not require additional approval.
 - Always use rebase rather than merge when integrating or updating branches; do not create merge commits.
-- For automated dependency and version updates, use bot-created pull requests that rebase into the target branch only after required CI succeeds; never integrate untested updates automatically.
 - When a request includes multiple independent pieces of work, split each completed piece into a separate commit as work progresses so each change remains easy to review; never include unrelated worktree changes.
 - For independent fixes in a multi-task request, prefer assigning subagents separate Git worktrees so they can implement and commit in parallel; integrate completed work with rebase or cherry-pick rather than merge commits.
 
 ## CI Supply Chain
 
 - Pin GitHub Actions to immutable full commit SHAs rather than mutable version tags, and include the corresponding release version in a trailing comment so updates remain secure and readable.
+- For automated dependency and version updates, use bot-created pull requests that rebase into the target branch only after required CI succeeds; never integrate untested updates automatically.
 
 ## System Packages
 
@@ -127,15 +117,3 @@
 - Present recoverable failures with concise, actionable, user-friendly messages in release builds.
 - In debug builds, preserve the user-facing message and add the concrete underlying error details needed for development and physical-device diagnosis.
 - Keep developer diagnostics out of release UI, and do not replace recoverable runtime failure handling with assertions.
-
-## Planning
-
-- For any non-trivial task (roughly 3+ steps or any architectural decision), enter plan mode before implementation.
-
-## Reviews
-
-- Use the `review` skill for every code review and final review of non-trivial implementation work.
-
-## Language Preferences
-
-- Keep durable language-specific preferences in `skills/`, not in this file.
