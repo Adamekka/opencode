@@ -20,7 +20,7 @@ Keep project documentation in `docs/`, organized by feature in Markdown files.
 - Update the existing feature file instead of adding another document for the same behavior. Split a large feature into a feature subdirectory when its distinct topics need separate files.
 - Maintain `docs/README.md` as a concise index with links and short descriptions. Keep detailed requirements in their feature files.
 - Give shared rules and formulas one home and link to them from feature documentation. Record feature-specific exceptions explicitly.
-- Keep required entry points such as root `AGENTS.md` in their discoverable locations. Keep agent workflow instructions there and link to `docs/` for detailed product behavior. Preserve tool-required skill files, licenses and third-party documentation in their required locations.
+- Keep required entry points such as root `AGENTS.md` in their discoverable locations. Keep agent workflow instructions there, not in tool-specific files such as `CLAUDE.md`, and link to `docs/` for detailed product behavior. Preserve tool-required skill files, licenses and third-party documentation in their required locations.
 - Document current agreed behavior. Preserve exact formulas, scope, failure states and evidence requirements; do not invent decisions or describe planned behavior as implemented.
 
 ## Migration

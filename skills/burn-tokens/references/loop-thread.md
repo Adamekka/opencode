@@ -7,7 +7,7 @@ You are executing one burn-tokens loop in a new top-level T3 thread. Work only i
 - Repeat the burn-tokens repository availability checks and acquire its repository claim before inspecting implementation files. Count other worktrees and other agents' pending work as competing activity. If unavailable, report the reason and finish without doing repository work.
 - Read the repository's applicable `AGENTS.md`, relevant product documentation, and required language and workflow skills. Use [projects-docs](../../projects-docs/SKILL.md) for project documentation. Honor repository requirements and preserve production data and protocol compatibility.
 - Establish the existing build and verification commands. Record the starting commit and clean status. A failed required baseline check blocks work in that area; report it rather than repairing unrelated paths.
-- State the chosen feature or review scope and update the plan before non-trivial implementation. If a required product decision is unresolved, follow the applicable one-question-at-a-time clarification rule. Do not invent required state or configuration values.
+- State the chosen feature or review scope and an implementation plan before non-trivial implementation. If a required product decision is unresolved, follow the applicable one-question-at-a-time clarification rule. Do not invent required state or configuration values.
 
 ## Feature mode
 
