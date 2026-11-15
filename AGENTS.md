@@ -42,7 +42,6 @@
 
 ## Implementation Workflow
 
-- For any non-trivial task (roughly 3+ steps or any architectural decision), present a plan before implementation. Use the tool's plan mode when it has one.
 - Write AI-assisted code in small, reviewable increments so the user can understand the changes and retain control over the code.
 - Use the `review` skill for every code review and final review of non-trivial implementation work.
 
