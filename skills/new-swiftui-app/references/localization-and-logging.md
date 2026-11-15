@@ -36,13 +36,13 @@ If a localized literal inside a function call exceeds the formatter's line limit
 
 ## Extract and synchronize resources
 
-Use the Swift-aware `genstrings` and `syncstrings` tools from PATH. Verify that `genstrings` is the custom Swift extractor, rather than Apple's tool with the same name. Their supported positional forms are `genstrings <swift-source-root>` and `syncstrings <localization-root> <base-locale>`.
+Use the Swift-aware `genstrings.swift` and `syncstrings.swift` scripts bundled in the sibling [localization-strings-sync](../../localization-strings-sync/scripts/) skill's `scripts/` directory. Run them by absolute path instead of commands from PATH, where `genstrings` may be Apple's unrelated tool. Their supported positional forms are `genstrings.swift <swift-source-root>` and `syncstrings.swift <localization-root> <base-locale>`.
 
 1. Identify the app's Swift source root and the resource root containing its locale folders. Scan app sources, excluding fetched package checkouts, build products, and test-only copy.
-2. Run `genstrings` on the source root and capture stdout to a temporary file. Require a successful exit and validate the resulting `.strings` syntax before replacing `<base-locale>.lproj/Localizable.strings`. This staging keeps extraction failures from truncating an existing baseline. Stop and report a failed extraction or an unexpectedly empty result.
-3. Run `syncstrings` with the localization root and agreed base locale. It synchronizes sibling locale files to the baseline key set, preserves existing translations, marks missing translations as `TODO`, and removes keys absent from the baseline.
+2. Run `genstrings.swift` on the source root and capture stdout to a temporary file. Require a successful exit and validate the resulting `.strings` syntax before replacing `<base-locale>.lproj/Localizable.strings`. This staging keeps extraction failures from truncating an existing baseline. Stop and report a failed extraction or an unexpectedly empty result.
+3. Run `syncstrings.swift` with the localization root and agreed base locale. It synchronizes sibling locale files to the baseline key set, preserves existing translations, marks missing translations as `TODO`, and removes keys absent from the baseline.
 4. Translate generated `TODO` values for the selected locales, preserving format specifiers and existing terminology. Do not invent translations for unsupported locales. Report any translation requiring native-speaker review.
-5. Validate `.strings` syntax and matching key sets. Run `syncstrings` again; it should report zero changed files. Verify that the built app contains the locale resources.
+5. Validate `.strings` syntax and matching key sets. Run `syncstrings.swift` again; it should report zero changed files. Verify that the built app contains the locale resources.
 
 Generate keys through source extraction rather than editing key sets by hand. Keep package-owned translations in the package; this setup changes only app resources. Use the agreed baseline everywhere; `en` is an example, not an implicit fallback. This setup does not authorize a localization commit or edits to shared tooling.
 
