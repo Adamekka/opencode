@@ -1,6 +1,7 @@
 ---
 name: html-plan
 description: When user asks for HTML plan.
+disable-model-invocation: true
 ---
 
 # HTML Plan

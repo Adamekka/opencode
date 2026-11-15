@@ -1,6 +1,7 @@
 ---
 name: burn-tokens
 description: Use ONLY when explicitly invoked to run sustained feature and review loops across AITranscribe, Alarm, web-browser, WifiAnalyzer, AppWrapper, AITranscribeBackend, and CoreUtils, with a fresh T3 thread for each loop.
+disable-model-invocation: true
 ---
 
 # Burn tokens

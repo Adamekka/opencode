@@ -1,6 +1,7 @@
 ---
 name: localization-strings-sync
 description: When user asks to sync localization strings.
+disable-model-invocation: true
 ---
 
 Use `genstrings` and `syncstrings` from PATH.

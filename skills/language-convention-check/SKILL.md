@@ -1,6 +1,7 @@
 ---
 name: language-convention-check
 description: Use ONLY when the user asks for a language convention check.
+disable-model-invocation: true
 ---
 
 # Language Convention Check

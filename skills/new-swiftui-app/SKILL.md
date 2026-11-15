@@ -1,6 +1,7 @@
 ---
 name: new-swiftui-app
 description: Configure a fresh Xcode SwiftUI app for iOS with shared formatting and linting, Swift 6 concurrency, localization, logging, and CoreUtils fetched from Git. Use for initial app setup.
+disable-model-invocation: true
 ---
 
 # New SwiftUI app

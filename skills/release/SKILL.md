@@ -1,6 +1,7 @@
 ---
 name: release
 description: Prepare an app release by verifying production, selecting its version/build, committing a release marker, and maintaining one cumulative Linear issue for all changes not yet in production. Use when the user asks to release an app or invokes this skill for a feature or bug-fix release.
+disable-model-invocation: true
 ---
 
 # Release

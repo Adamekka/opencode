@@ -1,6 +1,7 @@
 ---
 name: anime-clip
 description: Use only when explicitly invoked to create an AV1 MP4 clip from a video link and time range, with Japanese audio, burned-in English subtitles, and a file size under 50 MB.
+disable-model-invocation: true
 ---
 
 # Anime clip
