@@ -56,16 +56,16 @@ This is a read-only release prerequisite for every target that uses CloudKit, in
 
 ## Query App Store Connect with asc
 
-The installed client uses the `AdamMacBook` authentication profile stored in macOS Keychain. Select it explicitly with `--profile AdamMacBook`; subsequent queries do not need the original downloaded `.p8` file. Do not embed credentials in the skill or read private key contents into tool output. If the client or profile is unavailable, report the failure and follow the public-lookup rules above rather than silently selecting another account.
+The installed client uses the `AdamMacBook` authentication profile stored in macOS Keychain. Select it explicitly with `--profile AdamMacBook`, and pass `--read-only` so the client refuses any mutating request; subsequent queries do not need the original downloaded `.p8` file. Do not embed credentials in the skill or read private key contents into tool output. If the client or profile is unavailable, report the failure and follow the public-lookup rules above rather than silently selecting another account.
 
 Validate authentication, then resolve the app by its actual bundle identifier. Replace the placeholders with the resolved app ID and platform, such as `IOS` or `MAC_OS`. Require an unambiguous matching app before querying its release state.
 
 ```sh
-asc --profile AdamMacBook auth status --validate
-asc --profile AdamMacBook apps list --bundle-id "<bundle-id>" --paginate --output json
-asc --profile AdamMacBook versions list --app "<app-id>" --platform "<platform>" \
+asc --profile AdamMacBook --read-only auth status --validate
+asc --profile AdamMacBook --read-only apps list --bundle-id "<bundle-id>" --paginate --output json
+asc --profile AdamMacBook --read-only versions list --app "<app-id>" --platform "<platform>" \
   --include build,appStoreVersionPhasedRelease --paginate --output json
-asc --profile AdamMacBook builds list --app "<app-id>" --platform "<platform>" \
+asc --profile AdamMacBook --read-only builds list --app "<app-id>" --platform "<platform>" \
   --include preReleaseVersion,buildBetaDetail --processing-state all --paginate --output json
 ```
 
