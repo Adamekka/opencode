@@ -19,7 +19,7 @@ This is not a general code review. Do not report bugs, security issues, architec
 
 ## Convention Sources
 
-- Treat explicit conventions in those language skills as the only basis for confirmed violations. When no applicable convention resolves inconsistent code patterns, show those patterns and report the undefined preference instead of choosing one or calling either a violation.
+- Treat explicit conventions in the applicable language skills as the only basis for confirmed violations. When no applicable convention resolves inconsistent code patterns, show those patterns and report the undefined preference instead of choosing one or calling either a violation.
 - Repository instructions may determine scope and process, but they are not language conventions for this check unless the applicable language skill explicitly incorporates them.
 - If no language skill exists for an in-scope language, tell the user that the language has no defined convention source and do not invent one.
 - If conventions within one applicable language skill contradict each other, or applicable language skills contradict each other for the same code, report the contradiction and do not choose a side.
