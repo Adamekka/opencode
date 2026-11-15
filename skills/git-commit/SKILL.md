@@ -5,9 +5,9 @@ description: When git commit.
 
 # Git Commit
 
-- When committing user-requested fixes or refinements to a feature recently completed in the same thread, amend the original feature commit instead of creating a separate fix commit. Use an interactive rebase when needed to amend an earlier commit while preserving later work. Existing approval requirements for rewriting published history still apply.
+- When committing user-requested fixes or refinements to a feature recently completed in the same thread, amend the original feature commit instead of creating a separate fix commit. To amend an earlier commit while preserving later work, commit with `git commit --fixup=<sha>` and run `GIT_SEQUENCE_EDITOR=true git rebase --autosquash <sha>~1`; agents cannot drive the editor an interactive rebase opens. Existing approval requirements for rewriting published history still apply.
 - Before committing, run the project's configured formatter and linter on the code being committed, and run the project's configured tests relevant to the changes. Fix formatting, lint, and test failures within the requested scope, then verify all checks that ran pass on the final changes before committing.
-- Silently skip checks when their configuration, tools, or tests are missing. If a check runs and fails, report the blocker and do not commit.
+- Skip checks whose configuration, tools, or tests are missing, and name the skipped checks when reporting the commit. If a check runs and fails, report the blocker and do not commit.
 - Use concise Conventional Commit messages: `type(scope): summary` or `type: summary`.
 - Mark breaking changes with `!` immediately before the colon: `type(scope)!: summary` or `type!: summary`.
 - Put commit metadata in a final Git trailer block, separated from the subject or body by a blank line, with no prose after it. Order `Author` before `Linear-Issue` when both apply.
