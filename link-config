@@ -34,10 +34,24 @@ for ((i = 0; i < ${#links[@]}; i += 2)); do
         continue
     fi
 
-    if [[ -e "$destination" || -L "$destination" ]]; then
-        rm -rf -- "$destination"
+    if [[ -L "$destination" ]]; then
+        rm -- "$destination"
+    elif [[ -e "$destination" ]]; then
+        # Move real files and directories to the Trash so hand-written config stays recoverable
+        # without leaving backups in config directories, where tools could load them as config or skills.
+        trashed=~/.Trash/"${destination##*/} $(date +%Y%m%d-%H%M%S)"
+        mv -- "$destination" "$trashed"
+        printf 'Moved to Trash: %s -> %s\n' "$destination" "$trashed"
     fi
 
     ln -s -- "$source_path" "$destination"
     printf 'Linked: %s -> %s\n' "$destination" "$source_path"
+done
+
+# Remove Claude skill links left behind by renamed or deleted skills.
+for link in ~/.claude/skills/*; do
+    if [[ -L "$link" && ! -e "$link" && "$(readlink -- "$link")" == "$source_dir"/skills/* ]]; then
+        rm -- "$link"
+        printf 'Removed stale link: %s\n' "$link"
+    fi
 done
