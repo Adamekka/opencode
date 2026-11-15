@@ -1,0 +1,164 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+manifest="$source_dir/share.json"
+service_label=com.adamekka.share-sync
+
+usage() {
+    printf 'Usage: %s check|install|service\n' "${0##*/}" >&2
+    printf '  check    verify shared skills do not reference unshared ones\n' >&2
+    printf '  install  link AGENTS.md and shared skills into Claude and Codex\n' >&2
+    printf '  service  pull from GitHub and install every hour via launchd\n' >&2
+    exit 1
+}
+
+[[ $# -eq 1 ]] || usage
+
+# skills lists what gets shared. optionalSkills lists skills the shared ones may
+# reference because they skip those steps when the skill is not installed.
+shared=()
+while IFS= read -r skill; do shared+=("$skill"); done < <(jq -r '.skills[]' "$manifest")
+optional=()
+while IFS= read -r skill; do optional+=("$skill"); done < <(jq -r '.optionalSkills[]' "$manifest")
+
+contains() {
+    local needle="$1"
+    shift
+    local item
+    for item in "$@"; do
+        [[ "$item" == "$needle" ]] && return 0
+    done
+    return 1
+}
+
+shared_paths=()
+for skill in "${shared[@]}"; do
+    if [[ -d "$source_dir/skills/$skill" ]]; then
+        shared_paths+=("$source_dir/skills/$skill")
+    elif [[ -d "$source_dir/claude-skills/$skill" ]]; then
+        shared_paths+=("$source_dir/claude-skills/$skill")
+    else
+        printf 'Unknown skill in share.json: %s\n' "$skill" >&2
+        exit 1
+    fi
+done
+
+# Skills reference each other as relative links (../name/) or backticked names (`name`).
+check() {
+    local missing=0 skill_dir skill matches
+    for skill_dir in "$source_dir"/skills/*/ "$source_dir"/claude-skills/*/; do
+        [[ -d "$skill_dir" ]] || continue
+        skill="$(basename -- "$skill_dir")"
+        # The ${a[@]+...} form keeps macOS's bash 3.2 from treating an empty array as unbound.
+        if contains "$skill" "${shared[@]}" || contains "$skill" ${optional[@]+"${optional[@]}"}; then
+            continue
+        fi
+        if matches="$(grep -rnF -e "../$skill/" -e "\`$skill\`" -- "$source_dir/AGENTS.md" "${shared_paths[@]}")"; then
+            printf 'References unshared skill %s:\n%s\n' "$skill" "${matches//$source_dir\//  }" >&2
+            missing=1
+        fi
+    done
+    if ((missing)); then
+        printf 'Add these skills to share.json, or to optionalSkills if the references tolerate a missing skill.\n' >&2
+        return 1
+    fi
+}
+
+install() {
+    # Back up anything a link would replace outside the config directories, where tools could load it as config or skills.
+    local backup_root
+    backup_root="$HOME/Library/Application Support/share-sync/backups/$(date +%Y%m%d-%H%M%S)"
+
+    local links=(
+        "$HOME/.claude/CLAUDE.md" "$source_dir/AGENTS.md"
+        "$HOME/.codex/AGENTS.md" "$source_dir/AGENTS.md"
+    )
+    local skill_path
+    for skill_path in "${shared_paths[@]}"; do
+        links+=("$HOME/.claude/skills/${skill_path##*/}" "$skill_path")
+        links+=("$HOME/.codex/skills/${skill_path##*/}" "$skill_path")
+    done
+
+    local i destination source_path backup
+    for ((i = 0; i < ${#links[@]}; i += 2)); do
+        destination="${links[i]}"
+        source_path="${links[i + 1]}"
+        if [[ -L "$destination" && "$(readlink -- "$destination")" == "$source_path" ]]; then
+            continue
+        fi
+
+        mkdir -p -- "$(dirname -- "$destination")"
+        if [[ -e "$destination" || -L "$destination" ]]; then
+            backup="$backup_root/${destination#"$HOME"/}"
+            mkdir -p -- "$(dirname -- "$backup")"
+            mv -- "$destination" "$backup"
+            printf 'Backed up: %s -> %s\n' "$destination" "$backup"
+        fi
+        ln -s -- "$source_path" "$destination"
+        printf 'Linked: %s -> %s\n' "$destination" "$source_path"
+    done
+
+    # Remove links to skills that are no longer shared; they point into this repo, so nothing local is lost.
+    local link target
+    for link in "$HOME"/.claude/skills/* "$HOME"/.codex/skills/*; do
+        [[ -L "$link" ]] || continue
+        target="$(readlink -- "$link")"
+        if [[ "$target" == "$source_dir"/skills/* || "$target" == "$source_dir"/claude-skills/* ]] \
+            && ! contains "$target" "${shared_paths[@]}"; then
+            rm -- "$link"
+            printf 'Removed unshared skill link: %s\n' "$link"
+        fi
+    done
+}
+
+service() {
+    local plist="$HOME/Library/LaunchAgents/$service_label.plist"
+    local log="$HOME/Library/Logs/share-sync.log"
+    local escaped_dir="$source_dir"
+    escaped_dir="${escaped_dir//&/&amp;}"
+    escaped_dir="${escaped_dir//</&lt;}"
+    escaped_dir="${escaped_dir//>/&gt;}"
+
+    mkdir -p -- "$(dirname -- "$plist")" "$(dirname -- "$log")"
+    # Pull before starting share-sync so git never rewrites this script while bash is reading it.
+    cat > "$plist" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>$service_label</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>git -C "\$1" pull --ff-only --quiet &amp;&amp; "\$1/share-sync" install</string>
+        <string>share-sync</string>
+        <string>$escaped_dir</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>3600</integer>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>$log</string>
+    <key>StandardErrorPath</key>
+    <string>$log</string>
+</dict>
+</plist>
+EOF
+    plutil -lint -s "$plist"
+
+    # bootout fails when the service is not loaded yet, which is expected on the first run.
+    launchctl bootout "gui/$(id -u)/$service_label" 2>/dev/null || true
+    launchctl bootstrap "gui/$(id -u)" "$plist"
+    printf 'Installed %s; it pulls and installs every hour. Log: %s\n' "$plist" "$log"
+}
+
+case "$1" in
+    check) check ;;
+    install) check && install ;;
+    service) service ;;
+    *) usage ;;
+esac

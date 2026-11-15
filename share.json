@@ -1,0 +1,14 @@
+{
+    "skills": [
+        "git-commit",
+        "localization-strings-sync",
+        "new-swiftui-app",
+        "projects-docs",
+        "review",
+        "swift",
+        "unslop"
+    ],
+    "optionalSkills": [
+        "simlock"
+    ]
+}
