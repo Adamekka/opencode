@@ -12,68 +12,20 @@ Each new release request produces a new build. For a target explicitly not inten
 
 - Read the repository instructions and relevant project documentation. Inspect the worktree without editing. If pending app changes might belong in the release but their inclusion is unclear, ask one focused question and wait.
 - Read the app's actual version, build, bundle identifier, and platform. For Xcode, identify the app target and its version settings across configurations; test-target versions are separate.
-- Use the authenticated `asc` CLI as described below to verify the publicly available version and its associated build. Also inspect newer uploaded versions and their review, release, and TestFlight states. Approval, an upload, or TestFlight availability does not establish that a version is in production.
+- Use the authenticated `asc` CLI as described in [App Store Connect queries](references/app-store-connect.md) to verify the publicly available version and its associated build. Also inspect newer uploaded versions and their review, release, and TestFlight states. Approval, an upload, or TestFlight availability does not establish that a version is in production.
 - If App Store Connect access is unavailable, query Apple's live public App Store lookup by the app's bundle identifier and relevant storefront. Identify the platform and storefront checked. Report the public version and release date, and disclose that the lookup does not expose its build or private release states. Do not substitute Git markers or Linear statuses for evidence of public availability.
 - Establish whether the app has ever been in production, including historical releases. A missing public lookup result or unavailable store access does not establish that it has never shipped. If it has never been in production, ask whether this target build is intended to go to production and wait, unless the user has already explicitly answered for this target. A yes keeps the legal-page workflow unchanged; a no uses build-only versioning and skips the entire legal-page section below. Apps with any prior production release always keep that section, even when the target build is unreleased. Preserve the answer when resuming the same target; ask again for a new target while the app has never shipped. Production intent does not authorize publishing.
 - Enumerate release commits on the current branch's first-parent history whose entire subject matches `^[0-9]+\.[0-9]+\.[0-9]+ \([0-9]+\)$`. Match the production version/build to its release commit. When only the public version is available, use a Git build only if that version maps unambiguously to one release marker and no other evidence conflicts; state that Git supplied the build. If multiple builds share that version, require App Store Connect evidence or a user-confirmed build and commit. Never assume the newest same-version marker is production.
 - Resolve the app's existing Linear project and owning team. Inspect its release issues and correlate them with Git and the store. Identify the existing active issue covering the unreleased changes, even when its title names an earlier version or build; reuse that issue rather than creating another issue for the new target. List all known versions/builds after the production boundary, with their Git, store, and Linear states distinguished. Include local releases that were never uploaded or whose Linear issues were canceled when their changes remain in the target, but do not reuse canceled issues as the active release issue. If the destination or history boundary is ambiguous, ask before proceeding.
-- Complete the CoreUtils, localization, and CloudKit production schema checks below before release changes. Include their results in the current-state report.
+- Complete the release prerequisites below before release changes.
 - Before updating files, committing, or changing Linear, tell the user what is in production, all known versions/builds not in production and their states, the current app configuration, changes after the latest release marker, the previous prepared release used as the testing baseline for existing checked features, CoreUtils freshness, localization results, CloudKit production schema deployment status, and any uncertainty or unavailable access. Include the sources checked, the proposed target when known, and whether legal-page work is required or explicitly skipped. If production history or the applicable history boundary cannot be resolved, report what is known, ask one focused question, and stop before release changes.
 
-## Verify CoreUtils and localization
+## Release prerequisites
 
-These are release prerequisites. Inspect the exact app sources and dependency revision being released; for a resumed release, use its recorded release snapshot rather than later worktree changes.
+Run these read-only checks before release changes and include their results in the current-state report. Each one stops the release before version changes, commits, or Linear writes when it fails or cannot be verified.
 
-- Read the app's CoreUtils dependency requirement and resolved revision. Verify the latest authoritative upstream revision using the configured repository and branch, for example `git -C ../CoreUtils ls-remote origin "refs/heads/<configured-branch>"` after confirming that origin matches the dependency repository. Do not treat local HEAD or a cached remote-tracking ref as proof of freshness. For a version-based requirement, verify the latest published version allowed by that requirement; ask if the intended update policy is ambiguous. Require the app's resolved CoreUtils dependency to be current. Report an outdated or unverifiable dependency and stop before version changes, commits, or Linear writes.
-- Use `../CoreUtils` to inspect the shared library. Verify that the sources and localization resources checked match the revision the app will ship. Uncommitted local translations cannot establish that the resolved remote dependency is localized. If the checkout differs, inspect an isolated snapshot of the resolved revision or report the mismatch and stop; do not reset or overwrite another worktree.
-- Run the project's installed `genstrings` command for both production source trees, capturing output in a temporary directory. This is the custom extractor available on PATH, not Xcode's different `xcrun genstrings` command. Resolve the app's actual production source root and keep generated output outside tracked localization resources:
-
-  ```sh
-  genstrings "<app-source-root>" > "<temporary-directory>/app.strings"
-  genstrings "../CoreUtils/Sources" > "<temporary-directory>/coreutils.strings"
-  ```
-
-- Check extraction succeeded and inspect diagnostics and generated output; the extractor can print errors without a failing exit code. Compare each extracted key against the shipped localization resources for every language supported by the app, including the corresponding CoreUtils resources. Check missing keys, empty values, and untranslated placeholders. Do not classify valid proper names or shared technical terms as missing translations merely because they match the source language.
-- Key extraction alone does not prove localization completeness. Inspect user-facing text that bypasses the project's localization calls and any dynamic keys the extractor cannot discover. Do not report a successful extraction as a successful translation check.
-- If either the app or CoreUtils is not fully localized, report the affected repository, languages, files, and missing or untranslated keys, then stop. If a required check cannot be completed, report the blocker and stop. Do not automatically translate strings, update the dependency, commit, or push CoreUtils as part of this preflight. Resume the release only after the blockers are resolved and these checks pass.
-
-## Verify CloudKit schema deployment to production
-
-This is a read-only release prerequisite for every target that uses CloudKit, including non-production builds. Inspect the exact target sources, resolved dependencies, and configuration; for a resumed release, use its recorded release snapshot. If the target does not use CloudKit, report `Not applicable`.
-
-- Resolve every CloudKit container used by the target and its owning Apple Developer team. App Store availability, TestFlight availability, and production entitlements do not prove that its required schema is deployed.
-- Use Apple's [cktool](https://developer.apple.com/icloud/ck-tool/) to export each container's live production schema to a temporary directory. Schema exports require a CloudKit management token, separate from App Store Connect credentials; use the token stored in macOS Keychain and never print or embed it in files or commands:
-
-  ```sh
-  xcrun cktool export-schema --team-id "<team-id>" \
-    --container-id "<container-id>" --environment production \
-    --output-file "<temporary-directory>/production.ckdb"
-  ```
-
-- Compare production with the schema required by the target build, using its authoritative checked-in schema when available. Otherwise, export the development schema with the same command and `--environment development` to a separate file, and correlate it with the target's data model and CloudKit operations. Development may contain future changes, and production may retain older fields, so compare required record types, field types, indexes, and permissions rather than requiring identical exports. For Core Data or SwiftData, verify the required development schema was initialized for the target model; matching incomplete exports cannot establish deployment.
-- Report `Deployed` for a container only when all schema requirements of the target are present in production. Report `Missing changes` with the missing or incompatible definitions when they are absent, or `Unverifiable` when the required schema, container/team, tooling, or access cannot be established. A nonempty production schema alone is insufficient. This check verifies schema deployment, not the presence of user records or a successful sync.
-- Stop before version changes, commits, or Linear writes if any required container has missing changes or cannot be verified. Report the blocker and recheck after it is resolved. Do not deploy, import, reset, or modify schema or records as part of this check; deployment requires a separate user request.
-
-## Query App Store Connect with asc
-
-The installed client uses the `AdamMacBook` authentication profile stored in macOS Keychain. Select it explicitly with `--profile AdamMacBook`, and pass `--read-only` so the client refuses any mutating request; subsequent queries do not need the original downloaded `.p8` file. Do not embed credentials in the skill or read private key contents into tool output. If the client or profile is unavailable, report the failure and follow the public-lookup rules above rather than silently selecting another account.
-
-Validate authentication, then resolve the app by its actual bundle identifier. Replace the placeholders with the resolved app ID and platform, such as `IOS` or `MAC_OS`. Require an unambiguous matching app before querying its release state.
-
-```sh
-asc --profile AdamMacBook --read-only auth status --validate
-asc --profile AdamMacBook --read-only apps list --bundle-id "<bundle-id>" --paginate --output json
-asc --profile AdamMacBook --read-only versions list --app "<app-id>" --platform "<platform>" \
-  --include build,appStoreVersionPhasedRelease --paginate --output json
-asc --profile AdamMacBook --read-only builds list --app "<app-id>" --platform "<platform>" \
-  --include preReleaseVersion,buildBetaDetail --processing-state all --paginate --output json
-```
-
-- Fetch all pages and states so pending versions, failed uploads, and expired builds remain visible. Do not limit the inspection to the latest upload or active TestFlight builds.
-- Read the marketing version from each app store version's `attributes.versionString`. Treat `appVersionState == READY_FOR_DISTRIBUTION` as released; use the legacy `appStoreState == READY_FOR_SALE` only when `appVersionState` is absent. Historical versions can retain these states, so select the newest released version for the target platform and check the public storefront if current availability is uncertain. Report any phased release from the included `appStoreVersionPhasedRelease` resource.
-- Obtain the production build from that version's `relationships.build.data` reference. Match its type and ID to the resource in `included` and read the build's `attributes.version`. Never substitute the highest uploaded build number. If the relationship or included resource is missing, resolve it through App Store Connect or stop with the missing evidence.
-- For uploaded builds, resolve `preReleaseVersion` to get their marketing version and platform. Inspect `processingState`, `expired`, and the included `buildBetaDetail` internal/external states to distinguish processing, internal testing, external submission, and expiration. Build expiration describes TestFlight availability; it does not mean the production app has expired. Correlate these results with the app store version records to distinguish beta and production review states.
-- These commands authorize read-only inspection. Uploading, submitting for review, changing TestFlight distribution, or releasing an app still requires a separate user request.
+- [CoreUtils and localization](references/coreutils-localization.md)
+- [CloudKit schema deployment to production](references/cloudkit-schema.md)
 
 ## Determine the release
 
@@ -89,49 +41,7 @@ asc --profile AdamMacBook --read-only builds list --app "<app-id>" --platform "<
 
 Read all commits after the verified production commit through the current app changes being released, or through the existing target release commit when resuming. Squash the notes into the final combined behavior across every intervening unreleased version, accounting for reversions and follow-up fixes. Inspect commit bodies, changed files, and relevant documentation when subjects alone do not explain the result. Earlier Linear issues are supporting context, not the history boundary.
 
-Keep Linear release issues focused on versions, user-visible changes, and feature tests. Use only the four description sections below. Production and included releases contain only versions/builds, `Not yet in production`, or a brief test-only designation. Keep source-verification details, authentication/profile/key/account identifiers, local paths and commands, Git hashes, dependency revisions, automated check results or waivers, legal-workflow decisions, authorization details, and reviewer commentary out of issue descriptions, comments, and attachments. Report relevant preparation results to the user in conversation instead. Do not add a `Release scope and checks` section or equivalent.
-
-The issue title is exactly:
-
-```text
-version (build) - short description since first-unreleased-version (first-unreleased-build)
-```
-
-Use the actual target version/build on the left and the earliest unreleased version/build included in the cumulative release after `since`. Include the build on both sides. This is the first included release after the production commit, even when its issue was canceled; if no earlier unreleased marker exists, use the new target itself. Keep the verified production version/build in the description as the history baseline, not after `since` in the title. Describe the combined main changes in plain language. The issue description records the production baseline and all included release versions before the summary and test list:
-
-```markdown
-Production:
-
-production-version (production-build)
-
-Included releases:
-
-- version (build)
-- another unreleased version (build)
-
-Summary:
-
-A concise summary of all changes since production.
-
-To Test:
-
-- [ ] **Affected feature**
-  - **earlier-build:** earlier included change
-  - **target-build:** specific change
-- [ ] **Another affected feature**
-  - **target-build:** specific change
-```
-
-Summarize user-visible improvements and material fixes rather than reproducing the commit log. List each affected feature once as a Markdown task under `To Test:`. New items start unchecked; preserve existing results according to the rules below. Name individual games or challenges when they need separate testing. Keep the list at feature level instead of enumerating every behavior, edge case, or implementation detail. Include features affected by dependency or internal changes when the history establishes that impact. Do not turn formatting, documentation, or test-only commits into product features or claim unperformed tests passed.
-
-Put the bold feature name on the checkbox line. Under it, use one indented plain bullet per build, with a bold build number and a concise description of what changed. Keep builds in chronological order and each build on its own line, without inline parentheses or semicolons. Build-detail bullets are not checkboxes. Map changes to their actual release snapshots rather than assigning all cumulative changes to the latest build. Keep relevant changes from earlier included builds and combine superseded changes into the final behavior. Backfill missing annotations for both checked and unchecked items when maintaining an existing cumulative issue. Preserve checkbox states and match existing items by feature name, ignoring annotations and Markdown emphasis. Annotation edits are wording changes, not checkbox additions, removals, or state changes; report them separately in chat.
-
-### Preserve verified feature tests
-
-- Always use the latest prepared release before the target as the testing baseline for previously checked features, separately from the production history used for cumulative notes. For a new release, use the latest local release marker recorded before creating the target marker. For a resumed release, use the marker immediately before the target marker, not the target itself. Treat existing checked items as verified through that baseline; do not ask the user to confirm it. Earlier unreleased changes already covered by that testing do not invalidate its results.
-- Compare code and resolved dependency changes after that testing baseline with the exact target snapshot. Uncheck a completed feature only when a concrete change to its behavior, layout, accessible interaction, or affected shared logic requires retesting and verified testing does not already cover that change. A changed file, dependency revision, or inclusion in cumulative notes is not sufficient by itself; identify which tested expectation no longer applies.
-- Translation or copy changes alone belong under localization testing, not a reset of every screen's functional checks. Reopen an additional feature only when the text change specifically affects its operation, tested layout, or accessible interaction. Formatting, documentation, test-only changes, and version/build metadata do not invalidate functional test results.
-- Keep unaffected features checked and existing unchecked items unchecked. Merge overlapping tests rather than adding another item for a feature already covered by the checklist.
+Write the Linear issue title, description, and feature test list as described in [Linear release issue](references/release-issue.md).
 
 ## Update the app's website legal pages
 
@@ -147,11 +57,11 @@ Run the website's relevant build and link checks, review the final text, and com
 2. Load the `git-commit` skill and perform the configured checks relevant to the committed changes. Inspect the final diff and resolve failures within scope before committing. Honor the repository's review requirements.
 3. Use the `review` skill for a review round before committing and updating Linear, for both production-intended and non-production builds. Review the exact target snapshot and cumulative changes, version/build settings, dependency, localization, and CloudKit production schema checks, release notes and test coverage, and legal-page work when required. Fix verified findings within the authorized scope and rerun affected checks; keep the preflight blockers and publishing permissions unchanged. Stop and report unresolved findings or required decisions instead of claiming the release is ready. For a resume with an existing release commit, review that recorded snapshot without silently changing it or skipping the review.
 4. Commit only the release changes with the exact subject `version (build)`, for example `2.1.0 (30)`. This release marker intentionally overrides the usual Conventional Commit subject format so future releases can find the history boundary. Preserve the `git-commit` skill's verified model-author trailer requirement.
-5. Maintain one active cumulative Linear release issue in the resolved app project and team. Search all release issues for an existing active issue covering changes not yet in production, not just an issue whose title matches the new target. Update that original issue's target title, included releases, cumulative summary, and test list. Apply the retesting rule above to its checked items; preserve assignment, status, priority, and unrelated labels. Merge overlapping feature tests instead of duplicating them. Create a new issue only when no active issue covers the unreleased changes. The release request authorizes creating or updating this cumulative issue. Leave canceled and historical issues unchanged. When correcting an accidentally created duplicate, consolidate its unique content into the original issue and delete the obsolete duplicate when the user requests deletion. Apply these defaults to a newly created issue unless the user explicitly overrides them:
+5. Maintain one active cumulative Linear release issue in the resolved app project and team. Search all release issues for an existing active issue covering changes not yet in production, not just an issue whose title matches the new target. Update that original issue's target title, included releases, cumulative summary, and test list. Apply the [retesting rules](references/release-issue.md#preserve-verified-feature-tests) to its checked items; preserve assignment, status, priority, and unrelated labels. Merge overlapping feature tests instead of duplicating them. Create a new issue only when no active issue covers the unreleased changes. The release request authorizes creating or updating this cumulative issue. Leave canceled and historical issues unchanged. When correcting an accidentally created duplicate, consolidate its unique content into the original issue and delete the obsolete duplicate when the user requests deletion. Apply these defaults to a newly created issue unless the user explicitly overrides them:
    - Status: resolve `Ready for Testing` in the app's team. If it is unavailable, ask instead of choosing another status.
    - Assignee: resolve and assign the authenticated user, `me`.
    - Priority: High, Linear priority `2`.
    - Labels: inspect the team's available active issue labels and infer applicable labels from the release kind and actual changes. Use existing labels and respect exclusive label groups. When correcting an existing release issue, preserve unrelated labels.
-6. Read the issue back to verify its project, target and earliest unreleased version/build in the title, verified production baseline in the description, included versions, complete cumulative description, feature checkboxes, status, assignee, priority, and labels. Confirm the description contains only the four release-note sections and no operational details excluded above. Verify any requested obsolete-issue deletion separately. Report the production and target versions/builds, covered unreleased versions, commit hash, issue link, review and verification results, and legal-page completion or the explicit skip reason. In chat, report every checkbox state change by feature name with its before/after state, every added checkbox with its state, and every removed checkbox with its previous state. Give the concrete retesting reason for each completed item reopened; group identical reasons when useful. Explicitly say when no checkboxes changed, were added, or were removed. Keep this operational report out of Linear.
+6. Read the issue back to verify its project, target and earliest unreleased version/build in the title, verified production baseline in the description, included versions, complete cumulative description, feature checkboxes, status, assignee, priority, and labels. Confirm the description contains only the four release-note sections and no operational details excluded by [Linear release issue](references/release-issue.md). Verify any requested obsolete-issue deletion separately. Report the production and target versions/builds, covered unreleased versions, commit hash, issue link, review and verification results, and legal-page completion or the explicit skip reason. In chat, report every checkbox state change by feature name with its before/after state, every added checkbox with its state, and every removed checkbox with its previous state. Give the concrete retesting reason for each completed item reopened; group identical reasons when useful. Explicitly say when no checkboxes changed, were added, or were removed. Keep this operational report out of Linear.
 
 If an operation fails or has an uncertain outcome, inspect the actual Git/Linear state before retrying. Resume the same release without incrementing again or duplicating a commit or issue. If the commit succeeded but Linear failed, preserve the commit and report the remaining issue-update blocker. A later independent release request creates a new build and follows the marketing-version rules above. Pushing, tagging, archiving, and publishing require their own request.
