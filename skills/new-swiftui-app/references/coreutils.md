@@ -14,12 +14,12 @@ Use [localization and logging](localization-and-logging.md) for app resources, t
 
 Use values already supplied for this app and perform [App Store Connect discovery](app-store-connect.md) with `asc` before asking for values available there. Ask only for unresolved choices, one at a time, before generating configuration:
 
-- The real App Store URL for `SettingsConfig`. Use available app-specific privacy policy and terms URLs. For either missing URL, use `https://riviacorp.com` with a `// TODO` comment beside its Swift argument; do not ask the user for that missing URL.
+- The real App Store URL for `SettingsConfig`. Use available app-specific privacy policy and terms URLs; for a missing one, follow the placeholder rule in [the skill](../SKILL.md).
 - Whether in-app feedback is enabled. This controls notification integration and signing configuration.
 - The default app color and explicit App Color and App Lock choices. Enabled features require distinct stable storage keys and a Free or Premium access policy. App Lock also requires the app's Face ID usage description.
 - Explicit KVS, archive and CloudKit backup choices. Pass an enabled app-lifetime manager for each adopted backup type, or `.disabled`. AppWrapper owns registration and lifecycle; Settings derives availability from the registered managers.
 - Purchase identity and monetization choices. Obtain real offer IDs and the intended default product ID. StoreKit supplies renewal periods, prices and trial eligibility. Token products also require their actual grant amounts and names.
-- App-specific onboarding content and assets, the trial-toggle subtitle when used, paywall content and feature colors, and any splash styling needed by the selected startup flow. Shared splash and app-icon paywall views require an `Icon` image asset containing this app's approved icon.
+- App-specific onboarding content and assets, the trial-toggle subtitle when used, paywall content and feature colors, the paywall hero (`.appIcon` or `.artwork(...)`), and any splash styling needed by the selected startup flow. Shared splash and app-icon paywall views require an `Icon` image asset containing this app's approved icon.
 - Whether ATT and advertising are used. Use `.disabled` for the advertising consent provider only when ads are explicitly disabled.
 - Settings presentation if the app has no chosen route for it yet.
 
@@ -27,7 +27,7 @@ Do not use empty offers or invent a default product. CoreUtils requires a nonemp
 
 ## Add the Git package
 
-Add `https://github.com/RiviaCorp/CoreUtils` as a remote Swift package dependency of the Xcode project and link its `CoreUtils` library product to the app target. For a fresh project, use the `main` branch requirement. Preserve an existing explicitly selected version, branch, or revision unless the user asks to change it. For a `.pbxproj`, wire the `XCRemoteSwiftPackageReference` with its repository URL and requirement, `XCSwiftPackageProductDependency`, target `packageProductDependencies`, and Frameworks build phase. Let SwiftPM fetch the repository with Git and record the resolved revision in the app's `Package.resolved`.
+Add `https://github.com/RiviaCorp/CoreUtils` as a remote Swift package dependency of the Xcode project and link its `CoreUtils` library product to the app target. Link its separate `CoreCloudKit` product only when the app uses its CloudKit helpers. For a fresh project, use the `main` branch requirement. Preserve an existing explicitly selected version, branch, or revision unless the user asks to change it. For a `.pbxproj`, wire the `XCRemoteSwiftPackageReference` with its repository URL and requirement, `XCSwiftPackageProductDependency`, target `packageProductDependencies`, and Frameworks build phase. Let SwiftPM fetch the repository with Git and record the resolved revision in the app's `Package.resolved`.
 
 Reuse an existing matching remote reference or replace a local CoreUtils reference without creating a second dependency. Do not use `XCLocalSwiftPackageReference` or a filesystem package path for CoreUtils. Add package products to test targets only when their imports require them. Keep dependencies limited to this integration.
 
@@ -47,7 +47,7 @@ Reuse an existing matching remote reference or replace a local CoreUtils referen
 - Use the content closure's advertising-consent result if ads are configured. Do not ignore it in an app that requests ads.
 - Leave shared account startup, logger linking, purchase refresh, saved appearance, and language updates in `AppWrapper`.
 
-When `feedbackEnabled` is true, follow CoreUtils's feedback documentation. Attach `FeedbackApplicationDelegate` with `@UIApplicationDelegateAdaptor`, pass it through `notifications: .enabled(...)`, and configure Push Notifications plus the required APNs environment from the actual signing choices. Preserve an existing delegate's responsibilities and required superclass calls. When feedback is explicitly disabled, use the API's disabled notification mode and omit feedback-only capabilities.
+When `feedbackEnabled` is true, follow CoreUtils's feedback documentation. Attach `FeedbackApplicationDelegate` with `@UIApplicationDelegateAdaptor`, pass it through `notifications: .enabled(...)`, and configure Push Notifications plus the required APNs environment from the actual signing choices. Set the Info.plist `APNSEnvironment` value from the same `APNS_ENVIRONMENT` build setting the push entitlement uses; CoreUtils fails at startup without it. Preserve an existing delegate's responsibilities and required superclass calls. When feedback is explicitly disabled, omit the `notifications` argument, as CoreUtils's feedback documentation directs, and omit feedback-only capabilities.
 
 Do not add a delegate whose only purpose is to return `true` from launch. The shared startup does not require one when no selected feature uses a delegate.
 

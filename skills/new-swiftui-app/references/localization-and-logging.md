@@ -5,7 +5,7 @@ Check this guidance and its examples against the fetched CoreUtils revision and 
 ## Localization setup
 
 - Ask for the development language and supported locale codes when not supplied. Confirm that the fetched CoreUtils language picker supports those codes; do not invent a display name or silently substitute a locale.
-- Use `Localize_Swift` with the existing CoreUtils integration. Ensure the app can import the package's `Localize_Swift` product through its resolved dependencies. Do not add a second localization library.
+- Use `Localize_Swift` with the existing CoreUtils integration. CoreUtils does not re-export `Localize_Swift`; existing apps import it through the transitively resolved `localize-swift` package without linking that product or adding a separate package reference. Keep that setup and confirm the import builds. Do not add a second localization library.
 - Configure Xcode's development region and known regions to match the agreed languages. Create `<locale>.lproj/Localizable.strings` under the app's resource root and include them in the app target's resources. Verify target membership or the corresponding synchronized-group inclusion. Do not assume files on disk are automatically bundled.
 - Use the `.strings` extraction and synchronization workflow below. If a populated string catalog already owns the same table, resolve that format choice with the user before changing it; do not create competing `Localizable` tables.
 - Keep `SWIFT_EMIT_LOC_STRINGS = YES` in all app configurations. The compiler setting does not replace extraction of the custom `.localized()` calls.
@@ -50,9 +50,9 @@ Generate keys through source extraction rather than editing key sets by hand. Ke
 
 Read `docs/app-logging.md` and the `LogEvent`, `LogScreen`, and `Logger` declarations in the fetched CoreUtils checkout. AppWrapper starts and links the logger held by the app-lifetime Account. Use `account.logger`; do not create another logger or add per-view startup, readiness checks, upload queues, or logging adapters.
 
-Create app-owned `Logging/LogEvent+<App>.swift` and `Logging/LogScreen+<App>.swift` files. Define events and screens used by actual app flows. Use `static let` for definitions without runtime values and static factories with typed arguments for payloads. Each definition owns its name, severity, and parameter encoding. Callers pass complete typed definitions instead of raw names or parameter dictionaries.
+Create app-owned `Logging/LogEvent+<App>.swift` and `Logging/LogScreen+<App>.swift` files. Define events and screens used by actual app flows. Use `static let` for definitions without runtime values and static factories with typed arguments for payloads. Each definition owns its name, severity, category, and parameter encoding. Callers pass complete typed definitions instead of raw names or parameter dictionaries.
 
-Logging names are stable, nonlocalized `snake_case` string literals with an explicit severity. Match the fetched API's name limits. Do not put user-authored text, secrets, error descriptions, or `userInfo` in remote payloads. Use the initializer's `error:` argument for the underlying failure; CoreUtils owns error identifiers and debug diagnostics.
+Logging names are stable, nonlocalized `snake_case` string literals with an explicit severity and `LogCategory`. Use `productAnalytics` for user actions and screen visits, `lifecycle` for app and session transitions, and `diagnostics` for errors and technical operations. Match the fetched API's name limits. Do not put user-authored text, secrets, error descriptions, or `userInfo` in remote payloads. Use the initializer's `error:` argument for the underlying failure; CoreUtils owns error identifiers and debug diagnostics.
 
 The bundled root and Settings route use these definitions:
 
@@ -60,7 +60,7 @@ The bundled root and Settings route use these definitions:
 import CoreUtils
 
 extension LogEvent {
-    static let settingsOpened: Self = .init(name: "settings_opened", level: .info)
+    static let settingsOpened: Self = .init(name: "settings_opened", level: .info, category: .productAnalytics)
 }
 ```
 
@@ -68,8 +68,8 @@ extension LogEvent {
 import CoreUtils
 
 extension LogScreen {
-    static let content: Self = .init(name: "content", level: .info)
-    static let settings: Self = .init(name: "settings", level: .info)
+    static let content: Self = .init(name: "content", level: .info, category: .productAnalytics)
+    static let settings: Self = .init(name: "settings", level: .info, category: .productAnalytics)
 }
 ```
 
@@ -80,11 +80,11 @@ import CoreUtils
 
 extension LogEvent {
     static func itemsLoaded(count: Int) -> Self {
-        .init(name: "items_loaded", level: .info, parameters: ["item_count": .integer(Int64(count))])
+        .init(name: "items_loaded", level: .info, category: .productAnalytics, parameters: ["item_count": .integer(Int64(count))])
     }
 
     static func itemsLoadFailed(error: any Error) -> Self {
-        .init(name: "items_load_failed", level: .error, error: error)
+        .init(name: "items_load_failed", level: .error, category: .diagnostics, error: error)
     }
 }
 ```

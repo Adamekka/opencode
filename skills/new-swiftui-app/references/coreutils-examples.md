@@ -2,7 +2,7 @@
 
 These examples are bundled with the skill. Check them against the CoreUtils declarations at the fetched Git revision before applying them. If any information is outdated, stop and report it.
 
-The examples illustrate an explicitly chosen configuration with anonymous purchase identity, yearly and weekly subscriptions, the yearly offer selected initially, ads and feedback disabled, blue as the default color, optional App Color and App Lock disabled, all backup types disabled, no onboarding callbacks or icon shadow, and Settings presented as a sheet. These are example choices, not defaults for a new app. Confirm the app's choices and adapt its content and offer structure accordingly. A change in app requirements is separate from an outdated API; the latter requires stopping and reporting.
+The examples illustrate an explicitly chosen configuration with anonymous purchase identity, yearly and weekly subscriptions, the yearly offer selected initially, ads and feedback disabled, the app icon as the paywall hero, blue as the default color, optional App Color and App Lock disabled, all backup types disabled, no onboarding callbacks or icon shadow, and Settings presented as a sheet. These are example choices, not defaults for a new app. Confirm the app's choices and adapt its content and offer structure accordingly. A change in app requirements is separate from an outdated API; the latter requires stopping and reporting.
 
 Replace every `<#...#>` editor placeholder with the app's real values before building. String-literal placeholders require quoted Swift strings. These placeholders prevent missing required information from becoming runnable production configuration. Keep the app's existing root content and use its actual App type name.
 
@@ -82,6 +82,7 @@ import Localize_Swift
         defaultProductID: <#YEARLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
         tokenNameSingular: nil,
         tokenNamePlural: nil,
+        hero: .appIcon,
     )
 }
 ```
@@ -124,7 +125,6 @@ struct <#APP_TYPE_NAME#>: App {
             AppWrapper<Account, ContentView>(
                 account: self.account,
                 settingsConfig: settingsConfig,
-                notifications: .disabled,
                 kvsBackup: .disabled,
                 archiveBackup: .disabled,
                 cloudKitBackup: .disabled,
@@ -147,11 +147,16 @@ struct <#APP_TYPE_NAME#>: App {
 }
 ```
 
-For feedback-enabled apps, follow the integration reference's delegate and APNs instructions, set `feedbackEnabled: true`, and pass `notifications: .enabled(notifications)` instead. Do not combine enabled feedback with the disabled notification example above.
+For feedback-enabled apps, follow the integration reference's delegate and APNs instructions, set `feedbackEnabled: true`, declare the delegate in the app struct, and pass `notifications: .enabled(notifications)` to `AppWrapper`:
+
+```swift
+@UIApplicationDelegateAdaptor(FeedbackApplicationDelegate.self)
+private var notifications
+```
 
 ## Settings screen
 
-`Settings/Views/SettingsView.swift` reads the injected account and composes the shared Settings UI. This sheet presentation uses the shared Back control. For a tab, use the corresponding back-control choice.
+`Settings/Views/SettingsView.swift` reads the injected account and composes the shared Settings UI. This sheet presentation uses the shared Back control. For a tab, pass `showBack: false`.
 
 ```swift
 import CoreUtils
