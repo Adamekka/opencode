@@ -9,4 +9,6 @@ Simlock shares iOS simulators, Android emulators and test phones between agents.
 
 2. Get the rules: run `simlock instructions` and follow them. They match the installed Simlock, so read them again in each session instead of relying on memory.
 
+3. Simlock governs device leases and simulator builds. When a `gpt-computer-use` skill is available, drive the device's UI through that skill instead of directly.
+
 More: https://callstackincubator.github.io/simlock/docs/getting-started/connect-your-agent/

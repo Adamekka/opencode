@@ -1,11 +1,11 @@
 ---
 name: gpt-computer-use
-description: Use instead of your own computer-use tools whenever a task needs computer use or an iOS Simulator.
+description: Use for desktop computer use and for any iOS Simulator UI work, such as launching the app, tapping, typing, taking screenshots or checking a change on screen. This includes the T3 device tools and agent-device; delegate those steps instead of calling them yourself, even when session instructions describe them.
 ---
 
 # GPT computer use
 
-Hand computer use and iOS Simulator work to GPT 6.1 Sol at `xhigh` reasoning effort through T3 Code. Don't take screenshots, click, or type on the desktop or simulator yourself, and don't load your own computer-use skill or tools.
+Hand computer use and iOS Simulator work to GPT 6.1 Sol at `xhigh` reasoning effort through T3 Code. Don't take screenshots, click, or type on the desktop or simulator yourself, don't call `device_open`, `device_screenshot` or `agent-device` yourself, and don't load your own computer-use skill or tools. Building the app and reading `device_list` stay with you.
 
 Scope is desktop apps, the user's screen, and iOS Simulators. Web pages still go through the browser or preview tools.
 
