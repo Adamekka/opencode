@@ -4,7 +4,7 @@
 
 Inspect CoreUtils at the revision fetched for its Git package requirement, using the resolved SwiftPM checkout or a temporary Git clone for preflight inspection. In that checkout, start with `AGENTS.md` and `docs/README.md`. Read the linked startup and app-logging requirements and any feedback or purchase documentation needed by the selected configuration. No sibling CoreUtils checkout is required.
 
-Inspect the public declarations for `AppWrapper`, `Accountable`, `AccountStore`, `SettingsConfig`, `SettingsViewInternal`, `TrialPageConfig`, and the startup configuration types. Locate them with `rg` rather than relying on remembered signatures. Read the fetched checkout's `Package.swift` for the exported product and toolchain requirements. Use the same revision for inspection and the app's resolved dependency.
+Inspect the public declarations for `AppWrapper`, `Accountable`, `AccountStore`, `SettingsConfig`, `SettingsViewInternal`, `PaywallConfig`, `PaywallContext`, `PaywallOffer`, `PaywallSource`, `OnboardingFlow`, `OnboardingStep`, `OnboardingAudience`, `OnboardingNavigator`, and the startup configuration types. Read the app-owned onboarding and paywall section of `docs/onboarding.md`. Locate declarations with `rg` rather than relying on remembered signatures. Read the fetched checkout's `Package.swift` for the exported product and toolchain requirements. Use the same revision for inspection and the app's resolved dependency.
 
 Read the [bundled integration examples](coreutils-examples.md) for startup, Account, Settings, and app configuration. They contain the extracted patterns and do not require another app repository. Compare their API calls with the live declarations before editing the app. If they differ because information is outdated, stop and report the mismatch instead of porting the examples silently.
 
@@ -19,7 +19,8 @@ Use values already supplied for this app and perform [App Store Connect discover
 - The default app color and explicit App Color and App Lock choices. Enabled features require distinct stable storage keys and a Free or Premium access policy. App Lock also requires the app's Face ID usage description.
 - Explicit KVS, archive and CloudKit backup choices. Pass an enabled app-lifetime manager for each adopted backup type, or `.disabled`. AppWrapper owns registration and lifecycle; Settings derives availability from the registered managers.
 - Purchase identity and monetization choices. Obtain real offer IDs and the intended default product ID. StoreKit supplies renewal periods, prices and trial eligibility. Token products also require their actual grant amounts and names.
-- App-specific onboarding content and assets, the trial-toggle subtitle when used, paywall content and feature colors, the paywall hero (`.appIcon` or `.artwork(...)`), and any splash styling needed by the selected startup flow. Shared splash and app-icon paywall views require an `Icon` image asset containing this app's approved icon.
+- The onboarding flow: the ordered pages, each page's audience (`.everyone` or `.freeUsers`), and where the paywall step sits. Obtain the approved design, copy and assets for every page and for the paywall, including any per-`PaywallSource` copy. Ask for missing designs instead of inventing them.
+- Any splash styling needed by the startup flow. The shared splash requires an `Icon` image asset containing this app's approved icon.
 - Whether ATT and advertising are used. Use `.disabled` for the advertising consent provider only when ads are explicitly disabled.
 - Settings presentation if the app has no chosen route for it yet.
 
@@ -43,7 +44,9 @@ Reuse an existing matching remote reference or replace a local CoreUtils referen
 
 - Wrap the real root content in `AppWrapper` inside the app's `WindowGroup`. Pass the app-lifetime account and explicit `settingsConfig` using the live initializer.
 - Supply all other required startup arguments from the agreed app choices. Follow CoreUtils's docs for any required Info.plist values or configuration; preserve required startup diagnostics instead of inventing fallback values.
-- Supply onboarding and trial-page configuration through the initializer's closures. Build localized configuration when those closures run so a language change recreates the strings.
+- Use the AppWrapper initializer that takes `onboarding`, `onboardingPage`, `paywallConfig` and `paywall`. Do not use `onboardingViews`, `trialPageConfig`, `OnboardingViewType`, `OnboardingView`, `TrialPageConfig` or `TrialPage`. Supply the flow and paywall configuration through the closures so values computed there follow language changes.
+- Implement each onboarding page as an app view that calls `OnboardingNavigator.advance()` to continue. Implement one app paywall view that reads `PaywallContext`. CoreUtils owns progress, Premium skipping, StoreKit loading, purchase, restore, and the Close and Restore toolbar items.
+- Apps own the layout, fit, Dynamic Type, artwork, copy and accessibility of every page and the paywall. The paywall handles the loading, failed (with retry) and ready states, shows "no payment now" copy only when `selectedOfferHasFreeTrial` is true, and disables plan selection and Continue while `isPurchasing` is true. It must not hide the navigation bar or toolbar, because that hides Close and Restore; tint them with `.paywallToolbarTint(_:)` when the design needs it.
 - Use the content closure's advertising-consent result if ads are configured. Do not ignore it in an app that requests ads.
 - Leave shared account startup, logger linking, purchase refresh, saved appearance, and language updates in `AppWrapper`.
 
@@ -54,7 +57,7 @@ Do not add a delegate whose only purpose is to return `true` from launch. The sh
 ## Settings
 
 - Implement an app `SettingsView` that reads the same `Account` from the environment and composes `SettingsViewInternal<Account>`.
-- Supply the app's sections, developer sections, trial-page configuration, and back-control choice using the live initializer. Include the account license row shown in the bundled example; add app-specific rows only for agreed behavior.
+- Supply the app's sections, developer sections, and back-control choice using the initializer without `trialPageConfig`. Settings, App Theme and App Lock then present the paywall AppWrapper received. Include the account license row shown in the bundled example; add app-specific rows only for agreed behavior.
 - Get `SettingsConfig` and feedback runtime through `AppWrapper`'s environment.
 - Connect Settings to an actual tab, toolbar action, or navigation destination according to the agreed presentation. A Settings view file without a route does not complete the integration.
 - When adding standalone previews, supply their account and `.settingsConfig(...)` explicitly. Keep preview-only data out of production configuration.

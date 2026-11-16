@@ -9,7 +9,7 @@ Check this guidance and its examples against the fetched CoreUtils revision and 
 - Configure Xcode's development region and known regions to match the agreed languages. Create `<locale>.lproj/Localizable.strings` under the app's resource root and include them in the app target's resources. Verify target membership or the corresponding synchronized-group inclusion. Do not assume files on disk are automatically bundled.
 - Use the `.strings` extraction and synchronization workflow below. If a populated string catalog already owns the same table, resolve that format choice with the user before changing it; do not create competing `Localizable` tables.
 - Keep `SWIFT_EMIT_LOC_STRINGS = YES` in all app configurations. The compiler setting does not replace extraction of the custom `.localized()` calls.
-- Let AppWrapper and its localization manager own runtime language changes. Use the shared Settings language picker and keep localized onboarding and paywall values computed inside AppWrapper's configuration closures. Do not add another language manager or refresh account state when the language changes.
+- Let AppWrapper and its localization manager own runtime language changes. Use the shared Settings language picker. Onboarding pages and the paywall design localize their own copy with `.localized()` when they render, and the flow and paywall configuration stay inside AppWrapper's closures. Do not add another language manager or refresh account state when the language changes.
 
 ## Localized source
 

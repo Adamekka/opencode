@@ -2,7 +2,7 @@
 
 These examples are bundled with the skill. Check them against the CoreUtils declarations at the fetched Git revision before applying them. If any information is outdated, stop and report it.
 
-The examples illustrate an explicitly chosen configuration with anonymous purchase identity, yearly and weekly subscriptions, the yearly offer selected initially, ads and feedback disabled, the app icon as the paywall hero, blue as the default color, optional App Color and App Lock disabled, all backup types disabled, no onboarding callbacks or icon shadow, and Settings presented as a sheet. These are example choices, not defaults for a new app. Confirm the app's choices and adapt its content and offer structure accordingly. A change in app requirements is separate from an outdated API; the latter requires stopping and reporting.
+The examples illustrate an explicitly chosen configuration with anonymous purchase identity, yearly and weekly subscriptions, the yearly offer selected initially, ads and feedback disabled, a welcome page followed by the paywall step, the same paywall copy at every entry point, blue as the default color, optional App Color and App Lock disabled, all backup types disabled, no onboarding callbacks or splash icon shadow, and Settings presented as a sheet. The page and paywall views show the required wiring and states; replace their layout with the app's approved design. These are example choices, not defaults for a new app. Confirm the app's choices and adapt its content and offer structure accordingly. A change in app requirements is separate from an outdated API; the latter requires stopping and reporting.
 
 Replace every `<#...#>` editor placeholder with the app's real values before building. String-literal placeholders require quoted Swift strings. These placeholders prevent missing required information from becoming runnable production configuration. Keep the app's existing root content and use its actual App type name.
 
@@ -56,61 +56,156 @@ import Foundation
 
 ## Paywall configuration
 
-`Config/TrialPageConfig.swift` computes localized content when accessed. Use the app's actual subscription IDs. StoreKit supplies renewal periods, prices and introductory-offer eligibility. The default product ID must belong to this offer list. The shared subscription layout requires an annual plan first and a weekly plan second; their StoreKit prices must make the annual plan the best value.
+`Config/PaywallConfig.swift` holds the purchase facts shared by the onboarding paywall step and every other paywall entry point. Use the app's actual subscription IDs. StoreKit supplies renewal periods, prices and introductory-offer eligibility. The default product ID must belong to this offer list. Subscription offers require an annual plan first and a weekly plan second; their StoreKit prices must make the annual plan the best value. Token offers also need localized token names, which makes this a computed `var` built when AppWrapper's closure runs.
 
 ```swift
 import CoreUtils
-import Localize_Swift
 
-@MainActor var trialPageConfig: TrialPageConfig {
-    .init(
-        appName: <#APP_DISPLAY_NAME_STRING_LITERAL#>.localized(),
-        iconShadowConfig: nil,
-        title: <#PAYWALL_TITLE_STRING_LITERAL#>.localized(),
-        features: [
-            .init(icon: "checkmark", text: <#PREMIUM_FEATURE_STRING_LITERAL#>.localized(), color: .accentColor),
-        ],
-        userCount: nil,
-        offers: [
-            .subscription(.init(
-                id: <#YEARLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
-            )),
-            .subscription(.init(
-                id: <#WEEKLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
-            )),
-        ],
-        defaultProductID: <#YEARLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
-        tokenNameSingular: nil,
-        tokenNamePlural: nil,
-        hero: .appIcon,
-    )
+@MainActor let paywallConfig: PaywallConfig = .init(
+    offers: [
+        .subscription(.init(
+            id: <#YEARLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
+        )),
+        .subscription(.init(
+            id: <#WEEKLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
+        )),
+    ],
+    defaultProductID: <#YEARLY_SUBSCRIPTION_ID_STRING_LITERAL#>,
+    tokenNameSingular: nil,
+    tokenNamePlural: nil,
+)
+```
+
+## Onboarding flow
+
+`Config/OnboardingFlow.swift` names the app's pages and orders them around the paywall step. Expand the page enum and steps to match the agreed flow. Use `.freeUsers` for pages Premium users should skip.
+
+```swift
+import CoreUtils
+
+// MARK: - OnboardingPage
+
+enum OnboardingPage: Hashable {
+    case welcome
+}
+
+@MainActor let onboardingFlow: OnboardingFlow<OnboardingPage> = .init(steps: [
+    .page(.welcome, audience: .everyone),
+    .paywall(paywallConfig),
+])
+```
+
+## Onboarding pages
+
+`Onboarding/Views/WelcomePage.swift` is one app-owned page. Each page receives a continue action that calls `OnboardingNavigator.advance()`. Supply approved app copy and an existing image asset, referenced through its generated asset symbol.
+
+```swift
+import Localize_Swift
+import SwiftUI
+
+struct WelcomePage: View {
+    let next: () -> Void
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            Image(.<#ONBOARDING_ASSET_SYMBOL#>)
+                .resizable()
+                .scaledToFit()
+                .accessibilityHidden(true)
+            Text(<#ONBOARDING_TITLE_STRING_LITERAL#>.localized())
+                .font(.largeTitle.bold())
+            Text(<#ONBOARDING_DESCRIPTION_STRING_LITERAL#>.localized())
+                .foregroundStyle(.secondary)
+            Spacer()
+            Button("Continue".localized(), action: self.next)
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+        }
+        .multilineTextAlignment(.center)
+        .padding()
+    }
 }
 ```
 
-## Onboarding configuration
+## Paywall design
 
-`Config/OnboardingViews.swift` computes localized pages when accessed and reuses the same paywall configuration. Supply approved app copy and an existing image asset. Expand or change the page list to match the agreed onboarding flow.
+`Paywall/Views/AppPaywall.swift` draws the paywall from `PaywallContext`. CoreUtils wraps it with Close and Restore, so it must not hide the navigation bar or toolbar. It covers every loading state, shows "no payment now" copy only for an eligible free trial, and disables selection and Continue during a purchase.
 
 ```swift
 import CoreUtils
 import Localize_Swift
+import SwiftUI
 
-@MainActor var onboardingViews: [OnboardingViewType] {
-    [
-        .imageWithDescription(.init(
-            title: <#ONBOARDING_TITLE_STRING_LITERAL#>.localized(),
-            desc: <#ONBOARDING_DESCRIPTION_STRING_LITERAL#>.localized(),
-            image: <#ONBOARDING_ASSET_NAME_STRING_LITERAL#>,
-        )),
-        .toggle(subtitle: <#TRIAL_TOGGLE_SUBTITLE_STRING_LITERAL#>.localized()),
-        .trialPage(trialPageConfig),
-    ]
+struct AppPaywall: View {
+    let context: PaywallContext
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                Text(<#PAYWALL_TITLE_STRING_LITERAL#>.localized())
+                    .font(.largeTitle.bold())
+                    .multilineTextAlignment(.center)
+                switch self.context.state {
+                    case .loading:
+                        ProgressView()
+
+                    case let .failed(message):
+                        Text(message)
+                            .multilineTextAlignment(.center)
+                        Button("Try Again".localized()) { self.context.retry() }
+
+                    case let .ready(offers):
+                        ForEach(offers) { offer in
+                            let selected: Bool = offer.id == self.context.selectedProductID
+                            Button {
+                                self.context.select(offer.id)
+                            } label: {
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text(offer.displayPrice)
+                                            .font(.headline)
+                                        Text(offer.billingDescription)
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    if case let .bestValue(savingsPercentage, _, _) = offer.value {
+                                        Text(String(format: "Save %ld%%".localized(), savingsPercentage))
+                                            .font(.caption.bold())
+                                    }
+                                }
+                                .padding()
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .strokeBorder(
+                                            selected ? Color.accentColor : .secondary,
+                                            lineWidth: selected ? 2 : 1,
+                                        )
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(self.context.isPurchasing)
+                            .accessibilityAddTraits(selected ? .isSelected : [])
+                        }
+                        if self.context.selectedOfferHasFreeTrial {
+                            Text("No payment now".localized())
+                        }
+                        Button("Continue".localized()) { self.context.purchase() }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.large)
+                            .disabled(self.context.isPurchasing)
+                }
+            }
+            .padding()
+        }
+    }
 }
 ```
 
 ## App entry point
 
-The app owns one Account for its lifetime. AppWrapper supplies that same account, settings configuration, and shared startup behavior to the content subtree. Its closures recreate localized onboarding and paywall values after a language change.
+The app owns one Account for its lifetime. AppWrapper supplies that same account, settings configuration, paywall and shared startup behavior to the content subtree. Its onboarding presents the app's pages and the paywall step.
 
 ```swift
 import CoreUtils
@@ -131,11 +226,21 @@ struct <#APP_TYPE_NAME#>: App {
                 showATT: false,
                 advertisingConsentProvider: .disabled,
                 splashScreenConfig: .init(iconShadowConfig: nil),
-                onboardingViews: { onboardingViews },
-                trialPageConfig: { trialPageConfig },
+                onboarding: { onboardingFlow },
+                onboardingPage: { page, navigator in
+                    switch page {
+                        case .welcome:
+                            WelcomePage { navigator.advance() }
+                    }
+                },
+                paywallConfig: { paywallConfig },
+                paywall: { _, context in
+                    // This app shows the same paywall copy at every entry point, so it ignores the source.
+                    AppPaywall(context: context)
+                },
                 onboardingStart: nil,
                 onboardingEnd: nil,
-                // Keep app content distinct from the localized startup configuration closures.
+                // Keep app content distinct from the onboarding and paywall closures.
                 // swiftlint:disable:next trailing_closure
                 content: { _ in
                     // Ads are explicitly disabled, so this content does not consume the consent result.
@@ -156,7 +261,7 @@ private var notifications
 
 ## Settings screen
 
-`Settings/Views/SettingsView.swift` reads the injected account and composes the shared Settings UI. This sheet presentation uses the shared Back control. For a tab, pass `showBack: false`.
+`Settings/Views/SettingsView.swift` reads the injected account and composes the shared Settings UI. Its paywall rows present the `AppPaywall` that AppWrapper received. This sheet presentation uses the shared Back control. For a tab, pass `showBack: false`.
 
 ```swift
 import CoreUtils
@@ -174,7 +279,6 @@ struct SettingsView: View {
                 ]),
             ],
             devSections: [],
-            trialPageConfig: trialPageConfig,
             showBack: true,
         )
         .onAppear {
