@@ -1,6 +1,6 @@
 ---
 name: burn-tokens
-description: Use ONLY when explicitly invoked to run sustained feature and review loops across AITranscribe, Alarm, web-browser, WifiAnalyzer, AppWrapper, AITranscribeBackend, and CoreUtils, with a fresh T3 thread for each loop.
+description: Use ONLY when explicitly invoked to run sustained feature and review loops across AITranscribe, Alarm, web-browser, WifiAnalyzer, AppPlatform, AITranscribeBackend, and CoreUtils, with a fresh T3 thread for each loop.
 disable-model-invocation: true
 ---
 
@@ -18,11 +18,11 @@ Repositories always live in `~/Coding`. Resolve the existing `~/Coding/<reposito
 | Alarm | Features and bug fixes |
 | web-browser | Features and bug fixes |
 | WifiAnalyzer | Features and bug fixes |
-| AppWrapper | Review and improvements |
+| AppPlatform | Review and improvements |
 | AITranscribeBackend | Review and improvements |
 | CoreUtils | Review and improvements |
 
-Use [review](../review/SKILL.md) for every bug-fix or review-and-fix loop. Also use it for the final review of each feature. AppWrapper, AITranscribeBackend, and CoreUtils permit bug fixes and worthwhile review improvements, including refactoring, without new feature development.
+Use [review](../review/SKILL.md) for every bug-fix or review-and-fix loop. Also use it for the final review of each feature. AppPlatform, AITranscribeBackend, and CoreUtils permit bug fixes and worthwhile review improvements, including refactoring, without new feature development.
 
 ## Repository availability
 
@@ -54,13 +54,13 @@ The invoking thread coordinates work. It does not implement changes itself.
 
 - A feature loop selects and completes one coherent feature in an eligible app, including its review and fixes. Selection should follow documented product direction, known user needs, and gaps in existing workflows. Explain the user benefit and chosen scope before editing. Preserve applicable feature-selection and clarification requirements; defer work that needs an unresolved product decision rather than inventing behavior.
 - A bug-fix or review-and-fix loop invokes the review skill in full-project mode within the target's authorized scope. Follow its review, fix, verify, commit, and resume procedure and its stopping rule. Do not replace it with a separate review checklist. Respect invocation limits and repository ownership throughout the pass.
-- A feature loop's final review covers its own change, so do not schedule a follow-up review loop after it. Use gaps established by review loops to choose feature loops. AppWrapper, AITranscribeBackend, and CoreUtils remain limited to their table entries.
+- A feature loop's final review covers its own change, so do not schedule a follow-up review loop after it. Use gaps established by review loops to choose feature loops. AppPlatform, AITranscribeBackend, and CoreUtils remain limited to their table entries.
 
 ## Stopping and reporting
 
 Continue while eligible repositories have worthwhile work. Spending tokens is the opportunity, not a reason to invent defects, add filler features, churn code, or repeat clean reviews of unchanged code.
 
-Stop at the user's limit or stop request, when every target is busy, blocked, unavailable, or exhausted, or when a complete rotation produces no worthwhile work that can proceed. A review with no worthwhile findings completes that review target: the four apps then get only feature loops, and AppWrapper, AITranscribeBackend, and CoreUtils wait until relevant code or requirements change. Do not poll busy repositories or manufacture work to keep the run alive.
+Stop at the user's limit or stop request, when every target is busy, blocked, unavailable, or exhausted, or when a complete rotation produces no worthwhile work that can proceed. A review with no worthwhile findings completes that review target: the four apps then get only feature loops, and AppPlatform, AITranscribeBackend, and CoreUtils wait until relevant code or requirements change. Do not poll busy repositories or manufacture work to keep the run alive.
 
 At a limit or stop request, start no new loops. Safely stop any loop threads started by this invocation and their delegates, preserve unfinished changes, and release their claims only after their work has stopped. Use `t3_thread_interrupt` for these top-level loop threads and `task_cancel` for their delegates. Do not interrupt unrelated agents. Create no recurring schedules except the coordinator's wait timer, and delete that timer before the final handoff. Before the final handoff, settle or stop the loops; a tool-directed yield that will resume orchestration is not a final handoff.
 

@@ -19,7 +19,7 @@ Use [review](../../review/SKILL.md) for the final change or feature review. Fix 
 
 ## Bug-fix and review modes
 
-Use [review](../../review/SKILL.md) in full-project mode. Follow its review, fix, verify, commit, and resume loop until its stopping rule applies, a real blocker occurs, or the supplied limit is reached. Review findings must have concrete evidence and impact. AppWrapper, AITranscribeBackend, and CoreUtils authorize bug fixes and worthwhile review improvements, including refactoring, without new feature development.
+Use [review](../../review/SKILL.md) in full-project mode. Follow its review, fix, verify, commit, and resume loop until its stopping rule applies, a real blocker occurs, or the supplied limit is reached. Review findings must have concrete evidence and impact. AppPlatform, AITranscribeBackend, and CoreUtils authorize bug fixes and worthwhile review improvements, including refactoring, without new feature development.
 
 ## Finish
 
