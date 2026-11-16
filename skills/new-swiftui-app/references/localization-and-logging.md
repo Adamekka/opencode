@@ -32,7 +32,7 @@ Text(String(format: "Remaining: %ld".localized(), count))
 
 Supply locale-correct plural handling when the app's copy requires it; do not assume one plural form works for every count or language.
 
-If a localized literal inside a function call exceeds the formatter's line limit, place `// swiftformat:options:next --maxwidth 1000` inside that call immediately before the string expression. Keep the literal and its `.localized()` call together.
+If a localized literal inside a function call exceeds the formatter's line limit, place `// swiftformat:disable:next wrap wrapArguments` inside that call immediately before the string expression. Keep the literal and its `.localized()` call together.
 
 ## Extract and synchronize resources
 
