@@ -1,6 +1,6 @@
 ---
 name: review
-description: Review changes, features, or full projects and fix verified findings. Use for requested reviews and final reviews of non-trivial implementation work.
+description: Review code changes or projects and fix verified findings. Use when the user explicitly requests a review or for final review of substantial application or library code changes. Do not invoke automatically for plans, reports, one-off visualizations, routine documentation, or other low-impact edits.
 ---
 
 # Review
