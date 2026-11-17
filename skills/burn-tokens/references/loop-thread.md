@@ -1,10 +1,10 @@
 # Loop thread brief
 
-You are executing one burn-tokens loop in a new top-level T3 thread. Work only in the assigned repository and mode. The coordinator supplies the target, invocation ID, its thread ID, current limits, prior results, and the resolved skill paths. Read the supplied burn-tokens skill for its scope and repository availability rules, but do not invoke its coordinator workflow, create another loop thread, or schedule future work.
+You are executing one burn-tokens loop in a new top-level T3 thread. Work only in the assigned target's repositories and mode. The AITranscribe target includes the AITranscribeBackend repository. The coordinator supplies the target, invocation ID, its thread ID, current limits, prior results, and the resolved skill paths. Read the supplied burn-tokens skill for its scope and repository availability rules, but do not invoke its coordinator workflow, create another loop thread, or schedule future work.
 
 ## Before work
 
-- Repeat the burn-tokens repository availability checks and acquire its repository claim before inspecting implementation files. Count other worktrees and other agents' pending work as competing activity. If unavailable, report the reason and finish without doing repository work.
+- Repeat the burn-tokens repository availability checks and acquire its claim on every repository of the target before inspecting implementation files. Count other worktrees and other agents' pending work as competing activity. If unavailable, report the reason and finish without doing repository work.
 - Read the repository's applicable `AGENTS.md`, relevant product documentation, and required language and workflow skills. Use [projects-docs](../../projects-docs/SKILL.md) for project documentation. Honor repository requirements and preserve production data and protocol compatibility.
 - Establish the existing build and verification commands. Record the starting commit and clean status. A failed required baseline check blocks work in that area; report it rather than repairing unrelated paths.
 - State the chosen feature or review scope and an implementation plan before non-trivial implementation. If a required product decision is unresolved, follow the applicable one-question-at-a-time clarification rule. Do not invent required state or configuration values.
@@ -19,7 +19,7 @@ Use [review](../../review/SKILL.md) for the final change or feature review. Fix 
 
 ## Bug-fix and review modes
 
-Use [review](../../review/SKILL.md) in full-project mode. Follow its review, fix, verify, commit, and resume loop until its stopping rule applies, a real blocker occurs, or the supplied limit is reached. Review findings must have concrete evidence and impact. AppPlatform, AITranscribeBackend, and CoreUtils authorize bug fixes and worthwhile review improvements, including refactoring, without new feature development.
+Use [review](../../review/SKILL.md) in full-project mode. For the AITranscribe target, review both AITranscribe and AITranscribeBackend, including their shared API contract. Follow its review, fix, verify, commit, and resume loop until its stopping rule applies, a real blocker occurs, or the supplied limit is reached. Review findings must have concrete evidence and impact. AppPlatform and CoreUtils authorize bug fixes and worthwhile review improvements, including refactoring, without new feature development.
 
 ## Finish
 
@@ -27,4 +27,4 @@ Use [review](../../review/SKILL.md) in full-project mode. Follow its review, fix
 - Preserve unrelated files and existing external configuration. Do not push, deploy, publish, change production services, or edit global instructions or skills under this loop's authorization.
 - On a required decision, failed verification, or lost ownership, stop the affected loop. Preserve unfinished changes and report their exact status. Do not commit a failed or unverified fix.
 - Before ending a turn to wait for a user answer, create an empty `needs-input` file inside this loop's claim directory so the coordinator notices, and remove it when work resumes. Keep the claim while waiting.
-- Release only this loop's repository claim after repository work and any child work have stopped. Finish with the feature or findings addressed, commit hashes, checks and outcomes, remaining changes, deferred findings and decisions, and whether the review completed a clean pass. Do not start the next loop.
+- Release only this loop's repository claims after repository work and any child work have stopped. Finish with the feature or findings addressed, commit hashes, checks and outcomes, remaining changes, deferred findings and decisions, and whether the review completed a clean pass. Do not start the next loop.
