@@ -31,6 +31,7 @@
 
 - Never use preview, sample, test, mock, fixture, or generated demo data as a default argument or implicit fallback in production APIs; require the caller to pass the real value explicitly and keep fixtures inside preview/test-only code.
 - Required environment/configuration values and secrets must stay required. Do not convert them to optionals, hidden fallbacks, or recoverable runtime branches to avoid a crash; if the app cannot work without the value, fail fast at startup with a clear diagnostic so operators see misconfiguration immediately.
+- Make misconfiguration loud. At startup, validate that related settings are complete and consistent with each other, such as credentials covering every app and environment the system accepts, not just that each value is present. When a misconfiguration can only surface at runtime, such as an external service rejecting credentials, report the underlying cause at error level with identifying context, and stop retrying permanent failures. Never hide the cause behind a generic warning or an endless retry loop.
 
 ## Clarification and Tradeoffs
 
