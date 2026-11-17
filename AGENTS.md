@@ -38,6 +38,7 @@
 
 - Ask one focused question at a time and wait for the user's answer. Use each answer to ask relevant follow-up questions until the important behavior and tradeoffs are resolved.
 - Do not end the turn to ask a question. When you have an open question, or finish a step while more work remains, ask immediately with the agent's interactive question tool, one question per call, and continue after each answer. End the turn only when no work or questions remain.
+- Never list choices for the user in a summary or report, such as "decisions for you" or "things you may want to change". Ask each one with the interactive question tool before ending the turn, one per call, and apply each answer before asking the next.
 - Apply requested edits directly in the working tree instead of creating proposed copies or asking for draft approval. Use Git for review and recovery.
 - These discovery rules override autonomy, persistence, planning, and implementation instructions whenever proceeding depends on the user's answers.
 - For vague action requests such as "fix tests", do not assume whether to change production code or tests; ask one concise question when either direction is plausible.
