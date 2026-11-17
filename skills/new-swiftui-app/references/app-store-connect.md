@@ -1,19 +1,20 @@
 # App Store Connect discovery
 
-Use the authenticated `asc` CLI to retrieve existing app information before asking the user for it. The configured `AdamMacBook` profile uses macOS Keychain. Select it explicitly with `--profile AdamMacBook`. Do not print private keys or embed credentials in this skill. If the CLI, profile, or required access is unavailable, report the failure instead of silently selecting another account.
+Use the authenticated `asc` CLI to retrieve existing app information before asking the user for it. Use the machine's default `asc` credential and do not pass `--profile`; profile names are machine-specific. Do not print private keys or embed credentials in this skill. If the CLI is missing, no default credential validates, or required access is unavailable, report the failure instead of selecting another credential.
 
 Check the installed command's help before using it. If the documented interface is outdated, stop and report the mismatch. Use `--read-only` for these discovery requests. App setup does not authorize creating or updating App Store Connect records, products, agreements, uploads, or releases.
 
 ## Resolve the app
 
-Start with the user's supplied bundle identifier and require exactly one matching app:
+Validate the credential, then resolve the app. With a bundle identifier the user supplied, filter by it. Otherwise list every app and match the Xcode project or app name case-insensitively, ignoring spaces, against each app's name, bundle ID, and SKU. `--name` matches exact App Store names only, so it misses names such as `<App>: <Subtitle>`. Require exactly one matching app:
 
 ```sh
-asc --profile AdamMacBook --read-only auth status --validate
-asc --profile AdamMacBook --read-only apps list --bundle-id "<bundle-id>" --paginate --output json
+asc --read-only auth status --validate
+asc --read-only apps list --bundle-id "<bundle-id>" --paginate --output json
+asc --read-only apps list --paginate --output json
 ```
 
-Record the matched numeric Apple app ID, bundle identifier, App Store name, and primary locale. Stop and ask if the record is missing or ambiguous. An App Store name is marketing metadata; preserve the user's separate home-screen display-name choice.
+Take the bundle identifier from the matched record. Record the matched numeric Apple app ID, bundle identifier, App Store name, and primary locale. Stop and ask if the record is missing or ambiguous. An App Store name is marketing metadata; preserve the user's separate home-screen display-name choice.
 
 Use the real numeric app ID to form the canonical app URL, `https://apps.apple.com/app/id<app-id>`. This is derived from the app's existing Apple record, not from a guessed ID. For an app in preparation, the canonical URL can be configured before its public listing exists. Report that it is not live yet rather than claiming public availability or asking the user to invent another URL.
 
@@ -22,16 +23,16 @@ Use the real numeric app ID to form the canonical app URL, `https://apps.apple.c
 With the matched app ID, inspect app-info localizations, iOS versions, existing subscriptions, and any custom license agreement:
 
 ```sh
-asc --profile AdamMacBook --read-only localizations list --app "<app-id>" --type app-info --paginate --output json
-asc --profile AdamMacBook --read-only versions list --app "<app-id>" --platform IOS --paginate --output json
-asc --profile AdamMacBook --read-only subscriptions list --app "<app-id>" --paginate --output json
-asc --profile AdamMacBook --read-only eula view --app "<app-id>" --output json
+asc --read-only localizations list --app "<app-id>" --type app-info --paginate --output json
+asc --read-only versions list --app "<app-id>" --platform IOS --paginate --output json
+asc --read-only subscriptions list --app "<app-id>" --paginate --output json
+asc --read-only eula view --app "<app-id>" --output json
 ```
 
 Select the intended iOS version explicitly before reading its localized metadata. Prefer the setup's current editable version when unambiguous; ask when records conflict rather than mixing metadata from different versions. Query that version by its resource ID:
 
 ```sh
-asc --profile AdamMacBook --read-only localizations list --version "<version-id>" --paginate --output json
+asc --read-only localizations list --version "<version-id>" --paginate --output json
 ```
 
 - Read `privacyPolicyUrl` from app-info localizations. Inspect version-localized `supportUrl`, `marketingUrl`, and description for existing app-specific links and copy. Resolve differing locale-specific values explicitly.

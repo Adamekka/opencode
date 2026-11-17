@@ -17,7 +17,7 @@ Before editing the app, compare this skill's instructions and bundled examples w
 - Identify the app root, Xcode project, app target, configurations, and SwiftUI entry point. If the project does not exist or the target is ambiguous, ask before proceeding.
 - Resolve `../config-files` relative to the app root. If it is missing, clone `https://github.com/adamekka/config-files` into a temporary directory and use that clone as `../config-files` in the steps below. If the clone fails, stop and report the failure. Inspect the actual files rather than assuming their contents, and never substitute bundled configs.
 - Before editing the app, confirm that `https://github.com/RiviaCorp/CoreUtils` is reachable with the current Git credentials, for example with `git ls-remote`. The repository is private. If it is unreachable, stop and report that CoreUtils access is missing. Then fetch CoreUtils as described in the integration reference and inspect the fetched revision rather than requiring a sibling checkout. If fetching fails, stop and report the failure instead of substituting a local package.
-- Ask for the bundle identifier unless the user has already supplied it for this app. Do not derive it from the project name or copy it from another app. Then use [App Store Connect discovery](references/app-store-connect.md) through `asc` to retrieve the app ID, available URLs, localized metadata, and configured products before requesting remaining inputs.
+- Take the bundle identifier from the app's App Store Connect record, found through [App Store Connect discovery](references/app-store-connect.md) with `asc`, unless the user has already supplied it for this app. Ask for it only when no app or more than one app matches. Never construct it from the project name or copy it from another app. Use the same discovery to retrieve the app ID, available URLs, localized metadata, and configured products before requesting remaining inputs.
 - Use the supplied home-screen display name. The App Store marketing name can differ; ask for the display name when it has not been provided rather than treating the store title as that choice.
 - Read [CoreUtils integration](references/coreutils.md) and resolve its required app-specific configuration before wiring startup. Ask only for unresolved inputs, one focused question at a time, and wait for each answer. Never fill missing values with another app's URLs, product IDs, account choices, assets, or copy.
 - If this app has no privacy policy or terms URL, use `https://riviacorp.com` for that missing URL and add a `// TODO` comment beside the Swift argument explaining which app-specific URL must replace it. This is the explicit placeholder policy for these two URLs; use real URLs when available and do not ask the user for a missing one.
@@ -55,7 +55,7 @@ Apply the following values to every app build configuration, including Debug and
 | `TARGETED_DEVICE_FAMILY` | `1,2` |
 | `MARKETING_VERSION` | `0.0.0` |
 | `CURRENT_PROJECT_VERSION` | `0` |
-| `PRODUCT_BUNDLE_IDENTIFIER` | User-provided bundle identifier |
+| `PRODUCT_BUNDLE_IDENTIFIER` | Bundle identifier from App Store Connect or the user |
 | `INFOPLIST_KEY_CFBundleDisplayName` | User-provided display name |
 | `INFOPLIST_KEY_ITSAppUsesNonExemptEncryption` | `NO` |
 
