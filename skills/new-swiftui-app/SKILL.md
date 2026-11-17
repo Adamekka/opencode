@@ -63,6 +63,8 @@ For a manually maintained Info.plist, set `CFBundleDisplayName` and the Boolean 
 
 Remove macOS and visionOS destinations and conflicting platform-specific deployment settings from this app's project. If the template contains separate macOS or visionOS targets, remove those targets and their scheme references while retaining shared source files needed by iOS. Keep iPhone and iPad support. Leave signing identity and team choices as supplied by the project or user.
 
+Xcode 27 projects can store the project as a JSON-like `project.xcproj` instead of `project.pbxproj`. Edit whichever format the project already uses; do not convert between formats. In `.xcproj`, conditional values are keys such as `KEY[config=Debug]` and `KEY[sdk=iphoneos*]` inside a target's or the project's `build-settings`. Check both levels, because both contribute to the effective value.
+
 The build-setting names can be checked against [Apple's build settings reference](https://developer.apple.com/documentation/xcode/build-settings-reference).
 
 ## Add the Lint build phase
@@ -84,12 +86,31 @@ else
 fi
 ```
 
-Match these phase options:
+Match these phase options. For a `.pbxproj`:
 
 - For install builds only, unchecked. Set `runOnlyForDeploymentPostprocessing = 0` and use the normal all-actions `buildActionMask = 2147483647`.
 - Based on dependency analysis, unchecked. Set `alwaysOutOfDate = 1` because lint must run on incremental builds too.
 - Show environment variables in build log, checked. Set `showEnvVarsInLog = 1`.
 - Use discovered dependency file, unchecked. Do not add a dependency file or artificial output paths to suppress execution.
+
+For a `.xcproj`, add this entry to the app target's `build-phases` after its default phases, with one string per script line:
+
+```text
+{
+  "kind": "script",
+  "name": "Lint",
+  "log-environment-variables": true,
+  "run-on-every-build": true,
+  "shell": "/bin/sh",
+  "script": [
+    "# Xcode does not inherit Apple Silicon Homebrew's executable search path.",
+    "if [ \"$(uname -m)\" = arm64 ]; then",
+    "..."
+  ],
+},
+```
+
+`run-on-every-build` corresponds to `alwaysOutOfDate = 1` and `log-environment-variables` to `showEnvVarsInLog = 1`. The all-actions mask and normal, non-install-only builds are the format's defaults, so omit them. Do not add input, output, or dependency-file keys.
 
 Retain the explicit missing-tool warning. Do not add auto-fixing or promote lint warnings to errors.
 
@@ -117,7 +138,7 @@ Run `git init` in the app repository root. Preserve any existing repository hist
 ## Verify
 
 - Before simulator builds or device verification, load and follow [simlock](../simlock/SKILL.md) if it is installed. Skip this step when the skill is missing.
-- Validate changed project and plist syntax, then use `xcodebuild -list` to confirm the project and scheme load.
+- Validate changed project and plist syntax, then use `xcodebuild -list` to confirm the project and scheme load. `plutil` cannot read `.xcproj`, so `xcodebuild -list` is its syntax check.
 - Inspect effective build settings for Debug and Release, plus any other configurations. Verify deployment, language, concurrency, platform support, identity, version, and sandboxing values.
 - Resolve the Git-backed package and build the app for a generic iOS Simulator destination. Use a toolchain compatible with the fetched CoreUtils revision's `Package.swift` and the copied formatter config. Report toolchain or dependency-resolution failures without changing the requested setup to hide them.
 - Verify that the built app's Info.plist contains the requested display name, bundle ID, versions, and Boolean encryption flag.
