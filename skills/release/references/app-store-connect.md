@@ -1,15 +1,15 @@
 # Query App Store Connect with asc
 
-The installed client uses the `AdamMacBook` authentication profile stored in macOS Keychain. Select it explicitly with `--profile AdamMacBook`, and pass `--read-only` so the client refuses any mutating request; subsequent queries do not need the original downloaded `.p8` file. Do not embed credentials in the skill or read private key contents into tool output. If the client or profile is unavailable, report the failure and follow the public App Store lookup rules in [the release skill](../SKILL.md) rather than silently selecting another account.
+Use the machine's default `asc` credential and do not pass `--profile`; profile names are machine-specific. Pass `--read-only` so the client refuses any mutating request. Do not embed credentials in the skill or read private key contents into tool output. If the client is missing or no default credential validates, report the failure and follow the public App Store lookup rules in [the release skill](../SKILL.md) rather than selecting another credential.
 
 Validate authentication, then resolve the app by its actual bundle identifier. Replace the placeholders with the resolved app ID and platform, such as `IOS` or `MAC_OS`. Require an unambiguous matching app before querying its release state.
 
 ```sh
-asc --profile AdamMacBook --read-only auth status --validate
-asc --profile AdamMacBook --read-only apps list --bundle-id "<bundle-id>" --paginate --output json
-asc --profile AdamMacBook --read-only versions list --app "<app-id>" --platform "<platform>" \
+asc --read-only auth status --validate
+asc --read-only apps list --bundle-id "<bundle-id>" --paginate --output json
+asc --read-only versions list --app "<app-id>" --platform "<platform>" \
   --include build,appStoreVersionPhasedRelease --paginate --output json
-asc --profile AdamMacBook --read-only builds list --app "<app-id>" --platform "<platform>" \
+asc --read-only builds list --app "<app-id>" --platform "<platform>" \
   --include preReleaseVersion,buildBetaDetail --processing-state all --paginate --output json
 ```
 
