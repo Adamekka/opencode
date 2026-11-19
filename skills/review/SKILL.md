@@ -5,7 +5,7 @@ description: Review code changes or projects and fix verified findings. Use when
 
 # Review
 
-Every review runs two independent reviewers in parallel, Claude Opus 5.5 at `high` effort and GPT 6.2 Sol at `xhigh` reasoning effort. The thread running the review merges their reports, verifies and fixes the findings, and starts new rounds until nothing worth fixing remains. The sections from Feature completeness onward are the criteria the reviewers apply.
+Every review runs two independent reviewers in parallel, the Claude reviewer and the GPT reviewer from the global Model Selection table. The thread running the review merges their reports, verifies and fixes the findings, and starts new rounds until nothing worth fixing remains. The sections from Feature completeness onward are the criteria the reviewers apply.
 
 ## Review scope
 
@@ -26,17 +26,16 @@ Every review runs two independent reviewers in parallel, Claude Opus 5.5 at `hig
 ### Availability
 
 - The T3 tools are deferred. Load `delegate_task`, `orchestrator_capabilities`, and `task_cancel` with one ToolSearch attempt.
-- Call `orchestrator_capabilities` once per thread and check both reviewers:
-  - Claude: provider `claudeAgent`, model `claude-opus-5-5`, `effort: high`
-  - GPT: provider `codex`, model `gpt-6.2-sol`, `reasoningEffort: xhigh`
+- Call `orchestrator_capabilities` once per thread and check both reviewers' provider, model, and options in the global Model Selection table:
+  - Claude: the row that table names for the Claude reviewer of this review
+  - GPT: the GPT reviewer row
 
   If one reviewer's provider, model, or effort isn't offered, run the rounds with the other reviewer alone and report which one is missing. Never substitute another model, effort level, provider, or native subagent.
 
 ### Round
 
 1. Start both reviewers in the same response with two `delegate_task` calls that share the same task:
-   - `target: { providerInstanceId: "claudeAgent", model: "claude-opus-5-5", options: { effort: "high" } }` for Claude
-   - `target: { providerInstanceId: "codex", model: "gpt-6.2-sol", options: { reasoningEffort: "xhigh" } }` for GPT
+   - `target: { providerInstanceId: <provider>, model: <model>, options: { <options> } }` for each reviewer, filled from its Model Selection row
    - `role: "review"`
    - `isolation: "shared"` so the reviewers see the uncommitted working tree
    - `mode: "async"` so the two reviews run at the same time
