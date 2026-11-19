@@ -24,9 +24,9 @@ Resolve anything only the user can decide before the child starts, because a chi
    - `target: { providerInstanceId: <provider>, model: <model>, options: { <options> } }`, filled from the Computer use row
    - `role: "general"`
    - `isolation: "shared"`, since the desktop is shared anyway and the child may need files from this checkout
-   - `mode: "wait"` and `timeoutMs: 1800000`, because desktop tasks at high reasoning effort often outlast the default 4 minute wait
+   - `mode: "async"`, because desktop tasks often outlast the longest `delegate_task` wait
 
-   If the call returns before the child finishes, follow its `next` instruction. Don't poll or sleep.
+   Follow the call's `next` instruction until the child finishes. Don't poll or sleep.
 2. Write a self-contained task. The child gets no parent history, so include:
    - the goal and the end state that counts as done
    - the apps, windows, files, and data involved, with absolute paths
