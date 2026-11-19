@@ -64,13 +64,12 @@
 | Default | Everyday coding, refactoring, tests, docs, UI copy, and any delegate not listed below | `claudeAgent` | `claude-opus-5-5` | `effort: high` |
 | Hard problems | Plans and architecture across modules, security, concurrency, persisted data and migrations | `claudeAgent` | `claude-fable-5-2` | `effort: high` |
 | Second opinion | Paired with Hard problems when stuck | `codex` | `gpt-6.2-astra` | `reasoningEffort: xhigh` |
-| GPT reviewer | Paired with a Claude reviewer in every review | `codex` | `gpt-6.2-sol` | `reasoningEffort: xhigh` |
+| Reviewer | Code reviews | `codex` | `gpt-6.2-sol` | `reasoningEffort: xhigh` |
 | Computer use | Desktop and iOS Simulator UI work delegated from a Claude session | `codex` | `gpt-6.2-sol` | `reasoningEffort: xhigh` |
 
 - Leave the Default row only for work the Hard problems row names or when stuck, because Fable and Astra cost more and run slower. Task size alone is not a reason.
 - When stuck, such as after a failed fix with no explained root cause, send the same problem to Hard problems and Second opinion in parallel, read-only. Each returns a root cause and a fix plan. Compare them and make the fix yourself.
-- The Claude reviewer is Hard problems for full-project reviews and for changes that match its work, otherwise Default.
-- Skills that delegate to a fixed model take the provider, model, and options from this table by role and never name model IDs.
+- Skills that delegate to a fixed model take the provider, model, and options from this table by role and never name model IDs. The review skill is the exception: it names its reviewer models itself.
 - If a row's model or effort isn't offered, say which is missing and follow the skill's rule for it. Outside skills, do the work in the current session. Never substitute another row.
 
 ## Feature Selection
