@@ -1,28 +1,28 @@
 # Linear release issue
 
-Keep Linear release issues focused on versions, user-visible changes, and feature tests. Use only the four description sections below. Production and included releases contain only versions/builds, `Not yet in production`, or a brief test-only designation. Keep source-verification details, authentication/profile/key/account identifiers, local paths and commands, Git hashes, dependency revisions, automated check results or waivers, legal-workflow decisions, authorization details, and reviewer commentary out of issue descriptions, comments, and attachments. Report relevant preparation results to the user in conversation instead. Do not add a `Release scope and checks` section or equivalent.
+Keep Linear release issues focused on versions, user-visible changes, and feature tests. Use only the four description sections below. The review baseline and included releases contain only versions/builds, `Not yet submitted to App Store Review`, or a brief test-only designation. Keep source-verification details, authentication/profile/key/account identifiers, local paths and commands, Git hashes, dependency revisions, automated check results or waivers, legal-workflow decisions, authorization details, and reviewer commentary out of issue descriptions, comments, and attachments. Report relevant preparation results to the user in conversation instead. Do not add a `Release scope and checks` section or equivalent.
 
 The issue title is exactly:
 
 ```text
-version (build) - short description since first-unreleased-version (first-unreleased-build)
+version (build) - short description since first-included-version (first-included-build)
 ```
 
-Use the actual target version/build on the left and the earliest unreleased version/build included in the cumulative release after `since`. Include the build on both sides. This is the first included release after the production commit, even when its issue was canceled; if no earlier unreleased marker exists, use the new target itself. Keep the verified production version/build in the description as the history baseline, not after `since` in the title. Describe the combined main changes in plain language. The issue description records the production baseline and all included release versions before the summary and test list:
+Use the target on the left and the first included release after the review baseline on the right. Include the version and build on both sides, even when the earlier issue was canceled. Use the target on both sides if it is the only included release. Put the last submitted version/build in the description as the App Store Review baseline. Use `Not yet submitted to App Store Review` when there is no prior submission. Describe the combined changes in plain language.
 
 ```markdown
-Production:
+App Store Review baseline:
 
-production-version (production-build)
+submitted-version (submitted-build)
 
 Included releases:
 
 - version (build)
-- another unreleased version (build)
+- target version (build)
 
 Summary:
 
-A concise summary of all changes since production.
+A concise summary of changes after the App Store Review baseline.
 
 To Test:
 
@@ -39,7 +39,7 @@ Put the bold feature name on the checkbox line. Under it, use one indented plain
 
 ## Preserve verified feature tests
 
-- Always use the latest prepared release before the target as the testing baseline for previously checked features, separately from the production history used for cumulative notes. For a new release, use the latest local release marker recorded before creating the target marker. For a resumed release, use the marker immediately before the target marker, not the target itself. Treat existing checked items as verified through that baseline; do not ask the user to confirm it. Earlier unreleased changes already covered by that testing do not invalidate its results.
+- Always use the latest prepared release before the target as the testing baseline for previously checked features, separately from the App Store Review history used for cumulative notes. For a new release, use the latest local release marker recorded before creating the target marker. For a resumed release, use the marker immediately before the target marker, not the target itself. Treat existing checked items as verified through that baseline; do not ask the user to confirm it. Earlier changes already covered by that testing do not invalidate its results.
 - Compare code and resolved dependency changes after that testing baseline with the exact target snapshot. Uncheck a completed feature only when a concrete change to its behavior, layout, accessible interaction, or affected shared logic requires retesting and verified testing does not already cover that change. A changed file, dependency revision, or inclusion in cumulative notes is not sufficient by itself; identify which tested expectation no longer applies.
 - Translation or copy changes alone belong under localization testing, not a reset of every screen's functional checks. Reopen an additional feature only when the text change specifically affects its operation, tested layout, or accessible interaction. Formatting, documentation, test-only changes, and version/build metadata do not invalidate functional test results.
-- Keep unaffected features checked and existing unchecked items unchecked. Merge overlapping tests rather than adding another item for a feature already covered by the checklist.
+- Keep unaffected features checked and existing unchecked items unchecked when they remain in scope. Remove build annotations and feature tests that only cover changes through the review baseline. Keep a test when the target still changes that feature and merge overlapping tests.
