@@ -13,29 +13,37 @@ Use the target on the left and the first included release after the review basel
 ```markdown
 App Store Review baseline:
 
-submitted-version (submitted-build)
+1.11.0 (22)
 
 Included releases:
 
-- version (build)
-- target version (build)
+- 1.12.0 (23)
+- 1.12.0 (24)
 
 Summary:
 
-A concise summary of changes after the App Store Review baseline.
+- File imports pause when you leave the destination folder and resume when you return.
+- If you quit before an import finishes, Files shows the unfinished items the next time you open the app.
+- Subscription plans make the billed amount and period easier to find.
 
 To Test:
 
-- [ ] **Affected feature**
-  - **earlier-build:** earlier included change
-  - **target-build:** specific change
-- [ ] **Another affected feature**
-  - **target-build:** specific change
+- [ ] **File and gallery imports**
+  - **Build 23**
+    - Start importing several items. Leave the destination folder before the import finishes, then return. The import pauses while you're away and resumes without duplicates.
+    - Quit during an import to a protected folder, then reopen the app. The report lists unfinished items by position and hides their names.
+- [ ] **Subscription prices**
+  - **Build 24**
+    - Open the subscription screen with an account eligible for a trial. The billed amount and period are the most prominent price text on both plans.
 ```
 
-Summarize user-visible improvements and material fixes rather than reproducing the commit log. List each affected feature once as a Markdown task under `To Test:`. New items start unchecked; preserve existing results according to the rules below. Name individual games or challenges when they need separate testing. Keep the list at feature level instead of enumerating every behavior, edge case, or implementation detail. Include features affected by dependency or internal changes when the history establishes that impact. Do not turn formatting, documentation, or test-only commits into product features or claim unperformed tests passed.
+Give each headline user-visible improvement or fix one short bullet in `Summary`. Lead with what changes for the user. Keep test setup and scenarios under `To Test`.
 
-Put the bold feature name on the checkbox line. Under it, use one indented plain bullet per build, with a bold build number and a concise description of what changed. Keep builds in chronological order and each build on its own line, without inline parentheses or semicolons. Build-detail bullets are not checkboxes. Map changes to their actual release snapshots rather than assigning all cumulative changes to the latest build. Keep relevant changes from earlier included builds and combine superseded changes into the final behavior. Backfill missing annotations for both checked and unchecked items when maintaining an existing cumulative issue. Preserve checkbox states and match existing items by feature name, ignoring annotations and Markdown emphasis. Annotation edits are wording changes, not checkbox additions, removals, or state changes; report them separately in chat.
+List each affected feature once as a Markdown task with the feature name in bold. Start new items unchecked and preserve existing results according to the rules below. Name individual games or challenges when they need separate testing. Include features affected by dependency or internal changes when the history establishes that impact. Do not turn formatting, documentation, or test-only commits into product features or claim unperformed tests passed.
+
+Under each feature, put each relevant build on its own bold build line in chronological order. Give each scenario an indented plain bullet under that build. State any setup the tester needs, what to do, and the observable result that counts as a pass. Use the app's labels for controls and screens. Verify the expected result against the corresponding release snapshot or its requirements. If a required result is still unclear, raise it in chat. Before saving, read the checklist as a tester and make sure each scenario can be followed without guessing what should happen.
+
+Map scenarios to the release snapshots that introduced the changes they cover. Keep relevant changes from earlier included builds and combine superseded changes into the final behavior. Backfill missing annotations for both checked and unchecked items when maintaining an existing cumulative issue. Preserve checkbox states and match existing items by feature name, ignoring annotations and Markdown emphasis. Report annotation edits separately from checkbox additions, removals, and state changes in chat.
 
 ## Preserve verified feature tests
 
