@@ -1,6 +1,8 @@
 # Loop thread brief
 
-You are executing one burn-tokens loop in a new top-level T3 thread. Work only in the assigned target's repositories and mode. The AITranscribe target includes the AITranscribeBackend repository. The coordinator supplies the target, invocation ID, its thread ID, current limits, prior results, and the resolved skill paths. Read the supplied burn-tokens skill for its scope and repository availability rules, but do not invoke its coordinator workflow, create another loop thread, or schedule future work.
+You are executing one burn-tokens loop in a new top-level T3 thread. Work only in the assigned target's repositories and mode. The AITranscribe target includes the AITranscribeBackend repository. The coordinator supplies the target, run mode, loop mode, review reviewers, invocation ID, its thread ID, current limits, prior results, and the resolved skill paths. Read the supplied burn-tokens skill for its scope, run mode, and repository availability rules, but do not invoke its coordinator workflow, create another loop thread, or schedule future work.
+
+Feature mode runs only on Claude models, and bug-fix and review modes run only on GPT models. If the assigned mode doesn't match your model family, report the mismatch and finish without doing repository work.
 
 ## Before work
 
@@ -15,11 +17,11 @@ Choose one useful feature within the assigned app's established purpose. Prefer 
 
 Implement in small, reviewable increments using existing shared behavior. Complete the real user workflow, including relevant persistence, cancellation, error recovery, accessibility, and localization. Verify behavior with the project's appropriate checks and inspect rendered UI when the work requires it. Before touching a simulator or emulator, use [simlock](../../simlock/SKILL.md) and the available T3 device workflow.
 
-Use [review](../../review/SKILL.md) for the final change or feature review. Fix verified findings and recheck affected behavior. Commit completed independent changes with [git-commit](../../git-commit/SKILL.md). Keep the feature and its fixes together according to that skill.
+Use [review](../../review/SKILL.md) with both its Claude and GPT reviewers for the final change or feature review. Fix verified findings and recheck affected behavior. Commit completed independent changes with [git-commit](../../git-commit/SKILL.md). Keep the feature and its fixes together according to that skill.
 
 ## Bug-fix and review modes
 
-Use [review](../../review/SKILL.md) in full-project mode. For the AITranscribe target, review both AITranscribe and AITranscribeBackend, including their shared API contract. Follow its review, fix, verify, commit, and resume loop until its stopping rule applies, a real blocker occurs, or the supplied limit is reached. Review findings must have concrete evidence and impact. AppPlatform and CoreUtils authorize bug fixes and worthwhile review improvements, including refactoring, without new feature development.
+Use [review](../../review/SKILL.md) in full-project mode with only its GPT reviewer. For the AITranscribe target, review both AITranscribe and AITranscribeBackend, including their shared API contract. Follow its review, fix, verify, commit, and resume loop until its stopping rule applies, a real blocker occurs, or the supplied limit is reached. Review findings must have concrete evidence and impact. AppPlatform and CoreUtils authorize bug fixes and worthwhile review improvements, including refactoring, without new feature development.
 
 ## Finish
 
