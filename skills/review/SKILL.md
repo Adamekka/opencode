@@ -31,6 +31,7 @@ Every review runs two independent reviewers in parallel, the Claude reviewer and
   - GPT: provider `codex`, model `gpt-6.2-sol`, options `reasoningEffort: xhigh`
 
   If one reviewer's provider, model, or effort isn't offered, run the rounds with the other reviewer alone and report which one is missing. Never substitute another model, effort level, provider, or native subagent.
+- If the invoking skill or the user restricts the review to one of these reviewers, start only that reviewer wherever the steps below say both, and report the review as single-reviewer by request.
 
 ### Round
 
