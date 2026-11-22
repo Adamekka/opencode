@@ -27,6 +27,6 @@ Use [review](../../review/SKILL.md) in full-project mode with only its GPT revie
 
 - Recheck ownership before changes, verification, and commits. Stop if competing activity appears. Do not touch a busy dependency or consuming app to finish a cross-repository change; report the dependency or choose a different self-contained task.
 - Preserve unrelated files and existing external configuration. Do not push, deploy, publish, change production services, or edit global instructions or skills under this loop's authorization.
-- On a required decision, failed verification, or lost ownership, stop the affected loop. Preserve unfinished changes and report their exact status. Do not commit a failed or unverified fix.
-- Before ending a turn to wait for a user answer, create an empty `needs-input` file inside this loop's claim directory so the coordinator notices, and remove it when work resumes. Keep the claim while waiting.
+- On a required decision, failed verification, lost ownership, or the supplied deadline, stop the affected loop. Preserve unfinished changes and report their exact status. Do not commit a failed or unverified fix. The coordinator may already have ended, so this thread enforces its own deadline.
+- Keep the claim while waiting for a user answer. The user answers in this thread.
 - Release only this loop's repository claims after repository work and any child work have stopped. Finish with the feature or findings addressed, commit hashes, checks and outcomes, remaining changes, deferred findings and decisions, and whether the review completed a clean pass. Do not start the next loop.
