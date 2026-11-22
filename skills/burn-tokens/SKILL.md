@@ -1,6 +1,6 @@
 ---
 name: burn-tokens
-description: Use ONLY when explicitly invoked to run sustained loops across AITranscribe with AITranscribeBackend, Alarm, web-browser, WifiAnalyzer, AppPlatform, and CoreUtils, with a fresh T3 thread for each loop. GPT models run bug-fix loops; Claude models run feature loops.
+description: Use ONLY when explicitly invoked to run sustained loops across AITranscribe with AITranscribeBackend, Alarm, web-browser, WifiAnalyzer, AppPlatform, and CoreUtils, with a fresh T3 thread for each loop. GPT models run bug-fix loops; Claude models run feature loops, plus review loops on AppPlatform and CoreUtils.
 disable-model-invocation: true
 ---
 
@@ -18,15 +18,15 @@ Repositories always live in `~/Coding`. Resolve the existing `~/Coding/<reposito
 | Alarm | Bug fixes | Features |
 | web-browser | Bug fixes | Features |
 | WifiAnalyzer | Bug fixes | Features |
-| AppPlatform | Review and improvements | Skipped |
-| CoreUtils | Review and improvements | Skipped |
+| AppPlatform | Review and improvements | Review and improvements |
+| CoreUtils | Review and improvements | Review and improvements |
 
 ## Run mode
 
 The coordinator's model family sets the mode for the whole invocation, and loop threads inherit that model.
 
 - **GPT run:** start only bug-fix and review-and-improvement loops, never feature loops. Every review in the run uses the review skill with only its GPT reviewer.
-- **Claude run:** start only feature loops, never bug-fix or review-and-fix loops. Each feature's final review uses the review skill with both its Claude and GPT reviewers.
+- **Claude run:** start feature loops on the four app targets and review-and-improvement loops on AppPlatform and CoreUtils, never bug-fix loops on the app targets. Every review in the run, including each feature's final review, uses the review skill with both its Claude and GPT reviewers.
 
 If the coordinator's model is neither GPT nor Claude, stop and report that the run mode is undefined.
 
@@ -53,7 +53,7 @@ Recheck activity after acquiring the claim and before editing, running verificat
 The invoking thread coordinates work. It does not implement changes itself.
 
 1. Honor any repository selection, priorities, time limit, token budget, or loop count supplied with the invocation. Count in-flight loops toward a loop limit and pass an absolute deadline to workers for a time limit. Divide an explicit token budget among concurrent loops only when the runtime can enforce or measure it. If a requested limit cannot be enforced or measured, stop and report the limitation rather than proceeding without it. A run requires a loop count, time limit, or enforceable token budget. Without one, ask the user for a limit before launching anything. Do not invent a token budget or claim access to the user's remaining subscription quota.
-2. Track each target's last loop, result, commits, verification, deferred decisions, and reason for skipping. Rotate among available targets so a single app does not monopolize the run. In a GPT run, run full-project review-and-fix loops on a target until a review finds nothing worthwhile, then treat that target as exhausted. In a Claude run, run only feature loops on the four app targets.
+2. Track each target's last loop, result, commits, verification, deferred decisions, and reason for skipping. Rotate among available targets so a single app does not monopolize the run. Run full-project review-and-fix loops on a target until a review finds nothing worthwhile, then treat that target as exhausted. In a Claude run, those review loops cover only AppPlatform and CoreUtils, and the four app targets get only feature loops.
 3. Select an available target and resolve its T3 project by the exact checkout path. For the paired target, use the AITranscribe checkout. If the existing checkout is not registered, register that folder using `t3_project_create` with an explicit `workspaceRoot` and `createWorkspaceRootIfMissing: false`.
 4. Start a **new top-level T3 thread for every loop** using `t3_thread_launch`. Pass the target `projectId` and `workspaceStrategy: { type: "root" }` so the thread starts in the correct `~/Coding` repository. Use one retained `clientRequestId` for a launch and any uncertain retry. Inherit the current model and execution permissions. Do not reuse an old loop thread, use a delegate as its replacement, or create worktrees to bypass a busy repository.
 5. Give the new thread a self-contained brief containing the target, run mode, loop mode, review reviewers, invocation ID, coordinator thread ID, remaining limits, relevant prior results, and the contents of [loop-thread.md](references/loop-thread.md). Include the resolved paths to this skill and the review skill. The new thread executes its assigned loop without recursively invoking the coordinator or launching another loop.
@@ -77,7 +77,7 @@ The invoking thread coordinates work. It does not implement changes itself.
 
 Continue while eligible repositories have worthwhile work. Spending tokens is the opportunity, not a reason to invent defects, add filler features, churn code, or repeat clean reviews of unchanged code.
 
-Stop launching at the user's limit or stop request, when every target is busy, blocked, unavailable, or exhausted, or when a complete rotation produces no worthwhile work that can proceed. In a GPT run, a review with no worthwhile findings completes that target, which waits until relevant code or requirements change. Do not poll busy repositories or manufacture work to keep the run alive.
+Stop launching at the user's limit or stop request, when every target is busy, blocked, unavailable, or exhausted, or when a complete rotation produces no worthwhile work that can proceed. A review loop with no worthwhile findings completes that target, which waits until relevant code or requirements change. Do not poll busy repositories or manufacture work to keep the run alive.
 
 Reaching a loop count or time limit only stops new launches. Loops already running finish on their own or stop at their deadline. On an explicit user stop request, safely stop the loop threads started by this invocation and their delegates, preserve unfinished changes, and release their claims only after their work has stopped. Use `t3_thread_interrupt` for these top-level loop threads and `task_cancel` for their delegates. Do not interrupt unrelated agents. Do not create recurring schedules under this invocation, and stop the claim watcher before the final handoff.
 

@@ -2,7 +2,7 @@
 
 You are executing one burn-tokens loop in a new top-level T3 thread. Work only in the assigned target's repositories and mode. The AITranscribe target includes the AITranscribeBackend repository. The coordinator supplies the target, run mode, loop mode, review reviewers, invocation ID, its thread ID, current limits, prior results, and the resolved skill paths. Read the supplied burn-tokens skill for its scope, run mode, and repository availability rules, but do not invoke its coordinator workflow, create another loop thread, or schedule future work.
 
-Feature mode runs only on Claude models, and bug-fix and review modes run only on GPT models. If the assigned mode doesn't match your model family, report the mismatch and finish without doing repository work.
+Feature mode runs only on Claude models. Bug-fix mode on the app targets runs only on GPT models, and review mode on AppPlatform and CoreUtils runs on either. If the assigned mode doesn't match your model family, report the mismatch and finish without doing repository work.
 
 ## Before work
 
@@ -21,7 +21,7 @@ Use [review](../../review/SKILL.md) with both its Claude and GPT reviewers for t
 
 ## Bug-fix and review modes
 
-Use [review](../../review/SKILL.md) in full-project mode with only its GPT reviewer. For the AITranscribe target, review both AITranscribe and AITranscribeBackend, including their shared API contract. Follow its review, fix, verify, commit, and resume loop until its stopping rule applies, a real blocker occurs, or the supplied limit is reached. Review findings must have concrete evidence and impact. AppPlatform and CoreUtils authorize bug fixes and worthwhile review improvements, including refactoring, without new feature development.
+Use [review](../../review/SKILL.md) in full-project mode with the reviewers for your run mode: only the GPT reviewer on GPT models, and both reviewers on Claude models. For the AITranscribe target, review both AITranscribe and AITranscribeBackend, including their shared API contract. Follow its review, fix, verify, commit, and resume loop until its stopping rule applies, a real blocker occurs, or the supplied limit is reached. Review findings must have concrete evidence and impact. AppPlatform and CoreUtils authorize bug fixes and worthwhile review improvements, including refactoring, without new feature development.
 
 ## Finish
 
