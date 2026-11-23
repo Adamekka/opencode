@@ -64,7 +64,7 @@
 | Default | Everyday coding, refactoring, tests, docs, UI copy, and any delegate not listed below | `claudeAgent` | `claude-opus-5-5` | `effort: high` |
 | Hard problems | Plans and architecture across modules, security, concurrency, persisted data and migrations | `claudeAgent` | `claude-fable-5-2` | `effort: high` |
 | Second opinion | Paired with Hard problems when stuck | `codex` | `gpt-6.2-astra` | `reasoningEffort: xhigh` |
-| Reviewer | Code reviews | `codex` | `gpt-6.2-sol` | `reasoningEffort: xhigh` |
+| Reviewer | Code reviews and read-only audits | `codex` | `gpt-6.2-sol` | `reasoningEffort: xhigh` |
 | Computer use | Desktop and iOS Simulator UI work delegated from a Claude session | `codex` | `gpt-6.2-sol` | `reasoningEffort: xhigh` |
 
 - Leave the Default row only for work the Hard problems row names or when stuck, because Fable and Astra cost more and run slower. Task size alone is not a reason.
