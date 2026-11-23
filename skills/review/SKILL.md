@@ -98,6 +98,7 @@ After fixing findings, start a new round with both reviewers. Never reuse a fini
 - Developer experience (DX) problems in APIs, diagnostics, configuration, builds, and tests that make ordinary development confusing or fragile.
 - Accessibility (AX) barriers involving keyboard access, focus, accessible names and semantics, assistive technology, contrast, or text scaling. Explain the affected interaction and who it excludes.
 - Duplicated formulas, behavior, or logic that should use an existing shared implementation or justify extracting one. Identify the repeated locations and the shared responsibility. Similar-looking code alone does not justify an abstraction.
+- Documentation drift. Check that project documentation and `AGENTS.md` match the reviewed behavior, requirements, and workflows. Report docs the change left stale or missing, and docs that contradict each other or repeat the same rule in several places. Cite the doc passage and the code or decision it conflicts with. Fixes follow [projects-docs](../projects-docs/SKILL.md) and describe current agreed behavior only.
 
 ## Evidence and judgment
 
