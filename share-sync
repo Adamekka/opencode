@@ -9,7 +9,7 @@ usage() {
     printf 'Usage: %s check|install|service\n' "${0##*/}" >&2
     printf '  check    verify shared skills do not reference unshared ones\n' >&2
     printf '  install  link AGENTS.md and shared skills into Claude and Codex\n' >&2
-    printf '  service  pull from GitHub and install every hour via launchd\n' >&2
+    printf '  service  reset to GitHub and install every hour via launchd\n' >&2
     exit 1
 }
 
@@ -115,13 +115,39 @@ install() {
 service() {
     local plist="$HOME/Library/LaunchAgents/$service_label.plist"
     local log="$HOME/Library/Logs/share-sync.log"
-    local escaped_dir="$source_dir"
-    escaped_dir="${escaped_dir//&/&amp;}"
-    escaped_dir="${escaped_dir//</&lt;}"
-    escaped_dir="${escaped_dir//>/&gt;}"
+    # sed instead of ${var//&/...}, because bash 5.2+ expands & in the replacement to the match.
+    xml_escape() {
+        printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'
+    }
+
+    # GitHub always wins, so a clone whose commits were rebased upstream never gets stuck on a
+    # failed fast-forward. Local commits and edits go to a backup branch first, because the
+    # backups that install makes cover replaced links, not the clone itself.
+    local sync_script
+    # read -d '' returns 1 at the end of input, which is expected here.
+    IFS= read -r -d '' sync_script <<'EOF' || true
+set -euo pipefail
+cd "$1"
+git fetch --quiet
+if [[ -n "$(git status --porcelain)" || -n "$(git rev-list '@{upstream}..HEAD')" ]]; then
+    backup="backup/share-sync-$(date +%Y%m%d-%H%M%S)"
+    git switch --quiet -c "$backup"
+    git add -A
+    # A fixed identity, because the clone's machine may have no git identity configured.
+    git diff --cached --quiet || git -c user.name=share-sync -c user.email=share-sync@localhost \
+        commit --quiet -m 'share-sync: back up local changes before reset'
+    git switch --quiet -
+    printf 'Backed up local changes to branch %s\n' "$backup"
+fi
+git reset --hard --quiet '@{upstream}'
+exec ./share-sync install
+EOF
+    local escaped_script escaped_dir
+    escaped_script="$(xml_escape "$sync_script")"
+    escaped_dir="$(xml_escape "$source_dir")"
 
     mkdir -p -- "$(dirname -- "$plist")" "$(dirname -- "$log")"
-    # Pull before starting share-sync so git never rewrites this script while bash is reading it.
+    # Reset before starting share-sync so git never rewrites this script while bash is reading it.
     cat > "$plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -133,7 +159,7 @@ service() {
     <array>
         <string>/bin/bash</string>
         <string>-c</string>
-        <string>git -C "\$1" pull --ff-only --quiet &amp;&amp; "\$1/share-sync" install</string>
+        <string>$escaped_script</string>
         <string>share-sync</string>
         <string>$escaped_dir</string>
     </array>
@@ -153,7 +179,7 @@ EOF
     # bootout fails when the service is not loaded yet, which is expected on the first run.
     launchctl bootout "gui/$(id -u)/$service_label" 2>/dev/null || true
     launchctl bootstrap "gui/$(id -u)" "$plist"
-    printf 'Installed %s; it pulls and installs every hour. Log: %s\n' "$plist" "$log"
+    printf 'Installed %s; every hour it resets to GitHub and installs. Log: %s\n' "$plist" "$log"
 }
 
 case "$1" in
