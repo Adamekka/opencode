@@ -140,6 +140,10 @@
 - In debug builds, preserve the user-facing message and add the concrete underlying error details needed for development and physical-device diagnosis.
 - Keep developer diagnostics out of release UI, and do not replace recoverable runtime failure handling with assertions.
 
+## Visuals
+
+- Show diagrams, charts, mockups and other visuals as HTML rendered in the chat, never as ASCII art.
+
 ## T3 Code
 
 - Before ending a turn while a background Bash command or Monitor you started is still running and you are waiting on it, call `t3_background_wait` with its task ID. A `delegate_task` child's "end your turn" instruction covers only that child, not background shell tasks.
