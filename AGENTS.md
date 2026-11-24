@@ -52,6 +52,7 @@
 ## Subagents
 
 - Use subagents freely and proactively to parallelize exploration, investigation, review, and independent implementation work without waiting for a separate user request.
+- When a delegate on another provider runs out of usage, pause any work that needs its result instead of continuing without it or handing it to another model. The delegate resumes on its own once usage returns.
 
 ## Model Selection
 
