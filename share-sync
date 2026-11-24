@@ -3,24 +3,158 @@ set -euo pipefail
 
 source_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 manifest="$source_dir/share.json"
+# Friend-only text, mirroring repo paths: share-append/AGENTS.md, share-append/skills/NAME/FILE, or
+# share-append/claude-skills/NAME/FILE is appended to the same file on the friend's machine and
+# never touches this machine's config.
+append_dir="$source_dir/share-append"
+state_dir="$HOME/Library/Application Support/share-sync"
+# A symlink to the current generation, which holds AGENTS.md and every shared skill as a copy with
+# friend-only text or a link to the repo. Installed links point into it, so they never change when
+# text is added or removed, and switching the symlink never shows them a half-built tree.
+generated_root="$state_dir/generated"
+# In the folder of the plain clone that service expects, which git reset leaves alone.
+lock="$source_dir/.git/share-sync.lock"
 service_label=com.adamekka.share-sync
+plist="$HOME/Library/LaunchAgents/$service_label.plist"
+log="$HOME/Library/Logs/share-sync.log"
 
 usage() {
-    printf 'Usage: %s check|install|service\n' "${0##*/}" >&2
-    printf '  check    verify shared skills do not reference unshared ones\n' >&2
-    printf '  install  link AGENTS.md and shared skills into Claude and Codex\n' >&2
-    printf '  service  reset to GitHub and install every hour via launchd\n' >&2
+    printf 'Usage: %s check|install|service|uninstall\n' "${0##*/}" >&2
+    printf '  check      validate share.json and share-append, and that shared files reference only shared skills\n' >&2
+    printf '  install    link AGENTS.md and shared skills into Claude and Codex, with share-append text added\n' >&2
+    printf '  service    reset to GitHub and install every hour via launchd\n' >&2
+    printf '  uninstall  stop the hourly job and remove the links and copies install made\n' >&2
     exit 1
 }
 
 [[ $# -eq 1 ]] || usage
 
-# skills lists what gets shared. optionalSkills lists skills the shared ones may
-# reference because they skip those steps when the skill is not installed.
+# Install writes links into these folders, so a symlinked one, such as link-config's link from
+# ~/.codex/skills to the owner's repo, would have real skill folders moved out of whatever it points
+# to, from any clone. The service would also reset that clone every hour.
+if [[ "$1" == install || "$1" == service || "$1" == uninstall ]]; then
+    for skills_dir in "$HOME/.claude/skills" "$HOME/.codex/skills"; do
+        if [[ -L "$skills_dir" ]]; then
+            printf '%s is a symlink, so share-sync %s would change the folder it points to; it is for machines without link-config.\n' \
+                "$skills_dir" "$1" >&2
+            exit 1
+        fi
+    done
+fi
+
+# Locked before reading the repo, so a concurrent hourly reset cannot change it mid-install. The
+# kernel drops a lockf lock when its holder dies, so an interrupted run never blocks later ones.
+# The service holds the lock across its reset and sets SHARE_SYNC_LOCKED=1 for the install it runs.
+if [[ ( "$1" == install || "$1" == uninstall ) && "${SHARE_SYNC_LOCKED-}" != 1 ]]; then
+    # One compound command, so bash never reads more of a script that a later reset may rewrite.
+    {
+        status=0
+        SHARE_SYNC_LOCKED=1 /usr/bin/lockf -s -k -t 0 "$lock" "$source_dir/${BASH_SOURCE[0]##*/}" "$1" \
+            || status=$?
+        # lockf exits 75 (EX_TEMPFAIL) when another process holds the lock.
+        ((status != 75)) || printf 'Another share-sync run is in progress (lock: %s).\n' "$lock" >&2
+        exit "$status"
+    }
+fi
+
+# Defined and run before validation, so a broken share.json or share-append cannot block removal.
+uninstall() {
+    # Unloaded only when loaded, so any other bootout failure stops here, before the plist goes. A job
+    # left loaded would reset the clone and reinstall everything on its next run.
+    local print_status=0
+    launchctl print "gui/$(id -u)/$service_label" > /dev/null 2>&1 || print_status=$?
+    # launchctl print exits 113 when the job is not loaded; any other failure leaves that unknown.
+    case $print_status in
+        0) launchctl bootout "gui/$(id -u)/$service_label" ;;
+        113) ;;
+        *)
+            printf 'Could not tell whether %s is loaded (launchctl print exited %s); nothing was removed.\n' \
+                "$service_label" "$print_status" >&2
+            return 1
+            ;;
+    esac
+    if [[ -e "$plist" ]]; then
+        rm -- "$plist"
+        printf 'Removed %s\n' "$plist"
+    fi
+    # Only links with exactly the targets install writes are this script's; links into a repo may be
+    # the owner's own.
+    local link target
+    for link in "$HOME/.claude/CLAUDE.md" "$HOME/.codex/AGENTS.md" "$HOME"/.claude/skills/* "$HOME"/.codex/skills/*; do
+        [[ -L "$link" ]] || continue
+        target="$(readlink -- "$link")"
+        if [[ ( "$link" == "$HOME/.claude/CLAUDE.md" || "$link" == "$HOME/.codex/AGENTS.md" ) \
+            && "$target" == "$generated_root/AGENTS.md" ]] \
+            || [[ "$link" == */skills/* && "$target" == "$generated_root/skills/${link##*/}" ]]; then
+            rm -- "$link"
+            printf 'Removed link: %s\n' "$link"
+        fi
+    done
+    # Generations are read-only, and rm needs write access to their folders.
+    if [[ -d "$state_dir/generations" ]]; then
+        find "$state_dir/generations" -type d -exec chmod u+w {} +
+        rm -rf -- "$state_dir/generations"
+    fi
+    rm -f -- "$generated_root" "$state_dir/generated.next"
+    if [[ -d "$state_dir/backups" ]]; then
+        printf 'Files that install replaced are still in %s\n' "$state_dir/backups"
+    fi
+}
+if [[ "$1" == uninstall ]]; then
+    uninstall
+    exit 0
+fi
+
+# Whether PARENT holds an entry spelled exactly NAME that is not a symlink. macOS accepts a wrongly
+# cased path that a case-sensitive clone would not, and a symlink could point outside the repo.
+exact_entry() {
+    local entry
+    for entry in "$1"/* "$1"/.[!.]* "$1"/..?*; do
+        if [[ "${entry##*/}" == "$2" && ! -L "$entry" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+# Whether PARENT holds an entry whose name differs from NAME only in case. Checked by name, because
+# on a case-sensitive disk such an entry would otherwise just look absent.
+case_variant() {
+    local entry folded
+    folded="$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')"
+    for entry in "$1"/* "$1"/.[!.]* "$1"/..?*; do
+        [[ -e "$entry" || -L "$entry" ]] || continue
+        entry="${entry##*/}"
+        if [[ "$entry" != "$2" && "$(printf '%s' "$entry" | tr '[:upper:]' '[:lower:]')" == "$folded" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+for required in AGENTS.md share.json; do
+    if ! exact_entry "$source_dir" "$required" || [[ ! -f "$source_dir/$required" ]]; then
+        printf '%s must be a file with exactly this name.\n' "$required" >&2
+        exit 1
+    fi
+done
+
+# jq treats an empty file as no input and succeeds, so the shape is checked before reading lists.
+# Slurping also rejects a file holding several JSON values. Names are read line by line and bash
+# drops NUL bytes, so a line feed or NUL would turn one name into others. Folder globs skip dot
+# names, so a dot-prefixed skill would escape the reference check and link cleanup.
+if ! jq -se 'length == 1 and (.[0] | type == "object"
+    and (.skills | type == "array" and length > 0 and all(type == "string" and length > 0))
+    and (.optionalSkills | type == "array" and all(type == "string" and length > 0))
+    and ([.skills[], .optionalSkills[]] | all(test("[\u0000\n]") or startswith(".") | not)))' "$manifest" > /dev/null; then
+    printf '%s must be one object with a nonempty skills list and an optionalSkills list of names not starting with a dot.\n' "$manifest" >&2
+    exit 1
+fi
+# Assigned before looping so a jq error stops the script under set -e instead of sharing nothing.
+skills_list="$(jq -r '.skills[]' "$manifest")"
+optional_list="$(jq -r '.optionalSkills[]' "$manifest")"
 shared=()
-while IFS= read -r skill; do shared+=("$skill"); done < <(jq -r '.skills[]' "$manifest")
+while IFS= read -r skill; do [[ -z "$skill" ]] || shared+=("$skill"); done <<< "$skills_list"
 optional=()
-while IFS= read -r skill; do optional+=("$skill"); done < <(jq -r '.optionalSkills[]' "$manifest")
+while IFS= read -r skill; do [[ -z "$skill" ]] || optional+=("$skill"); done <<< "$optional_list"
 
 contains() {
     local needle="$1"
@@ -32,32 +166,137 @@ contains() {
     return 1
 }
 
-shared_paths=()
-for skill in "${shared[@]}"; do
-    if [[ -d "$source_dir/skills/$skill" ]]; then
-        shared_paths+=("$source_dir/skills/$skill")
-    elif [[ -d "$source_dir/claude-skills/$skill" ]]; then
-        shared_paths+=("$source_dir/claude-skills/$skill")
-    else
-        printf 'Unknown skill in share.json: %s\n' "$skill" >&2
+# Names must match folder names exactly, because macOS paths match case-insensitively and a case
+# variant would pass as another skill. Skills install flat by name, so names that differ only in
+# case collide there too, and a second link would land inside the first one, which points into the repo.
+# The skill roots themselves must be spelled exactly too, or every lookup under them would pass on
+# macOS and fail in a case-sensitive clone.
+skill_roots=()
+for root in skills claude-skills; do
+    if case_variant "$source_dir" "$root" \
+        || { [[ -e "$source_dir/$root" ]] && ! { exact_entry "$source_dir" "$root" && [[ -d "$source_dir/$root" ]]; }; }; then
+        printf '%s must be a folder with exactly this name.\n' "$root" >&2
         exit 1
+    fi
+    if [[ -d "$source_dir/$root" ]]; then
+        skill_roots+=("$source_dir/$root")
+    fi
+done
+skill_folder() {
+    local root
+    for root in ${skill_roots[@]+"${skill_roots[@]}"}; do
+        if exact_entry "$root" "$1" && [[ -d "$root/$1" ]]; then
+            printf '%s\n' "$root/$1"
+            return 0
+        fi
+    done
+    printf 'Unknown skill in share.json: %s\n' "$1" >&2
+    return 1
+}
+shared_paths=()
+seen=()
+for skill in "${shared[@]}" ${optional[@]+"${optional[@]}"}; do
+    lower="$(printf '%s' "$skill" | tr '[:upper:]' '[:lower:]')"
+    if contains "$lower" ${seen[@]+"${seen[@]}"}; then
+        printf 'Skill listed twice in share.json, ignoring case: %s\n' "$skill" >&2
+        exit 1
+    fi
+    seen+=("$lower")
+    # Assigned on its own so an unknown name stops the script under set -e.
+    skill_path="$(skill_folder "$skill")"
+    if contains "$skill" "${shared[@]}"; then
+        # A folder left with only reference files would install as a skill with no entry point.
+        if ! exact_entry "$skill_path" SKILL.md || [[ ! -f "$skill_path/SKILL.md" ]]; then
+            printf 'Shared skill %s has no SKILL.md\n' "$skill" >&2
+            exit 1
+        fi
+        shared_paths+=("$skill_path")
     fi
 done
 
+# Repo-relative paths that get friend-only text, and the files holding that text. Each must name
+# AGENTS.md or an existing file in a shared skill, so a typo or an unshared skill fails loudly
+# instead of being skipped.
+appends=()
+append_files=()
+if [[ -L "$append_dir" || ( -e "$append_dir" && ! -d "$append_dir" ) ]] \
+    || case_variant "$source_dir" share-append; then
+    printf 'share-append must be a folder with exactly this name.\n' >&2
+    exit 1
+fi
+if [[ -d "$append_dir" ]]; then
+    # Assigned before looping so a find error stops the script under set -e instead of dropping text.
+    unsupported="$(find "$append_dir" ! -type f ! -type d)"
+    if [[ -n "$unsupported" ]]; then
+        printf 'share-append may hold only regular files and folders:\n%s\n' "$unsupported" >&2
+        exit 1
+    fi
+    files="$(find "$append_dir" -type f ! -name .DS_Store)"
+    while IFS= read -r file; do
+        # An empty share-append yields one empty line.
+        [[ -n "$file" ]] || continue
+        rel="${file#"$append_dir"/}"
+        allowed=0
+        [[ "$rel" == AGENTS.md ]] && allowed=1
+        for skill_path in "${shared_paths[@]}"; do
+            [[ "$source_dir/$rel" == "$skill_path"/* ]] && allowed=1
+        done
+        if ((!allowed)); then
+            printf 'share-append/%s must mirror AGENTS.md or a file in a skill listed in share.json\n' "$rel" >&2
+            exit 1
+        fi
+        if [[ ! -f "$source_dir/$rel" ]]; then
+            printf 'share-append/%s appends to %s, which does not exist\n' "$rel" "$rel" >&2
+            exit 1
+        fi
+        # Every component must pass exact_entry; a symlink would also make the append write outside
+        # the generated copy.
+        parent="$source_dir"
+        remaining="$rel"
+        while [[ -n "$remaining" ]]; do
+            component="${remaining%%/*}"
+            if [[ "$remaining" == */* ]]; then
+                remaining="${remaining#*/}"
+            else
+                remaining=""
+            fi
+            if ! exact_entry "$parent" "$component"; then
+                printf 'share-append/%s must match its target exactly, without symlinks or case differences\n' "$rel" >&2
+                exit 1
+            fi
+            parent="$parent/$component"
+        done
+        appends+=("$rel")
+        append_files+=("$file")
+    done <<< "$files"
+fi
+
 # Skills reference each other as relative links (../name/) or backticked names (`name`).
 check() {
-    local missing=0 skill_dir skill matches
-    for skill_dir in "$source_dir"/skills/*/ "$source_dir"/claude-skills/*/; do
+    local missing=0 root skill_dir skill matches status skill_dirs=()
+    for root in ${skill_roots[@]+"${skill_roots[@]}"}; do
+        for skill_dir in "$root"/*/; do
+            skill_dirs+=("$skill_dir")
+        done
+    done
+    for skill_dir in ${skill_dirs[@]+"${skill_dirs[@]}"}; do
         [[ -d "$skill_dir" ]] || continue
         skill="$(basename -- "$skill_dir")"
         # The ${a[@]+...} form keeps macOS's bash 3.2 from treating an empty array as unbound.
         if contains "$skill" "${shared[@]}" || contains "$skill" ${optional[@]+"${optional[@]}"}; then
             continue
         fi
-        if matches="$(grep -rnF -e "../$skill/" -e "\`$skill\`" -- "$source_dir/AGENTS.md" "${shared_paths[@]}")"; then
-            printf 'References unshared skill %s:\n%s\n' "$skill" "${matches//$source_dir\//  }" >&2
-            missing=1
-        fi
+        matches="$(grep -rnF -e "../$skill/" -e "\`$skill\`" -- "$source_dir/AGENTS.md" "${shared_paths[@]}" \
+            ${append_files[@]+"${append_files[@]}"})" && status=0 || status=$?
+        # grep exits 1 for no match and 2 when it could not read a file, which must not pass as clean.
+        case $status in
+            0)
+                printf 'References unshared skill %s:\n%s\n' "$skill" "${matches//$source_dir\//  }" >&2
+                missing=1
+                ;;
+            1) ;;
+            *) return 1 ;;
+        esac
     done
     if ((missing)); then
         printf 'Add these skills to share.json, or to optionalSkills if the references tolerate a missing skill.\n' >&2
@@ -68,20 +307,104 @@ check() {
 install() {
     # Back up anything a link would replace outside the config directories, where tools could load it as config or skills.
     local backup_root
-    backup_root="$HOME/Library/Application Support/share-sync/backups/$(date +%Y%m%d-%H%M%S)"
+    backup_root="$state_dir/backups/$(date +%Y%m%d-%H%M%S)"
 
-    local links=(
-        "$HOME/.claude/CLAUDE.md" "$source_dir/AGENTS.md"
-        "$HOME/.codex/AGENTS.md" "$source_dir/AGENTS.md"
-    )
-    local skill_path
-    for skill_path in "${shared_paths[@]}"; do
-        links+=("$HOME/.claude/skills/${skill_path##*/}" "$skill_path")
-        links+=("$HOME/.codex/skills/${skill_path##*/}" "$skill_path")
+    if [[ -e "$generated_root" && ! -L "$generated_root" ]]; then
+        printf '%s must be a symlink to a generation; move it away and rerun.\n' "$generated_root" >&2
+        return 1
+    fi
+    # The hourly job's script lives in the plist, so a repo update reaches it only through service.
+    if [[ -f "$plist" ]] && ! cmp -s "$plist" <(service_plist); then
+        printf 'error: %s is outdated; run %s service to update the hourly job.\n' "$plist" "$source_dir/share-sync" >&2
+    fi
+    mkdir -p -- "$state_dir/generations"
+    local build
+    build="$(mktemp -d "$state_dir/generations/XXXXXX")"
+    mkdir -- "$build/skills"
+
+    # A file with friend-only text needs a copy, since a symlink can only show the repo file as is.
+    # The whole skill is copied so its other files stay beside the appended one. Skills sit flat
+    # under skills/, as they are installed, so ../name/ links resolve from a copy's real path too.
+    local i rel rest out unit unit_out copied=()
+    for ((i = 0; i < ${#appends[@]}; i++)); do
+        rel="${appends[i]}"
+        if [[ "$rel" == AGENTS.md ]]; then
+            unit=AGENTS.md
+            unit_out=AGENTS.md
+            out=AGENTS.md
+        else
+            rest="${rel#*/}"
+            unit="${rel%%/*}/${rest%%/*}"
+            unit_out="skills/${rest%%/*}"
+            out="skills/$rest"
+        fi
+        if ! contains "$unit" ${copied[@]+"${copied[@]}"}; then
+            # cp -R would copy into an existing folder, such as one a name that differs only by case or
+            # Unicode normalization already created on APFS.
+            if [[ -e "$build/$unit_out" || -L "$build/$unit_out" ]]; then
+                printf '%s collides with another shared skill on this disk.\n' "$unit" >&2
+                return 1
+            fi
+            cp -R -- "$source_dir/$unit" "$build/$unit_out"
+            copied+=("$unit")
+        fi
+        # $(...) drops a trailing newline, so a nonempty last byte means the file lacks one.
+        [[ -z "$(tail -c 1 -- "$build/$out")" ]] || printf '\n' >> "$build/$out"
+        { printf '\n'; cat -- "${append_files[i]}"; } >> "$build/$out"
     done
 
-    local i destination source_path backup
-    for ((i = 0; i < ${#links[@]}; i += 2)); do
+    contains AGENTS.md ${copied[@]+"${copied[@]}"} || ln -s -- "$source_dir/AGENTS.md" "$build/AGENTS.md"
+    local skill_path
+    for skill_path in "${shared_paths[@]}"; do
+        contains "${skill_path#"$source_dir"/}" ${copied[@]+"${copied[@]}"} && continue
+        # ln would put the link inside an existing folder, or follow an existing link into the repo,
+        # when a name that differs only by case or Unicode normalization already took this one on APFS.
+        if [[ -e "$build/skills/${skill_path##*/}" || -L "$build/skills/${skill_path##*/}" ]]; then
+            printf '%s collides with another shared skill on this disk.\n' "$skill_path" >&2
+            return 1
+        fi
+        ln -s -- "$skill_path" "$build/skills/${skill_path##*/}"
+    done
+    # Copies are rebuilt every run, so making them read-only, folders included, makes an edit or a
+    # new file fail instead of vanishing later. find does not follow the links into the repo.
+    find "$build" \( -type f -o -type d \) -exec chmod a-w {} +
+
+    # rename(2) swaps the symlink atomically; -h replaces the link instead of moving into its target.
+    local previous
+    previous="$(readlink -- "$generated_root" || true)"
+    rm -f -- "$state_dir/generated.next"
+    ln -s -- "$build" "$state_dir/generated.next"
+    # By path, because GNU mv from Homebrew coreutils has no -h.
+    /bin/mv -h -- "$state_dir/generated.next" "$generated_root"
+    # Sessions may have resolved paths into an older generation, and the hourly job builds one every
+    # run, so replaced ones stay for a day. The touch counts that day from the replacement, not the
+    # build, which may be days earlier when no install ran. rm needs write access to the folders.
+    if [[ -d "$previous" ]]; then
+        touch -- "$previous"
+    fi
+    local generation old_generations
+    old_generations="$(find "$state_dir/generations" -mindepth 1 -maxdepth 1 ! -path "$build" -mtime +0)"
+    while IFS= read -r generation; do
+        [[ -n "$generation" ]] || continue
+        find "$generation" -type d -exec chmod u+w {} +
+        rm -rf -- "$generation"
+    done <<< "$old_generations"
+
+    # Each entry is a destination, the source it links to, and the repo path older versions linked
+    # to directly, which holds nothing local and so needs no backup when replaced.
+    local links=(
+        "$HOME/.claude/CLAUDE.md" "$generated_root/AGENTS.md" "$source_dir/AGENTS.md"
+        "$HOME/.codex/AGENTS.md" "$generated_root/AGENTS.md" "$source_dir/AGENTS.md"
+    )
+    local skill_sources=()
+    for skill_path in "${shared_paths[@]}"; do
+        skill_sources+=("$generated_root/skills/${skill_path##*/}")
+        links+=("$HOME/.claude/skills/${skill_path##*/}" "$generated_root/skills/${skill_path##*/}" "$skill_path")
+        links+=("$HOME/.codex/skills/${skill_path##*/}" "$generated_root/skills/${skill_path##*/}" "$skill_path")
+    done
+
+    local destination source_path backup
+    for ((i = 0; i < ${#links[@]}; i += 3)); do
         destination="${links[i]}"
         source_path="${links[i + 1]}"
         if [[ -L "$destination" && "$(readlink -- "$destination")" == "$source_path" ]]; then
@@ -89,7 +412,9 @@ install() {
         fi
 
         mkdir -p -- "$(dirname -- "$destination")"
-        if [[ -e "$destination" || -L "$destination" ]]; then
+        if [[ -L "$destination" && "$(readlink -- "$destination")" == "${links[i + 2]}" ]]; then
+            rm -- "$destination"
+        elif [[ -e "$destination" || -L "$destination" ]]; then
             backup="$backup_root/${destination#"$HOME"/}"
             mkdir -p -- "$(dirname -- "$backup")"
             mv -- "$destination" "$backup"
@@ -99,22 +424,22 @@ install() {
         printf 'Linked: %s -> %s\n' "$destination" "$source_path"
     done
 
-    # Remove links to skills that are no longer shared; they point into this repo, so nothing local is lost.
-    local link target
+    # Remove links this script made for skills that are no longer shared. Only a link named after its
+    # target counts, so a custom link to a skill under another name stays.
+    local link target name
     for link in "$HOME"/.claude/skills/* "$HOME"/.codex/skills/*; do
         [[ -L "$link" ]] || continue
         target="$(readlink -- "$link")"
-        if [[ "$target" == "$source_dir"/skills/* || "$target" == "$source_dir"/claude-skills/* ]] \
-            && ! contains "$target" "${shared_paths[@]}"; then
+        name="${link##*/}"
+        if [[ "$target" == "$source_dir/skills/$name" || "$target" == "$source_dir/claude-skills/$name" \
+            || "$target" == "$generated_root/skills/$name" ]] && ! contains "$target" "${skill_sources[@]}"; then
             rm -- "$link"
             printf 'Removed unshared skill link: %s\n' "$link"
         fi
     done
 }
 
-service() {
-    local plist="$HOME/Library/LaunchAgents/$service_label.plist"
-    local log="$HOME/Library/Logs/share-sync.log"
+service_plist() {
     # sed instead of ${var//&/...}, because bash 5.2+ expands & in the replacement to the match.
     xml_escape() {
         printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'
@@ -128,27 +453,119 @@ service() {
     IFS= read -r -d '' sync_script <<'EOF' || true
 set -euo pipefail
 cd "$1"
+# No hooks for any git command here: a hook in the clone could block the backup or the reset,
+# including reference-transaction, which runs even for plumbing ref updates.
+export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/dev/null
+# Path lists come NUL-separated and become lines, so names arrive unquoted; names with line feeds
+# are not supported.
+paths() { "$@" -z | tr '\0' '\n'; }
 git fetch --quiet
-if [[ -n "$(git status --porcelain)" || -n "$(git rev-list '@{upstream}..HEAD')" ]]; then
+# Assigned first so a git failure stops the job before the reset. Untracked files are listed
+# explicitly because status.showUntrackedFiles could hide files the reset would overwrite.
+changes="$(git status --porcelain --untracked-files=all)"
+# git status does not report edits to files marked assume-unchanged or skip-worktree, so the reset
+# would discard them without a backup.
+hidden="$(git ls-files -v | awk '/^[a-zS] / { print substr($0, 3) }')"
+if [[ -n "$hidden" ]]; then
+    printf 'Files are marked assume-unchanged or skip-worktree; clear the marks so local edits can be backed up:\n%s\n' "$hidden" >&2
+    exit 1
+fi
+# Resolved once, so a fetch from elsewhere during the run cannot make the reset differ from the
+# commit the backup was planned against.
+upstream="$(git rev-parse --verify '@{upstream}')"
+ahead="$(git rev-list "$upstream..HEAD")"
+untracked="$(paths git ls-files --others --exclude-standard)"
+ignored="$(paths git ls-files --others --ignored --exclude-standard)"
+upstream_files="$(paths git ls-tree -r --name-only "$upstream")"
+# Prints the paths read from stdin that the reset would overwrite: upstream has the same path, a
+# parent of it, or a path inside it, compared case-insensitively as APFS does.
+collisions() {
+    awk 'FILENAME == ARGV[1] {
+        path = tolower($0); upstream[path] = 1
+        while (sub(/\/[^\/]*$/, "", path)) upstream_dir[path] = 1
+        next
+    }
+    $0 != "" {
+        # git lists an ignored nested repository as its folder with a trailing slash.
+        path = tolower($0); sub(/\/$/, "", path); hit = (path in upstream) || (path in upstream_dir)
+        while (sub(/\/[^\/]*$/, "", path)) if (path in upstream) hit = 1
+        if (hit) print
+    }' <(printf '%s\n' "$upstream_files") -
+}
+# Ignored files the reset would overwrite join the backup.
+overwritten="$(printf '%s\n' "$ignored" | collisions)"
+# A nested repository's history and uncommitted files can't go into a backup, which could only
+# record its commit. So the job stops before touching anything when one sits in a folder with
+# tracked files (git status can't see it there, and the reset may replace the folder), in a folder
+# that isn't ignored (git add would record it), or where upstream will write. Markers and folders
+# are matched ignoring case, as macOS resolves them, and folders are compared with upstream
+# directly, since git may not list a damaged nested repository.
+nested_folders="$(find . -path ./.git -prune -o -iname .git -prune -print | sed -e 's|/[^/]*$||' -e 's|^\./||')"
+colliding_folders="$(printf '%s\n' "$nested_folders" | collisions)"
+while IFS= read -r folder; do
+    [[ -n "$folder" ]] || continue
+    # Quoted inside the pattern so the folder name matches literally. check-ignore gets ./folder
+    # because it reads a leading colon as pathspec syntax.
+    collides=0
+    case $'\n'"$colliding_folders"$'\n' in *$'\n'"$folder"$'\n'*) collides=1 ;; esac
+    if [[ -n "$(git ls-files -- ":(literal,icase)$folder")" ]] || ((collides)) \
+        || ! git check-ignore -q -- "./$folder"; then
+        printf 'The git repository in %s cannot be backed up; move it out of the clone.\n' "$folder" >&2
+        exit 1
+    fi
+done <<< "$nested_folders"
+if [[ -n "$changes" || -n "$ahead" || -n "$overwritten" ]]; then
     backup="backup/share-sync-$(date +%Y%m%d-%H%M%S)"
-    git switch --quiet -c "$backup"
-    git add -A
-    # A fixed identity, because the clone's machine may have no git identity configured.
-    git diff --cached --quiet || git -c user.name=share-sync -c user.email=share-sync@localhost \
-        commit --quiet -m 'share-sync: back up local changes before reset'
-    git switch --quiet -
+    # Plumbing in a temporary index keeps the clone on its branch and runs no hooks. One commit holds
+    # the staged state and the next the whole working tree, since staging the working tree would
+    # overwrite staged-only edits. A fixed identity, because the machine may have none configured.
+    identity=(-c user.name=share-sync -c user.email=share-sync@localhost)
+    staged="$(git "${identity[@]}" commit-tree --no-gpg-sign -p HEAD \
+        -m 'share-sync: staged changes before reset' "$(git write-tree)")"
+    index="$(mktemp)"
+    # exec below skips EXIT traps, so the index is also removed explicitly on success.
+    trap 'rm -f -- "$index"' EXIT
+    cp -- "$(git rev-parse --git-path index)" "$index"
+    GIT_INDEX_FILE="$index" git add -A
+    while IFS= read -r file; do
+        [[ -z "$file" ]] || GIT_INDEX_FILE="$index" git --literal-pathspecs add --force -- "$file"
+    done <<< "$overwritten"
+    # A safety net behind the nested repository check above: a nested repository in the backup would
+    # be recorded only as its commit. The repo tracks no submodules, so any such entry is one.
+    nested="$(GIT_INDEX_FILE="$index" git ls-files --stage | awk '$1 == "160000" { sub(/^[^\t]*\t/, ""); print }')"
+    if [[ -n "$nested" ]]; then
+        printf 'Cannot back up nested git repositories; move them out of the clone:\n%s\n' "$nested" >&2
+        exit 1
+    fi
+    tree="$(GIT_INDEX_FILE="$index" git write-tree)"
+    rm -f -- "$index"
+    git branch "$backup" "$(git "${identity[@]}" commit-tree --no-gpg-sign -p "$staged" \
+        -m 'share-sync: unstaged and untracked changes before reset' "$tree")"
     printf 'Backed up local changes to branch %s\n' "$backup"
 fi
-git reset --hard --quiet '@{upstream}'
-exec ./share-sync install
+git reset --hard --quiet "$upstream"
+# Leaving backed-up untracked files would back them up again every run. Only files untracked and not
+# ignored both before and after the reset are removed, as exactly those are in the backup; a file the
+# reset stopped ignoring stays until the next run backs it up.
+untracked_after="$(paths git ls-files --others --exclude-standard)"
+# One awk pass instead of a grep per file, which was quadratic and, under pipefail, lost matches when
+# grep -q closed the pipe early.
+removable="$(awk 'FILENAME == ARGV[1] { after[$0] = 1; next } $0 != "" && ($0 in after)' \
+    <(printf '%s\n' "$untracked_after") <(printf '%s\n' "$untracked"))"
+while IFS= read -r file; do
+    [[ -z "$file" ]] || rm -f -- "$file"
+done <<< "$removable"
+# lockf already holds the install lock across the reset, so install must not take it again.
+SHARE_SYNC_LOCKED=1 exec ./share-sync install
 EOF
-    local escaped_script escaped_dir
+    local escaped_script escaped_dir escaped_lock
     escaped_script="$(xml_escape "$sync_script")"
     escaped_dir="$(xml_escape "$source_dir")"
+    escaped_lock="$(xml_escape "$lock")"
 
-    mkdir -p -- "$(dirname -- "$plist")" "$(dirname -- "$log")"
     # Reset before starting share-sync so git never rewrites this script while bash is reading it.
-    cat > "$plist" <<EOF
+    # lockf takes the install lock first and exits 75 without running anything while it is held.
+    cat <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -157,6 +574,11 @@ EOF
     <string>$service_label</string>
     <key>ProgramArguments</key>
     <array>
+        <string>/usr/bin/lockf</string>
+        <string>-k</string>
+        <string>-t</string>
+        <string>0</string>
+        <string>$escaped_lock</string>
         <string>/bin/bash</string>
         <string>-c</string>
         <string>$escaped_script</string>
@@ -174,6 +596,11 @@ EOF
 </dict>
 </plist>
 EOF
+}
+
+service() {
+    mkdir -p -- "$(dirname -- "$plist")" "$(dirname -- "$log")"
+    service_plist > "$plist"
     plutil -lint -s "$plist"
 
     # bootout fails when the service is not loaded yet, which is expected on the first run.
