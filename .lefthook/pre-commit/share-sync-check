@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# git write-tree records exactly what the commit will contain, leaving out files only marked
+# intent-to-add.
+set -euo pipefail
+tree="$(git write-tree)"
+exec "$(git rev-parse --show-toplevel)/.lefthook/check-tree" "$tree"

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Commits from rebase, cherry-pick, and merge skip pre-commit, and the friend's clone resets to what
+# is pushed, so each pushed tip is checked. Tips suffice because the clone only checks out a tip.
+set -euo pipefail
+checker="$(git rev-parse --show-toplevel)/.lefthook/check-tree"
+while IFS= read -r line; do
+    # The first field is the source as typed, such as HEAD@{1 hour ago}, which may contain spaces;
+    # the three after it never do, so the object name is read from the right.
+    rest="${line% * *}"
+    local_sha="${rest##* }"
+    # An all-zero object name is a deletion, which pushes nothing to check.
+    [[ "$local_sha" =~ ^0+$ ]] && continue
+    # stdin holds the remaining ref lines, which a checker reading stdin would silently consume.
+    "$checker" "$local_sha" < /dev/null
+done

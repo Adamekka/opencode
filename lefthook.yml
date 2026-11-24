@@ -1,0 +1,13 @@
+# share.json and share-append mistakes otherwise surface only in the friend's hourly sync log.
+# Script jobs, because lefthook skips run jobs when the only staged changes are file type changes.
+pre-commit:
+  jobs:
+    - name: share-sync check
+      script: share-sync-check
+      runner: bash
+pre-push:
+  jobs:
+    - name: share-sync check
+      script: share-sync-check
+      runner: bash
+      use_stdin: true

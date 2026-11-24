@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Runs share-sync check on a commit's tree, rebuilt from raw objects so local checkout settings such
+# as filters, line-ending conversion, or core.symlinks cannot change what is checked.
+set -euo pipefail
+
+if (($# != 1)); then
+    printf 'Usage: %s TREE-ISH\n' "${0##*/}" >&2
+    exit 1
+fi
+
+# Replacement refs could make an object look different locally than what a clone receives.
+export GIT_NO_REPLACE_OBJECTS=1
+root="$(mktemp -d)"
+trap 'rm -rf "$root"' EXIT
+# Written to a file first so a git failure stops the script instead of checking a partial tree.
+git ls-tree -r -z --full-tree "$1" > "$root/entries"
+# One pass over every entry: macOS would merge paths that differ only in case, hiding entries a
+# case-sensitive clone has; committed attributes could transform files on checkout so a clone runs
+# something other than what is checked; and share-sync, which runs the check, must be an executable
+# file with exactly this name, since macOS would also find a wrongly cased one.
+tr '\0' '\n' < "$root/entries" | awk -F '\t' '{
+    path = substr($0, length($1) + 2)
+    if (path == "share-sync" && substr($1, 1, 6) == "100755") found = 1
+    # Compared ignoring case, since git on macOS also reads a wrongly cased attributes file.
+    if (tolower(path) == ".gitattributes" || tolower(path) ~ /\/\.gitattributes$/) {
+        print "Tracked .gitattributes files are not supported: " path > "/dev/stderr"; bad = 1
+    }
+    n = split(path, parts, "/"); prefix = ""
+    for (i = 1; i <= n; i++) {
+        prefix = (i == 1 ? parts[1] : prefix "/" parts[i]); folded = tolower(prefix)
+        if ((folded in seen) && seen[folded] != prefix) {
+            print "Tracked paths differ only in case: " seen[folded] " and " prefix > "/dev/stderr"; bad = 1
+        }
+        seen[folded] = prefix
+    }
+} END {
+    if (!found) { print "share-sync must be tracked as an executable file with exactly this name." > "/dev/stderr"; bad = 1 }
+    exit bad
+}'
+while IFS= read -r -d '' entry; do
+    meta="${entry%%$'\t'*}"
+    path="$root/tree/${entry#*$'\t'}"
+    mode="${meta%% *}"
+    object="${meta##* }"
+    mkdir -p -- "$(dirname -- "$path")"
+    case "$mode" in
+        100644) git cat-file blob "$object" > "$path" ;;
+        100755)
+            git cat-file blob "$object" > "$path"
+            chmod +x "$path"
+            ;;
+        # A symlink could resolve to a file only this machine has, or by a spelling macOS matches
+        # case-insensitively, so the check would see something a clone does not.
+        120000)
+            printf 'Tracked symlinks are not supported: %s\n' "${entry#*$'\t'}" >&2
+            exit 1
+            ;;
+        # A submodule checks out as an empty folder until it is initialized.
+        160000) mkdir -p -- "$path" ;;
+        *)
+            printf 'Unexpected mode %s for %s\n' "$mode" "${entry#*$'\t'}" >&2
+            exit 1
+            ;;
+    esac
+done < "$root/entries"
+"$root/tree/share-sync" check
