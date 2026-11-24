@@ -1,0 +1,1 @@
+- When a change needs `CoreUtils` edits, create a CoreUtils branch for the current app instead of pushing to `main` or pointing the app at a local CoreUtils checkout. Make the app's package dependency track that branch instead of `main`, and open a CoreUtils pull request when the feature is done.
