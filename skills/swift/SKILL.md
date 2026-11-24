@@ -30,6 +30,10 @@ description: When Swift.
 - Treat SwiftLint rules as strong defaults. When following a rule would make a specific correct implementation less clear or less safe, prefer the clearer code and disable that rule locally at the smallest practical scope; do not add awkward structure just to satisfy lint.
 - For protocol witness methods, do not assume the implementation must repeat `async` or `throws` from the requirement. If the body does not `await` or throw, first try a synchronous and/or non-throwing witness instead of adding `async_without_await`, `unused_parameter`, or `unneeded_throws_rethrows` disables.
 - Before simulator builds or interacting with a simulator or test phone, load and follow [simlock](../simlock/SKILL.md) if it is installed. Skip this step when the skill is missing.
+- Build incrementally. Reuse one stable DerivedData folder per checkout (the Xcode default or a fixed `-derivedDataPath`) across builds and review rounds. Don't run `xcodebuild clean` or create a fresh DerivedData folder per build.
+- Give each build variant with different compiler flags, such as an overlay or offline build, its own stable DerivedData folder. Switching flags inside one folder recompiles the whole app.
+- Give concurrent builds of the same checkout separate stable DerivedData folders, because xcodebuild locks its build database.
+- Clean only to diagnose a suspected stale-build failure, and state the symptom that justified it.
 - For app changes that need runtime or visual verification, such as UI, navigation, or app lifecycle behavior, test the affected flow in a simulator and inspect the result. Skip simulator testing when compilation or focused tests adequately verify the change.
 - After finishing a Swift edit task, run `swiftformat .` and `swiftlint` from repo root.
 - Do not run formatting/linting early unless requested; run at task completion checkpoints.
